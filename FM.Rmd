@@ -9,4 +9,18 @@ output: html_notebook
 # Please Work!!!
 ```
 
+```{r}
+#Sofia suggestions for dataset :)
+
+#install.packages("fdm2id")
+#install.packages("psych")
+#library(psych)
+library(fdm2id)
+
+#1st suggestion:
+fdm2id::ozone
+
+#2nd suggestion:
+airquality
+```
 
