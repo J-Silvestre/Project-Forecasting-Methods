@@ -1,29 +1,11 @@
 ---
-title: "Forecasting Methods Project"
+title: "ForeCasting Methods"
+author: "Group"
+date: "30/04/2022"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
-```
-
-```{r}
-#Sofia suggestions for dataset :)
-
-#install.packages("fdm2id")
-#install.packages("psych")
-#library(psych)
-#library(fdm2id)
-
-#1st suggestion:
-#fdm2id::ozone
-
-#2nd suggestion:
-#airquality
-```
-
-```{r, include=FALSE}
+```{r, echo=FALSE}
 #loading libraries
 library(fpp3)
 library(tidyverse)
@@ -56,7 +38,7 @@ setwd("~/GitHub/Project-Forecasting-Methods")
 
 ## 2 Time series graphics
 
-```{r, message=FALSE}
+```{r}
 #merging Global file with country file
 GlobalCountryTemp <- list.files(pattern = "*.csv", full.names = TRUE) %>% 
   lapply(read_csv) %>%                             
@@ -114,6 +96,7 @@ AustraliaTemp <-GlobalCountryTemp %>% filter(Country == "Australia")%>% select(D
 GreenlandTemp <- GlobalCountryTemp %>% filter(Country == "Greenland")%>% select(Date, Country, LandAvgTemp)
 ```
 
+
 ## General overview of the dataset
 
 ```{r, warning = FALSE}
@@ -122,7 +105,7 @@ GlobalCountryTemp %>% filter(Country %in% countries) %>% filter(year(Date)>1984)
   geom_line(data=GlobalTempV ,aes(Date, LandAvgTemp, col= "Global"),lwd=2)+
   labs(title= "Global & Country Land Temperature- Last 30 years",
             subtitle = "Average",
-            y= "LandAvgTemp Cº")+
+            y= "LandAvgTemp CÂº")+
   ylim(-30,40)+
   theme(legend.position = "right")
 
@@ -130,13 +113,13 @@ GlobalTemp %>% autoplot(LandOceanAvgTemp)+
   geom_line(color="blue")+
   labs(title = "Land & Ocean Temperature",
        subtitle = "Average",
-       y="LandOceanAvgTemp Cº")
+       y="LandOceanAvgTemp CÂº")
 
 GlobalCountryTemp %>% filter(Country == "Brazil") %>% autoplot(LandAvgTemp)+
   geom_line(color="green")+
   labs(title = "Land Temperature in Brazil- Since 1850",
        subtitle="Average",
-       y="LandAvgTemp Cº")
+       y="LandAvgTemp CÂº")
 
 
 GlobalTempV %>% ggplot()+
@@ -144,7 +127,7 @@ GlobalTempV %>% ggplot()+
   geom_line(data=GlobalTempV, aes(Date,LandAvgTemp,col="LandAvgTemp"),lwd=2)+
   geom_line(data=GlobalTempV, aes(Date, LandMinTemp, col="LandMinTemp"))+
   labs(title = "Land temperature- Global overview",
-       y="LandTemp Cº",
+       y="LandTemp CÂº",
        color="Temperature Type")+
   scale_color_manual(values= c("red","black","blue"))
 
@@ -161,14 +144,14 @@ GlobalCountryTemp %>%
   filter(Country=="Global") %>% 
   gg_season(LandAvgTemp)+
   labs(title = "Seasonality in temperature- Land",
-       y="LandAvgTemp Cº",
+       y="LandAvgTemp CÂº",
        color="Years")
 
 GlobalCountryTemp %>% 
   filter(Country=="Global") %>% 
   gg_season(LandOceanAvgTemp)+
   labs(title = "Seasonality in temperature- Land and Ocean",
-       y="LandOceanAvgTemp Cº",
+       y="LandOceanAvgTemp CÂº",
        color="Years")
 
 #subseries
@@ -181,15 +164,16 @@ GlobalCountryTemp %>%
   filter(Country %in% countries2) %>% 
   gg_subseries(LandAvgTemp)+
   labs(title = "Subseries - monthly analysis",
-         y="LandAvgTemp Cº")
+         y="LandAvgTemp CÂº")
 
 GlobalCountryTemp %>% 
   filter(Country %in% countries3) %>% 
   gg_subseries(LandAvgTemp)+
   labs(title = "Subseries - monthly analysis",
-         y="LandAvgTemp Cº")
+         y="LandAvgTemp CÂº")
   
 ```
+
 
 ##Looking at autocorrelation and white noise
 
@@ -203,11 +187,3 @@ GlobalCountryTemp %>% filter(Country=="Global") %>% ACF(LandOceanAvgTemp,lag_max
 GlobalCountryTemp %>% 
   filter(Country %in% countries2)%>% ACF(LandAvgTemp,lag_max = 12) %>% autoplot()
 ```
-
-
-
-
-
-
-
-
