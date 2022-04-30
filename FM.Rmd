@@ -3,8 +3,6 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-
-
 ```{r}
 # Please Work!!!
 ```
@@ -15,46 +13,201 @@ output: html_notebook
 #install.packages("fdm2id")
 #install.packages("psych")
 #library(psych)
-library(fdm2id)
+#library(fdm2id)
 
 #1st suggestion:
-fdm2id::ozone
+#fdm2id::ozone
 
 #2nd suggestion:
-airquality
+#airquality
 ```
 
+```{r, echo=FALSE}
+#loading libraries
+library(fpp3)
+library(tidyverse)
+#working directory for github
+setwd("~/GitHub/Project-Forecasting-Methods")
 
+#--------------------------------------------- be careful with this code below
+
+#loading the data -->just to run for the first time 
+
+#GlobalTemperature <-read.csv("data/GlobalTemperatures.csv")
+
+#adding column -->just to run for the first time
+
+#GlobalTemperature["Country"]<- "Global"
+
+#creating new csv file --> just to run for the first time
+
+#write.csv(GlobalTemperature, "GlobalTemperatures2.csv")
+
+#Country <- read.csv("data/GlobalLandTemperaturesByCountry.csv")
+#names(Country) <-c("dt","LandAverageTemperature", "AverageTemperatureUncertainty","Country")
+#write.csv(Country,"GlobalLandTemperaturesByCountry2.csv")
+
+#------------------------------------------- be careful with this code above
+
+#supress warnings
+
+
+```
+
+## 2 Time series graphics
 
 ```{r}
-setwd("~/GitHub/Project-Forecasting-Methods")
-#loading the data
-GlobalTemperature <-read.csv("GlobalTemperatures.csv")
-GlobalTemperatureCountry <- read.csv("GlobalLandTemperaturesByCountry.csv")
+#merging Global file with country file
+GlobalCountryTemp <- list.files(pattern = "*.csv", full.names = TRUE) %>% 
+  lapply(read_csv) %>%                             
+  bind_rows  
 
-#cleaning nas
-GlobalTemperature <- na.omit(GlobalTemperature)
-GlobalTemperatureCountry <- na.omit(GlobalTemperatureCountry)
+#transforming in a tsibble
 
-#transforming in tsibbles
-GlobalTemperature<- GlobalTemperature%>% mutate(Date = yearmonth(dt)) %>% as_tsibble(index=Date) %>% select(Date, everything()) %>% select(-dt, -LandAndOceanAverageTemperatureUncertainty, -LandMaxTemperatureUncertainty, -LandMinTemperatureUncertainty, -LandAverageTemperatureUncertainty) 
-
-GlobalTemperatureCountry <- GlobalTemperatureCountry %>% mutate(Date= yearmonth(dt)) %>% as_tsibble(index=Date, key =Country) %>%  select(-dt, -AverageTemperatureUncertainty ) %>% select(Date, Country, AverageTemperature)
+GlobalCountryTemp<- GlobalCountryTemp%>% mutate(Date = yearmonth(dt)) %>% as_tsibble(index=Date, key="Country") %>% select(Date, Country, everything()) %>% select(-dt, -LandAndOceanAverageTemperatureUncertainty, -LandMaxTemperatureUncertainty, -LandMinTemperatureUncertainty, -LandAverageTemperatureUncertainty, -AverageTemperatureUncertainty, -idk) 
 
 #changing columns names
-names(GlobalTemperature)<-c('Date','LandAvgTemp', 'LandMaxTemp', 'LandMinTemp', 'Land&OceanAvgTemp')
-names(GlobalTemperatureCountry) <- c('Date', 'Country', 'AvgTemp')
+names(GlobalCountryTemp) <-c('Date','Country','idk', 'LandAvgTemp', 'LandMaxTemp', 'LandMinTemp', 'LandOceanAvgTemp')
 
-#Selecting countries, one object for each country
-PortugalTemp <-GlobalTemperatureCountry %>% filter(Country == "Portugal")
-GermanyTemp <-GlobalTemperatureCountry %>% filter(Country == "Germany")
-UkTemp <-GlobalTemperatureCountry %>% filter(Country == "United Kingdom")
-BrazilTemp <-GlobalTemperatureCountry %>% filter(Country == "Brazil")
-USATemp <-GlobalTemperatureCountry %>% filter(Country == "United States")
-ChinaTemp <-GlobalTemperatureCountry %>% filter(Country == "China")
-AntarcticaTemp <-GlobalTemperatureCountry %>% filter(Country == "Antarctica")
-MaliTemp <-GlobalTemperatureCountry %>% filter(Country == "Mali")
-SouthAfricaTemp <-GlobalTemperatureCountry %>% filter(Country == "South Africa")
-AustraliaTemp <-GlobalTemperatureCountry %>% filter(Country == "Australia")
+#-------------------Objects for visualization
+
+#Creating GlobalTemp object, which contains only Global values and cleaning it for visualization
+GlobalTempV <- GlobalCountryTemp %>% filter(Country=="Global") %>% select(-idk) %>% filter(year(Date)>1984, year(Date)<2014)
+GlobalTempV <-na.omit(GlobalTempV)
+
+#Creating CountryTemp objects, each contains one country and cleaning it for visualizations purpose -->Not sure if its needed to use
+#using years above 1984 for visualisation purposes
+
+#PortugalTempV <-GlobalCountryTemp %>% filter(Country == "Portugal") %>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#GermanyTempV <-GlobalCountryTemp %>% filter(Country == "Germany")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#UkTempV <-GlobalCountryTemp %>% filter(Country == "United Kingdom")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#BrazilTempV <-GlobalCountryTemp %>% filter(Country == "Brazil")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#USATempV <-GlobalCountryTemp %>% filter(Country == "United States")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#ChinaTempV <-GlobalCountryTemp %>% filter(Country == "China")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#MaliTempV <-GlobalCountryTemp %>% filter(Country == "Mali")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#SouthAfricaTempV <-GlobalCountryTemp %>% filter(Country == "South Africa")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#AustraliaTempV <-GlobalCountryTemp %>% filter(Country == "Australia")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#GreenlandTempV <- GlobalCountryTemp %>% filter(Country == "Greenland")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+
+
+#divided it because analysing 10 at once gets really messy
+countries<- c('Portugal','Mali','Greenland')
+countries2<- c('Portugal', 'Germany', 'United Kingdom','Brazil','United States')
+countries3<-c('China','Mali','South Africa','Australia','Greenland')
+
+#-------------------Objects to use in the rest of the work
+
+#Global
+GlobalTemp <- GlobalCountryTemp %>% filter(Country=="Global") %>% select(-idk) 
+GlobalTemp <-na.omit(GlobalTemp)
+
+#Countries-->not sure if its needed to use
+PortugalTemp <-GlobalCountryTemp %>% filter(Country == "Portugal") %>% select(Date, Country, LandAvgTemp)
+GermanyTemp <-GlobalCountryTemp %>% filter(Country == "Germany")%>% select(Date, Country, LandAvgTemp)
+UkTemp <-GlobalCountryTemp %>% filter(Country == "United Kingdom")%>% select(Date, Country, LandAvgTemp)
+BrazilTemp <-GlobalCountryTemp %>% filter(Country == "Brazil")%>% select(Date, Country, LandAvgTemp)
+USATemp <-GlobalCountryTemp %>% filter(Country == "United States")%>% select(Date, Country, LandAvgTemp)
+ChinaTemp <-GlobalCountryTemp %>% filter(Country == "China")%>% select(Date, Country, LandAvgTemp)
+MaliTemp <-GlobalCountryTemp %>% filter(Country == "Mali")%>% select(Date, Country, LandAvgTemp)
+SouthAfricaTemp <-GlobalCountryTemp %>% filter(Country == "South Africa")%>% select(Date, Country, LandAvgTemp)
+AustraliaTemp <-GlobalCountryTemp %>% filter(Country == "Australia")%>% select(Date, Country, LandAvgTemp)
+GreenlandTemp <- GlobalCountryTemp %>% filter(Country == "Greenland")%>% select(Date, Country, LandAvgTemp)
 ```
+
+## General overview of the dataset
+
+```{r, warning = FALSE}
+
+GlobalCountryTemp %>% filter(Country %in% countries) %>% filter(year(Date)>1984) %>% autoplot(LandAvgTemp)+
+  geom_line(data=GlobalTempV ,aes(Date, LandAvgTemp, col= "Global"),lwd=2)+
+  labs(title= "Global & Country Land Temperature- Last 30 years",
+            subtitle = "Average",
+            y= "LandAvgTemp Cº")+
+  ylim(-30,40)+
+  theme(legend.position = "right")
+
+GlobalTemp %>% autoplot(LandOceanAvgTemp)+
+  geom_line(color="blue")+
+  labs(title = "Land & Ocean Temperature",
+       subtitle = "Average",
+       y="LandOceanAvgTemp Cº")
+
+GlobalCountryTemp %>% filter(Country == "Brazil") %>% autoplot(LandAvgTemp)+
+  geom_line(color="green")+
+  labs(title = "Land Temperature in Brazil- Since 1850",
+       subtitle="Average",
+       y="LandAvgTemp Cº")
+
+
+GlobalTempV %>% ggplot()+
+  geom_line(data=GlobalTempV, aes(Date, LandMaxTemp, col="LandMaxTemp"))+
+  geom_line(data=GlobalTempV, aes(Date,LandAvgTemp,col="LandAvgTemp"),lwd=2)+
+  geom_line(data=GlobalTempV, aes(Date, LandMinTemp, col="LandMinTemp"))+
+  labs(title = "Land temperature- Global overview",
+       y="LandTemp Cº",
+       color="Temperature Type")+
+  scale_color_manual(values= c("red","black","blue"))
+
+```
+
+
+
+##Looking at seasonality, cycles and trends 
+
+
+```{r, warning=FALSE}
+#seasonal and trending
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  gg_season(LandAvgTemp)+
+  labs(title = "Seasonality in temperature- Land",
+       y="LandAvgTemp Cº",
+       color="Years")
+
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  gg_season(LandOceanAvgTemp)+
+  labs(title = "Seasonality in temperature- Land and Ocean",
+       y="LandOceanAvgTemp Cº",
+       color="Years")
+
+#subseries
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  gg_subseries(LandAvgTemp)+
+  labs(title = "Subseries - monthly global analysis")
+
+GlobalCountryTemp %>% 
+  filter(Country %in% countries2) %>% 
+  gg_subseries(LandAvgTemp)+
+  labs(title = "Subseries - monthly analysis",
+         y="LandAvgTemp Cº")
+
+GlobalCountryTemp %>% 
+  filter(Country %in% countries3) %>% 
+  gg_subseries(LandAvgTemp)+
+  labs(title = "Subseries - monthly analysis",
+         y="LandAvgTemp Cº")
+  
+```
+
+##Looking at autocorrelation and white noise
+
+```{r}
+#6, 12 or 24 lags--> monthly data
+#In this case 12 looks the best as it captures all months of one year
+
+GlobalCountryTemp %>% filter(Country=="Global") %>% ACF(LandAvgTemp,lag_max = 12) %>% autoplot()
+GlobalCountryTemp %>% filter(Country=="Global") %>% ACF(LandOceanAvgTemp,lag_max = 12) %>% autoplot()
+
+GlobalCountryTemp %>% 
+  filter(Country %in% countries2)%>% ACF(LandAvgTemp,lag_max = 12) %>% autoplot()
+```
+
+
+
+
+
+
+
 
