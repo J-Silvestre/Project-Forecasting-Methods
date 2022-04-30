@@ -24,3 +24,37 @@ fdm2id::ozone
 airquality
 ```
 
+
+
+```{r}
+setwd("~/GitHub/Project-Forecasting-Methods")
+#loading the data
+GlobalTemperature <-read.csv("GlobalTemperatures.csv")
+GlobalTemperatureCountry <- read.csv("GlobalLandTemperaturesByCountry.csv")
+
+#cleaning nas
+GlobalTemperature <- na.omit(GlobalTemperature)
+GlobalTemperatureCountry <- na.omit(GlobalTemperatureCountry)
+
+#transforming in tsibbles
+GlobalTemperature<- GlobalTemperature%>% mutate(Date = yearmonth(dt)) %>% as_tsibble(index=Date) %>% select(Date, everything()) %>% select(-dt, -LandAndOceanAverageTemperatureUncertainty, -LandMaxTemperatureUncertainty, -LandMinTemperatureUncertainty, -LandAverageTemperatureUncertainty) 
+
+GlobalTemperatureCountry <- GlobalTemperatureCountry %>% mutate(Date= yearmonth(dt)) %>% as_tsibble(index=Date, key =Country) %>%  select(-dt, -AverageTemperatureUncertainty ) %>% select(Date, Country, AverageTemperature)
+
+#changing columns names
+names(GlobalTemperature)<-c('Date','LandAvgTemp', 'LandMaxTemp', 'LandMinTemp', 'Land&OceanAvgTemp')
+names(GlobalTemperatureCountry) <- c('Date', 'Country', 'AvgTemp')
+
+#Selecting countries, one object for each country
+PortugalTemp <-GlobalTemperatureCountry %>% filter(Country == "Portugal")
+GermanyTemp <-GlobalTemperatureCountry %>% filter(Country == "Germany")
+UkTemp <-GlobalTemperatureCountry %>% filter(Country == "United Kingdom")
+BrazilTemp <-GlobalTemperatureCountry %>% filter(Country == "Brazil")
+USATemp <-GlobalTemperatureCountry %>% filter(Country == "United States")
+ChinaTemp <-GlobalTemperatureCountry %>% filter(Country == "China")
+AntarcticaTemp <-GlobalTemperatureCountry %>% filter(Country == "Antarctica")
+MaliTemp <-GlobalTemperatureCountry %>% filter(Country == "Mali")
+SouthAfricaTemp <-GlobalTemperatureCountry %>% filter(Country == "South Africa")
+AustraliaTemp <-GlobalTemperatureCountry %>% filter(Country == "Australia")
+```
+
