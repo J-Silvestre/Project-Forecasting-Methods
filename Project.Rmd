@@ -268,3 +268,5 @@ uncertainty %>%as_tsibble(index=Year) %>% filter(Year> "1752") %>%
   By looking at  the autocorrelation plots, regarding the Land Average Temperature, we used a lag of 12 months since it's more appropriate for monthly data and it captures all the months of one year. It clearly shows that exists autocorrelation between the time series and its lags period, we can also spot that the autocorrelation peaks on months 6 and 12 which correspond to the highest and lowest temperature peeks of the seasonality, respectively.
 
   For the autocorrelation analysis of Land Average temperature Uncertainty, we first changed the monthly date to early data as there is no seasonality and it helps on the visualization, and defined a lag period of 48 years which is about 1/3 of our total data. We can observer that it follows the typical trend behaviour, small lags have larger values as they are close to the previous value and tend to get smaller as the time goes by. 
+  
+  Since our autocorrelation values are mostly above the significant interval our time series isn't a "white noise".
