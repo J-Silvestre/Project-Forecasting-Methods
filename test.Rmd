@@ -1,0 +1,270 @@
+---
+title: "ForeCasting Methods Project"
+author: "Group"
+date: "01/05/2022"
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+#loading libraries
+library(fpp3)
+library(tidyverse)
+#working directory for github
+setwd("~/GitHub/Project-Forecasting-Methods")
+
+#--------------------------------------------- be careful with this code below
+
+#loading the data -->just to run for the first time 
+
+#GlobalTemperature <-read.csv("data/GlobalTemperatures.csv")
+
+#adding column -->just to run for the first time
+
+#GlobalTemperature["Country"]<- "Global"
+
+#creating new csv file --> just to run for the first time
+
+#write.csv(GlobalTemperature, "GlobalTemperatures2.csv")
+
+#Country <- read.csv("data/GlobalLandTemperaturesByCountry.csv")
+#names(Country) <-c("dt","LandAverageTemperature", "AverageTemperatureUncertainty","Country")
+#write.csv(Country,"GlobalLandTemperaturesByCountry2.csv")
+
+#------------------------------------------- be careful with this code above
+
+
+
+```
+
+
+```{r, message=FALSE, include=FALSE}
+#merging Global file with country file
+GlobalCountryTemp <- list.files(pattern = "*.csv", full.names = TRUE) %>% 
+  lapply(read_csv) %>%                             
+  bind_rows  
+
+#transforming in a tsibble
+
+GlobalCountryTemp<- GlobalCountryTemp%>% mutate(Date = yearmonth(dt)) %>% as_tsibble(index=Date, key="Country") %>% select(Date, Country, everything()) %>% select(-dt,-LandMaxTemperatureUncertainty, -LandMinTemperatureUncertainty,-AverageTemperatureUncertainty) 
+
+#changing columns names
+names(GlobalCountryTemp) <-c('Date','Country','idk', 'LandAvgTemp','LandAvgTempUnc', 'LandMaxTemp', 'LandMinTemp', 'LandOceanAvgTemp', 'LandOceanAvgTempUnc')
+GlobalCountryTemp <-GlobalCountryTemp %>%  select(-idk)
+#-------------------Objects for visualization
+
+#Creating GlobalTemp object, which contains only Global values and cleaning it for visualization
+GlobalTempV <- GlobalCountryTemp %>% filter(Country=="Global")  %>% filter(year(Date)>1984, year(Date)<2014)
+GlobalTempV <-na.omit(GlobalTempV)
+
+#Creating CountryTemp objects, each contains one country and cleaning it for visualizations purpose -->Not sure if its needed to use
+#using years above 1984 for visualisation purposes
+
+#PortugalTempV <-GlobalCountryTemp %>% filter(Country == "Portugal") %>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#GermanyTempV <-GlobalCountryTemp %>% filter(Country == "Germany")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#UkTempV <-GlobalCountryTemp %>% filter(Country == "United Kingdom")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#BrazilTempV <-GlobalCountryTemp %>% filter(Country == "Brazil")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#USATempV <-GlobalCountryTemp %>% filter(Country == "United States")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#ChinaTempV <-GlobalCountryTemp %>% filter(Country == "China")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#MaliTempV <-GlobalCountryTemp %>% filter(Country == "Mali")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#SouthAfricaTempV <-GlobalCountryTemp %>% filter(Country == "South Africa")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#AustraliaTempV <-GlobalCountryTemp %>% filter(Country == "Australia")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#GreenlandTempV <- GlobalCountryTemp %>% filter(Country == "Greenland")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+
+
+#divided it because analysing 10 at once gets really messy
+countries<- c('Portugal','Mali','Greenland')
+countries2<- c('Portugal', 'Germany', 'United Kingdom','Brazil','United States')
+countries3<-c('China','Mali','South Africa','Australia','Greenland')
+
+#-------------------Objects to use in the rest of the work
+
+#Global
+GlobalTemp <- GlobalCountryTemp %>% filter(Country=="Global") 
+GlobalTemp <-na.omit(GlobalTemp)
+
+#Countries-->not sure if its needed to use
+PortugalTemp <-GlobalCountryTemp %>% filter(Country == "Portugal") %>% select(Date, Country, LandAvgTemp)
+GermanyTemp <-GlobalCountryTemp %>% filter(Country == "Germany")%>% select(Date, Country, LandAvgTemp)
+UkTemp <-GlobalCountryTemp %>% filter(Country == "United Kingdom")%>% select(Date, Country, LandAvgTemp)
+BrazilTemp <-GlobalCountryTemp %>% filter(Country == "Brazil")%>% select(Date, Country, LandAvgTemp)
+USATemp <-GlobalCountryTemp %>% filter(Country == "United States")%>% select(Date, Country, LandAvgTemp)
+ChinaTemp <-GlobalCountryTemp %>% filter(Country == "China")%>% select(Date, Country, LandAvgTemp)
+MaliTemp <-GlobalCountryTemp %>% filter(Country == "Mali")%>% select(Date, Country, LandAvgTemp)
+SouthAfricaTemp <-GlobalCountryTemp %>% filter(Country == "South Africa")%>% select(Date, Country, LandAvgTemp)
+AustraliaTemp <-GlobalCountryTemp %>% filter(Country == "Australia")%>% select(Date, Country, LandAvgTemp)
+GreenlandTemp <- GlobalCountryTemp %>% filter(Country == "Greenland")%>% select(Date, Country, LandAvgTemp)
+```
+## 2 Time series graphics
+
+  In this section the group will explore the dataset by ploting time series graphics and analyzing them, this section is really important as it provides the group an overall view of the temperature changing through the time and allows the group to identify possible patterns, such as trends, cycles and seasonalities during the time. 
+
+### General overview of the dataset
+
+```{r, warning = FALSE}
+GlobalTemp %>% autoplot(LandOceanAvgTemp)+
+  geom_line(color="blue")+
+  labs(title = "Land & Ocean Temperature- Global",
+       subtitle = "Average",
+       y="LandOceanAvgTemp Cº",
+       caption = "fig. 1")
+
+GlobalCountryTemp %>% filter(Country == "Brazil") %>% autoplot(LandAvgTemp)+
+  geom_line(color="green")+
+  labs(title = "Land Temperature in Brazil- Since 1850",
+       subtitle="Average",
+       y="LandAvgTemp Cº",
+       caption = "fig. 2")
+
+GlobalCountryTemp %>% filter(Country=="Global") %>% autoplot(LandAvgTempUnc)+
+  labs(title = "Land Average temperature Uncertainty- Evolution through time",
+       caption = "fig. 3")
+```
+
+  The dataset provides three different views that can be combined and analysed in multiple different ways.
+
+  The first view is the Global Land & Ocean average temperature, it provides an interesting sight on how the combination of both and land temperature have been changing since 1850.
+
+  The central view of the dataset is the Land temperature analysis, which can be divided in a global analysis that contain average,max and min temperature values and a more narrow analysis that allow us to observe particular countries average temperature over the years.Note that the years in analyse may differ from country to country due to missing data in the dataset, especially for years before 1900.
+
+  The final view is related with the uncertainty of the average temperature values and how it has changed overtime.
+
+
+
+```{r, warning=FALSE}
+GlobalTempV %>% ggplot()+
+  geom_line(data=GlobalTempV, aes(Date, LandMaxTemp, col="LandMaxTemp"))+
+  geom_line(data=GlobalTempV, aes(Date,LandAvgTemp,col="LandAvgTemp"),lwd=2)+
+  geom_line(data=GlobalTempV, aes(Date, LandMinTemp, col="LandMinTemp"))+
+  labs(title = "Land temperature- Global overview",
+       y="LandTemp Cº",
+       color="Temperature Type",
+       caption = "fig. 4")+
+  scale_color_manual(values= c("red","black","blue"))
+       
+
+GlobalCountryTemp %>% filter(Country %in% countries) %>% filter(year(Date)>1984) %>% autoplot(LandAvgTemp)+
+  geom_line(data=GlobalTempV ,aes(Date, LandAvgTemp, col= "Global"),lwd=2)+
+  labs(title= "Global & Country Land Temperature- Last 30 years",
+            subtitle = "Average",
+            y= "LandAvgTemp Cº",
+       caption = "fig. 5")+
+  ylim(-30,40)+
+  theme(legend.position = "right")
+```
+
+  As we start looking at the time series plots we can see that the temperature behaves differently acording to the countries analysed, some countries belong to hot regions like Mali and even Portugal and therefore have higher temperatures while other countries like Greenland are in more northern zones and have colder temperatures. The global temperature is nothing else but the weighted average of the temperature of all countries and there for it appears on the "middle" of the time series graph, the same reasoning can be applied to the max and min global temperature.
+
+  When we take a closer look to this graphs it's possible to start observing some seasonal and trending patterns.
+Regarding the trending patterns, we can clearly see a very smooth crescent trend when it comes to land and ocean temperatures, which makes sense as a result of a direct effect of the global warming in the temperature, making it rise. On the other hand, there is a very clear decrescent trending on the temperature uncertainty, which makes sense from a point where as the time pass, the practices to measure temperature are better and more precise.
+
+  Looking now at the seasonal pattern, when we highlight the graph starting from 1985 onwards, it becomes explicit that there is a seasonal behaviour every years.
+When we think about it, it makes sence since every year we have 4 seasons(winter, spring, summer and autumn) and each of those has its temperature characteristics.
+
+## Focusing on seasonality, cycles and trends 
+
+  In this section, the objective is to focus on the seasonal and trending pattern idetified previously and confirm them. 
+
+```{r, warning=FALSE}
+#seasonal and trending
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  gg_season(LandAvgTemp)+
+  labs(title = "Seasonality in temperature- Land",
+       y="LandAvgTemp Cº",
+       color="Years",
+       caption = "fig. 6")
+
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  gg_season(LandOceanAvgTemp)+
+  labs(title = "Seasonality in temperature- Land and Ocean",
+       y="LandOceanAvgTemp Cº",
+       color="Years",
+       caption = "fig. 7")
+```
+
+
+  This graphs give us some very interesting intail on the previous spotted seasonality.
+  
+  We can clearly see that on winter months(December, January and February), the temperature reach the lowest values while on summer months(June, July, August), the temperature reach its peak. Besides showing the seasonality, this graph clearly shows the crescent trending as the years go by, the lines that represent the years keep going up in the graph.
+  
+  Other very important aspect that we can spot is that in years around 1800 the values have some kind of spikes, this results from the fact that there was a big uncertainty around the temperature in this years and as time pass by, the uncertainty decreases and the lines become more stable. The land and ocean seasonality graph clearly shows that difference has it doesn't have value below 1900.
+
+
+```{r, warning=FALSE}
+#subseries
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  gg_subseries(LandAvgTemp)+
+  labs(title = "Subseries - monthly global analysis",
+       caption = "fig. 8")
+
+GlobalCountryTemp %>% 
+  filter(Country %in% countries2) %>% 
+  gg_subseries(LandAvgTemp)+
+  labs(title = "Subseries - monthly analysis",
+         y="LandAvgTemp Cº",
+       caption = "fig. 9")
+
+GlobalCountryTemp %>% 
+  filter(Country %in% countries3) %>% 
+  gg_subseries(LandAvgTemp)+
+  labs(title = "Subseries - monthly analysis",
+         y="LandAvgTemp Cº",
+       caption = "fig. 10")
+
+```
+
+  The subseries analysis also provides some more details regarding the seasonality and trending.
+  
+  It clearly shows high discrepancies in early 1800 temperature values due to the high uncertainty, however it is still clear to see that there is a growing trend, at a global perspective.
+  
+  The country subseries analysis shows a new perspective, regarding the seasonality. Some countries have their seasonality "swaped" when compared to the global seasonality, this happens because countries from the northern hemisphere move on the opposite way of countries from southern hemisphere, this means that when it's summer in the north(June, July, August), it's winter in the south and thats why this differences appear. Never the less we can stil identify the growing trend of the temperature in most countries.
+
+
+## Looking at autocorrelation and white noise
+
+Lastly, we analyse the autocorrelation and try to identify white noise
+
+```{r}
+#6, 12 or 24 lags--> monthly data
+#In this case 12 looks the best as it captures all months of one year
+
+GlobalCountryTemp %>% filter(Country=="Global") %>% ACF(LandAvgTemp,lag_max = 12) %>% autoplot()+
+  labs(title = "Autocorrelation in LandAvgTemp - Global",
+       subtitle = "12 month lag",
+       caption = "fig. 11")
+
+GlobalCountryTemp %>% 
+  filter(Country %in% countries2)%>% ACF(LandAvgTemp,lag_max = 12) %>% autoplot()+
+  labs(title = "Autocorrelation in LandAvgTemp - Country",
+       subtitle = "12 month lag",
+       caption = "fig. 12")
+
+#transforming it into yearly data since there is no seasonality
+#showing the first 48 years
+uncertainty<- GlobalCountryTemp %>% filter(Country=="Global") %>%
+  mutate(Year= year(Date)) %>% 
+  as_tibble(GlobalCountryTemp) %>% 
+  group_by(Year)%>%
+  select(-Date) %>%
+  summarise(LandAvgTempUnc= mean(LandAvgTempUnc))
+
+uncertainty %>%as_tsibble(index=Year) %>% filter(Year> "1752") %>% 
+  ACF(LandAvgTempUnc, lag_max = 48) %>% autoplot()+
+  labs(title = "Autocorrelation in LandAvgTempUnc- Global",
+       subtitle = "48 years lag",
+       caption = "fig. 13")
+```
+
+
+
+  By looking at  the autocorrelation plots, regarding the Land Average Temperature, we used a lag of 12 months since it's more appropriate for monthly data and it captures all the months of one year. It clearly shows that exists autocorrelation between the time series and its lags period, we can also spot that the autocorrelation peaks on months 6 and 12 which correspond to the highest and lowest temperature peeks of the seasonality, respectively.
+
+  For the autocorrelation analysis of Land Average temperature Uncertainty, we first changed the monthly date to early data as there is no seasonality and it helps on the visualization, and defined a lag period of 48 years which is about 1/3 of our total data. We can observer that it follows the typical trend behaviour, small lags have larger values as they are close to the previous value and tend to get smaller as the time goes by. 
