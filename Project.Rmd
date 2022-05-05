@@ -392,16 +392,18 @@ europe <- c('Portugal', 'Germany', 'United Kingdom')
 GlobalCountryTemp %>%
   filter(Country %in% europe) %>%
   select(Country, LandAvgTemp) %>%
-  #drop_na(LandAvgTemp)  
-  as_tibble() %>% group_by(Date) %>%
-  summarise(MeanLandAvgTempEurope = mean(LandAvgTemp)) %>%
-  as_tsibble(index = Date) -> land_temp_mean_europe
+  index_by(Date) %>%
+  summarise(LandAvgTemp = mean(LandAvgTemp)) %>% na.omit() %>% 
+  mutate(month= row_number()) %>% 
+  select(LandAvgTemp, everything()) %>% 
+  update_tsibble(index=month, regular = TRUE)-> land_temp_mean_europe
 
+deceurope<- land_temp_mean_europe %>%
+  model(stl = STL(LandAvgTemp~ trend(window=7)+
+                    season(window = "periodic"),
+    robust = TRUE))
   
-dec_europe <- land_temp_mean_europe %>% 
-  model(stl = STL(MeanLandAvgTempEurope))
-
-components(dec_europe)
+components(deceurope) %>% autoplot()
 ```
 
 
