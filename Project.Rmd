@@ -374,10 +374,34 @@ components(dec2) %>%
 Note: we can see the trend is clearly going up.
 
 
-
 ```{r}
 
 components(dec) %>% gg_subseries(season_year)
 components(dec2) %>% gg_subseries(season_year)
 
 ```
+
+
+
+Analyzing Europe Trend
+
+```{r}
+
+europe <- c('Portugal', 'Germany', 'United Kingdom')
+
+GlobalCountryTemp %>%
+  filter(Country %in% europe) %>%
+  select(Country, LandAvgTemp) %>%
+  #drop_na(LandAvgTemp)  
+  as_tibble() %>% group_by(Date) %>%
+  summarise(MeanLandAvgTempEurope = mean(LandAvgTemp)) %>%
+  as_tsibble(index = Date) -> land_temp_mean_europe
+
+  
+dec_europe <- land_temp_mean_europe %>% 
+  model(stl = STL(MeanLandAvgTempEurope))
+
+components(dec_europe)
+```
+
+
