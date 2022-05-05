@@ -273,6 +273,9 @@ uncertainty %>%as_tsibble(index=Year) %>% filter(Year> "1752") %>%
   
   
   
+
+
+
 ## 3. Time Series Decomposition
 
 First we are going to see if the series need adjustments. As we can see in the graphs our variation does not change with the level of the time series. So, we will not use mathematical transformations. 
@@ -326,6 +329,16 @@ dec <- land_ocean_global_temp %>%
 components(dec)
 
 
+GlobalTemp %>%
+  select(LandAvgTemp) -> land_global_temp
+
+  
+dec2 <- land_global_temp %>% 
+  model(stl = STL(LandAvgTemp))
+
+components(dec2)
+
+
 ```
 
 
@@ -334,12 +347,14 @@ components(dec)
 
 land_ocean_global_temp %>%
   autoplot(LandOceanAvgTemp, color = 'gray') + 
-  autolayer(components(dec), trend, color = 'purple') + 
+  autolayer(components(dec), trend, color = '#6666ff') + 
   ggtitle('Land and Ocean Global Temperature Trend')
 
+land_global_temp %>%
+  autoplot(LandAvgTemp, color = 'gray') + 
+  autolayer(components(dec2), trend, color = 'purple') + 
+  ggtitle('Land Global Temperature Trend') 
 ```
-
-
 
 
 
@@ -347,10 +362,12 @@ land_ocean_global_temp %>%
 ```{r}
 
 components(dec) %>%
-  autoplot()
+  autoplot() + ggtitle('Land and Ocean Global Temperature') 
+
+components(dec2) %>%
+  autoplot() + ggtitle('Land Global Temperature') 
 
 ```
-
 
 
 
@@ -359,8 +376,8 @@ Note: we can see the trend is clearly going up.
 
 
 ```{r}
+
 components(dec) %>% gg_subseries(season_year)
+components(dec2) %>% gg_subseries(season_year)
+
 ```
-
-
-
