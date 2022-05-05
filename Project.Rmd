@@ -270,3 +270,97 @@ uncertainty %>%as_tsibble(index=Year) %>% filter(Year> "1752") %>%
   For the autocorrelation analysis of Land Average temperature Uncertainty, we first changed the monthly date to early data as there is no seasonality and it helps on the visualization, and defined a lag period of 48 years which is about 1/3 of our total data. We can observer that it follows the typical trend behaviour, small lags have larger values as they are close to the previous value and tend to get smaller as the time goes by. 
   
   Since our autocorrelation values are mostly above the significant interval our time series isn't a "white noise".
+  
+  
+  
+## 3. Time Series Decomposition
+
+First we are going to see if the series need adjustments. As we can see in the graphs our variation does not change with the level of the time series. So, we will not use mathematical transformations. 
+
+
+
+```{r}
+
+GlobalTemp %>%
+  filter(year(Date)>1838, year(Date)<1900) %>%
+  autoplot(LandAvgTemp)+
+  geom_line()+
+  labs(title = "Land Temperature- Global",
+       subtitle = "Average",
+       y="LandAvgTemp Cº")
+
+GlobalTemp %>%
+  filter(year(Date)>1900, year(Date)<1990) %>%
+  autoplot(LandAvgTemp)+
+  geom_line()+
+  labs(title = "Land Temperature- Global",
+       subtitle = "Average",
+       y="LandAvgTemp Cº")
+
+GlobalTemp %>%
+  filter(year(Date)>1990, year(Date)<2014) %>%
+  autoplot(LandAvgTemp)+
+  geom_line()+
+  labs(title = "Land Temperature- Global",
+       subtitle = "Average",
+       y="LandAvgTemp Cº")
+
+```
+
+
+## Time series Components
+
+Now we will try to decompose the series into the Seasonal components, the Trend component and a Remainder. As the variations around the trend are of similar magnitudes over time, we will use an Additive Decomposition.
+
+
+
+```{r}
+
+GlobalTemp %>%
+  select(LandOceanAvgTemp) -> land_ocean_global_temp
+
+  
+dec <- land_ocean_global_temp %>% 
+  model(stl = STL(LandOceanAvgTemp))
+
+components(dec)
+
+
+```
+
+
+
+```{r}
+
+land_ocean_global_temp %>%
+  autoplot(LandOceanAvgTemp, color = 'gray') + 
+  autolayer(components(dec), trend, color = 'purple') + 
+  ggtitle('Land and Ocean Global Temperature Trend')
+
+```
+
+
+
+
+
+
+```{r}
+
+components(dec) %>%
+  autoplot()
+
+```
+
+
+
+
+Note: we can see the trend is clearly going up.
+
+
+
+```{r}
+components(dec) %>% gg_subseries(season_year)
+```
+
+
+
