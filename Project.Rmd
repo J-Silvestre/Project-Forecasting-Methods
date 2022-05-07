@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(fpp3)
 library(tidyverse)
 #working directory for github
-setwd("~/GitHub/Project-Forecasting-Methods")
+setwd("~/Project-Forecasting-Methods")
 
 #--------------------------------------------- be careful with this code below
 
@@ -128,13 +128,15 @@ GlobalCountryTemp %>% filter(Country=="Global") %>% autoplot(LandAvgTempUnc)+
 
   The dataset provides three different views that can be combined and analysed in multiple different ways.
 
-  The first view is the Global Land & Ocean average temperature, it provides an interesting sight on how the combination of both and land temperature have been changing since 1850.
+  The first view is the Global Land & Ocean average temperature, it provides an interesting sight on how the combination of both land and ocean temperature has been changing since 1850.
 
-  The central view of the dataset is the Land temperature analysis, which can be divided in a global analysis that contain average,max and min temperature values and a more narrow analysis that allow us to observe particular countries average temperature over the years.Note that the years in analyse may differ from country to country due to missing data in the dataset, especially for years before 1900.
+  The central view of the dataset is the Land temperature analysis, which can be divided into two parts: 
 
-  The final view is related with the uncertainty of the average temperature values and how it has changed overtime.
+* A global analysis that contains average, max and min temperature values 
+* A more narrow analysis by country that allows us to observe particular countries average temperatures over the years. (Note that the years in analyse may differ from country to country due to missing data in the dataset, especially for years before 1900.)
 
 
+  The final view is related with the uncertainty of the average temperature values and how it has changed over time.
 
 ```{r, warning=FALSE}
 GlobalTempV %>% ggplot()+
@@ -158,7 +160,7 @@ GlobalCountryTemp %>% filter(Country %in% countries) %>% filter(year(Date)>1984)
   theme(legend.position = "right")
 ```
 
-  As we start looking at the time series plots we can see that the temperature behaves differently acording to the countries analysed, some countries belong to hot regions like Mali and even Portugal and therefore have higher temperatures while other countries like Greenland are in more northern zones and have colder temperatures. The global temperature is nothing else but the weighted average of the temperature of all countries and there for it appears on the "middle" of the time series graph, the same reasoning can be applied to the max and min global temperature.
+  As we start looking at the time series plots we can see that the temperature behaves differently according to the countries analysed, some countries belong to hot regions like Mali and even Portugal and therefore have higher temperatures while other countries like Greenland are in more northern zones and have colder temperatures. The global temperature is nothing else but the weighted average of the temperature of all countries and there for it appears on the "middle" of the time series graph, the same reasoning can be applied to the max and min global temperature.
 
   When we take a closer look to this graphs it's possible to start observing some seasonal and trending patterns.
 Regarding the trending patterns, we can clearly see a very smooth crescent trend when it comes to land and ocean temperatures, which makes sense as a result of a direct effect of the global warming in the temperature, making it rise. On the other hand, there is a very clear decrescent trending on the temperature uncertainty, which makes sense from a point where as the time pass, the practices to measure temperature are better and more precise.
