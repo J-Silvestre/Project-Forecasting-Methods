@@ -382,27 +382,6 @@ components(dec2) %>% gg_subseries(season_year)
 
 
 
-#### Analyzing Europe Trend
-
-```{r}
-
-europe <- c('Portugal', 'Germany', 'United Kingdom')
-
-GlobalCountryTemp %>%
-  filter(Country %in% europe) %>%
-  select(Country, LandAvgTemp) %>%
-  index_by(Date) %>%
-  summarise(LandAvgTemp = mean(LandAvgTemp)) %>% na.omit() %>% 
-  mutate(month= row_number()) %>% 
-  select(LandAvgTemp, everything()) %>% 
-  update_tsibble(index=month, regular = TRUE)-> land_temp_mean_europe
-
-deceurope<- land_temp_mean_europe %>%
-  model(stl = STL(LandAvgTemp~ trend(window=7)+
-                    season(window = "periodic"),
-    robust = TRUE))
-  
-components(deceurope) %>% autoplot()
 ```
 
 
