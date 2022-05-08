@@ -284,7 +284,7 @@ uncertainty %>%as_tsibble(index=Year) %>% filter(Year> "1752") %>%
 
 First of all, we are replacing missing values, by the last available value for that variable (in a up-down manner), so that we keep our time series without missing gaps, to be able to decompose it.
 
-```{r, warning = False}
+```{r, warning = FALSE}
 
 GlobalCountryTemp %>%
   fill(LandAvgTemp, .direction = 'down') %>%
@@ -298,7 +298,7 @@ GlobalCountryTemp %>%
 Now we are going to see if the series need adjustments. As we can see in the graphs below, our variation does not change with the level of the time series. So, we will not use mathematical transformations. 
 
 
-```{r, warning = False}
+```{r, warning = FALSE}
 
 GlobalTemp %>%
   filter(year(Date)>1838, year(Date)<1900) %>%
@@ -306,7 +306,7 @@ GlobalTemp %>%
   geom_line(color = '#0088cc')+
   labs(title = "Land Temperature- Global",
        subtitle = "Average",
-       y="LandAvgTemp Cº")
+       y="LandAvgTemp Cº", caption = "fig. 14")
 
 GlobalTemp %>%
   filter(year(Date)>1900, year(Date)<1990) %>%
@@ -314,7 +314,7 @@ GlobalTemp %>%
   geom_line(color = '#ff3399')+
   labs(title = "Land Temperature- Global",
        subtitle = "Average",
-       y="LandAvgTemp Cº")
+       y="LandAvgTemp Cº", caption = "fig. 15")
 
 GlobalTemp %>%
   filter(year(Date)>1990, year(Date)<2014) %>%
@@ -322,7 +322,7 @@ GlobalTemp %>%
   geom_line(color = '#cc33ff')+
   labs(title = "Land Temperature- Global",
        subtitle = "Average",
-       y="LandAvgTemp Cº")
+       y="LandAvgTemp Cº", caption = "fig. 16")
 
 ```
 
@@ -332,7 +332,7 @@ As the variations around the trend are of similar magnitudes over time, we will 
 
 ##Decomposing using Classical Decomposition
 
-```{r, warning = False}
+```{r, warning = FALSE}
 
 GlobalTemp %>%
   select(LandOceanAvgTemp) -> land_ocean_global_temp
@@ -343,11 +343,11 @@ land_ocean_global_temp %>%
 
 classic_decmp %>%
   autoplot() +
-  labs(title = "Land and Ocean Global Temperature Classical Additive Decomposition")
+  labs(title = "Land and Ocean Global Temperature Classical Additive Decomposition", caption = "fig. 17")
 
 classic_decmp %>%
   autoplot(random, color = '#ff668c') +
-  labs(title = "Variations not Captured by Classical Decomposition in Land and Ocean")
+  labs(title = "Variations not Captured by Classical Decomposition in Land and Ocean", caption = "fig. 18")
 
 ```
 
@@ -361,7 +361,7 @@ Now, we will try to decompose the series into the Seasonal components, the Trend
 
 ##Decomposing using STL
 
-```{r, warning = False}
+```{r, warning = FALSE}
 
 
 dec <- land_ocean_global_temp %>% 
@@ -385,18 +385,20 @@ dec2 <- land_global_temp %>%
 Isolating the trend and the seasonal adjusted temperatures in a graph.
 
 
-```{r, warning = False}
+```{r, warning = FALSE}
 
 land_ocean_global_temp %>%
   autoplot(LandOceanAvgTemp, color = 'gray') + 
   autolayer(components(dec), trend, color = '#6666ff') + 
-  ggtitle('Land and Ocean Global Temperature Trend')
+  ggtitle('Land and Ocean Global Temperature Trend') +
+  labs(caption = "fig. 19")
 
 
 land_global_temp %>%
   autoplot(LandAvgTemp, color = 'gray') + 
   autolayer(components(dec2), trend, color = 'purple') + 
-  ggtitle('Land Global Temperature Trend')
+  ggtitle('Land Global Temperature Trend')+
+  labs(caption = "fig. 20")
 
 components(dec) %>%
   filter(year(Date)>1900) -> comp_after1900
@@ -405,12 +407,14 @@ land_ocean_global_temp %>%
   filter(year(Date)>1900) %>%
   autoplot(LandOceanAvgTemp, color = 'gray') + 
   autolayer(comp_after1900, trend, color = '#6666ff') + 
-  ggtitle('Land and Ocean Global Temperature Trend')
+  ggtitle('Land and Ocean Global Temperature Trend')+
+  labs(caption = "fig. 21")
 
 land_global_temp %>%
   autoplot(LandAvgTemp, color = 'gray') + 
   autolayer(components(dec2), season_adjust, color = 'purple') + 
-  ggtitle('Seasonal Adjusted Land Global Temperature')
+  ggtitle('Seasonal Adjusted Land Global Temperature')+
+  labs(caption = "fig. 22")
 
 
 ```
@@ -424,16 +428,18 @@ In the last graph, after adjusting the series regarding seasonal variations, we 
 
 
 
-```{r, warning = False}
+```{r, warning = FALSE}
 
 components(dec) %>%
-  autoplot() + ggtitle('Land and Ocean Global Temperature STL Decomposition')
+  autoplot() + ggtitle('Land and Ocean Global Temperature STL Decomposition')+
+  labs(caption = "fig. 23")
 
 #components(dec2) %>%
 #  autoplot() + ggtitle('Land Global Temperature') 
 
 components(dec) %>%
-  autoplot(remainder, color = '#ff668c') + ggtitle('Land Global Temperature Remainder') 
+  autoplot(remainder, color = '#ff668c') + ggtitle('Land Global Temperature Remainder')+
+  labs(caption = "fig. 24") 
 
 #components(dec2) %>%
 #autoplot(remainder, color = '#8c66ff') + ggtitle('Land and Ocean Global Temperature Remainder') 
@@ -450,14 +456,14 @@ Looking at the remainder, there is no clear pattern. That is a sign that the STL
 
 ##Decomposing using SEATS Decomposition
 
-```{r, warning = False}
+```{r, warning = FALSE}
 
 land_ocean_global_temp %>% 
   filter(year(Date) > 1990) %>%
   model(seats = feasts::: SEATS(LandOceanAvgTemp)) %>%
   components() -> seats_dec
 
-autoplot(seats_dec) + labs(title = "Land and Ocean Global Temperature X-13 ARIMA-SEATS Decomposition")
+autoplot(seats_dec) + labs(title = "Land and Ocean Global Temperature X-13 ARIMA-SEATS Decomposition", caption = "fig. 25")
 ```
 
 Did SEATS help?
@@ -466,9 +472,9 @@ The trend is smoother. It is easiear to see that the trend is going up.
 
 
 
-##Trend in different Continents
+## Trend in different Continents
 
-```{r, message=FALSE, warning = False}
+```{r, message=FALSE, warning = FALSE}
 
 #----------------------------------------------------------------
 
@@ -490,7 +496,8 @@ decEurope <- tempEurope %>%
 tempEurope %>%
   autoplot(LandTempEurope, color = 'gray') + 
   autolayer(components(decEurope), trend, color = '#9900cc') + 
-  ggtitle('Land Temperature Europe Trend')
+  ggtitle('Land Temperature Europe Trend') +
+  labs(caption = "fig. 26")
 
 #----------------------------------------------------------------
 
@@ -512,7 +519,8 @@ decAfrica <- tempAfrica %>%
 tempAfrica %>%
   autoplot(LandTempAfrica, color = 'gray') + 
   autolayer(components(decAfrica), trend, color = '#e65c00') + 
-  ggtitle('Land Temperature Africa Trend')
+  ggtitle('Land Temperature Africa Trend') +
+  labs(caption = "fig. 27")
 
 #----------------------------------------------------------------
 
@@ -534,7 +542,8 @@ decAsia <- tempAsia %>%
 tempAsia %>%
   autoplot(LandTempAsia, color = 'gray') + 
   autolayer(components(decAsia), trend, color = '#ff4d94') + 
-  ggtitle('Land Temperature Asia Trend')
+  ggtitle('Land Temperature Asia Trend') +
+  labs(caption = "fig. 28")
 
 #----------------------------------------------------------------
 
@@ -556,7 +565,8 @@ decSouthAmerica <- tempSouthAmerica %>%
 tempSouthAmerica %>%
   autoplot(LandTempSouthAmerica, color = 'gray') + 
   autolayer(components(decSouthAmerica), trend, color = '#008040') + 
-  ggtitle('Land Temperature South America Trend')
+  ggtitle('Land Temperature South America Trend') +
+  labs(caption = "fig. 29")
 
 #----------------------------------------------------------------
 
@@ -578,7 +588,8 @@ decNorthAmerica <- tempNorthAmerica %>%
 tempNorthAmerica %>%
   autoplot(LandTempNorthAmerica, color = 'gray') + 
   autolayer(components(decNorthAmerica), trend, color = '#009999') + 
-  ggtitle('Land Temperature North America Trend')
+  ggtitle('Land Temperature North America Trend') +
+  labs(caption = "fig. 30")
 
 #----------------------------------------------------------------
 
@@ -600,7 +611,8 @@ decOceania <- tempOceania %>%
 tempOceania %>%
   autoplot(LandTempOceania, color = 'gray') + 
   autolayer(components(decOceania), trend, color = '#99004d') + 
-  ggtitle('Land Temperature Oceania Trend')
+  ggtitle('Land Temperature Oceania Trend') +
+  labs(caption = "fig. 31")
 
 ```
 Analyzing trends on different continents, we can reach some conclusions:
@@ -660,7 +672,7 @@ GlobalCountryTemp %>%
   ggplot(aes(x = trend_strength, y = seasonal_strength_year, colour = Continent)) +
   scale_color_manual(values=c('#ff9900', '#ff4d94', '#9900cc', '#009999', '#ffcc00', '#00cc00')) +
   geom_point() +
-  labs(title= 'Trend and Seasonal Strenght in different Countries')
+  labs(title= 'Trend and Seasonal Strenght in different Countries', caption = "fig. 32")
 
 
 ```
@@ -680,10 +692,10 @@ In North America, the trend is very string in most of the countries, meaning tem
 
 ## Subseries of Land and Ocean Global Temperature
 
-```{r, warning = False}
+```{r, warning = FALSE}
 
 components(dec) %>% gg_subseries(season_year) + 
-  labs(title = 'Subseries by month of Land and Ocean Global Temperatures') 
+  labs(title = 'Subseries by month of Land and Ocean Global Temperatures', caption = "fig. 33") 
 
 ```
 
@@ -716,7 +728,7 @@ GlobalCountryTemp %>%
   labs(title = "Global Land Average Temperature - Forecast",
        subtitle = "Drift and Seasonal naïve method",
        y="LandAvgTemp Cº",
-       caption = "fig. 20")
+       caption = "fig. 34")
 ```
 
 
@@ -731,7 +743,7 @@ GlobalCountryTemp %>%
   labs(title = "Global Land & Ocean Average Temperature - Forecast",
        subtitle = "Drift and Seasonal naïve method",
        y="LandOceanAvgTemp Cº",
-       caption = "fig. 21")
+       caption = "fig. 35")
 ```
 
 The figures above show the forecasts for the next 8 years (from 2016 onward) estimated by the "Seasonal naïve method" and the "Drift Method" for the times Series "Global Land Average temperature" and "Global Land & Ocean Temperature", respectively. It can be seen that the area for the prediction intervals is high (espicially for the "Drift method"), which means that there is a high uncertainty in the forecasts. One reason for this may be that one method is suitable for data with seasonality and the other method for data with trend. But in fact our time series has both seasonality and trend. 
@@ -752,7 +764,7 @@ GlobalCountryTemp %>%
   labs(title = "Global Land Average Temperature - Forecast",
        subtitle = "Drift method based on seasonal adjusted data",
        y="LandAvgTemp Cº",
-       caption = "fig. 22")
+       caption = "fig. 36")
 
 ```
 
@@ -770,10 +782,10 @@ GlobalCountryTemp %>%
   labs(title = "Global Land & Ocean Average Temperature - Forecast",
        subtitle = "Drift method based on seasonal adjusted data",
        y="LandOceanAvgTemp Cº",
-       caption = "fig. 23")
+       caption = "fig. 37")
 ```
 
-The figures above show the forecasts for the next 8 years (from 2016 onward) estimated by the "Drift Method" based on the seasonal adjusted data (based on STL Decomposition) for the times Series "Global Land Average temperature" and "Global Land & Ocean Temperature", respectively. The prediction intervals are still big, especially for the forecast of the "Global Land Average temperature". When we compare the prediction interval to those of the "Seasonal naïve method" in figure 20 and 21 they seem to be even bigger.
+The figures above show the forecasts for the next 8 years (from 2016 onward) estimated by the "Drift Method" based on the seasonal adjusted data (based on STL Decomposition) for the times Series "Global Land Average temperature" and "Global Land & Ocean Temperature", respectively. The prediction intervals are still big, especially for the forecast of the "Global Land Average temperature". When we compare the prediction interval to those of the "Seasonal naïve method" in the figures before they seem to be even bigger.
 
 In the following chapter we will calculate the forecasting accuracy and check if our intuition about the best method is true.
 
@@ -873,7 +885,7 @@ GlobalCountryTemp %>%
   model(Seasonal_naive = SNAIVE(LandAvgTemp)) %>% 
   augment() %>% 
   ACF(.resid) %>% 
-  autoplot() + labs(title = "ACF of Residuals from Seasonal naïve method", caption = "fig. 25")
+  autoplot() + labs(title = "ACF of Residuals from Seasonal naïve method", caption = "fig. 38")
 ```
 
 We have limited our time series to data from 1990 onwards, as we do not need data from 1850 onwards. In the two figures above we can see the residuals from the "Seasonal naïve method" and the ACF of the residuals from the "Seasonal naïve method". The ACF value is for some lags very low, but we can also see that there are several outliers. Therefore, we can't say that the residuals of our selected method looks like white noise.
