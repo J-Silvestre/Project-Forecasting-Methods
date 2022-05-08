@@ -276,112 +276,425 @@ uncertainty %>%as_tsibble(index=Year) %>% filter(Year> "1752") %>%
   
   
   
-## 3. Time Series Decomposition
 
-Time series data can have a variety of patterns, and it is often convenient to divide a time series into several components, each representing an underlying pattern category. In this chapter, the project group will use established methods to extract these components from the time series. This is done to improve the understanding of the time series, but also to improve forecast accuracy, which is discussed in the following chapters.
 
-### Mathematical transformations
 
-First we are going to see if the time series need adjustments. As we can see in the graphs below (see figure 14, 15 and 16) our variation does not change with the level of the time series. So, we will not use mathematical transformations. 
 
-```{r}
+# 3. Time Series Decomposition
+
+First of all, we are replacing missing values, by the last available value for that variable (in a up-down manner), so that we keep our time series without missing gaps, to be able to decompose it.
+
+```{r, warning = False}
+
+GlobalCountryTemp %>%
+  fill(LandAvgTemp, .direction = 'down') %>%
+  fill(LandOceanAvgTemp, .direction = 'down') -> GlobalCountryTemp 
+  
+#colSums(is.na(GlobalCountryTemp))
+
+```
+
+
+Now we are going to see if the series need adjustments. As we can see in the graphs below, our variation does not change with the level of the time series. So, we will not use mathematical transformations. 
+
+
+```{r, warning = False}
 
 GlobalTemp %>%
   filter(year(Date)>1838, year(Date)<1900) %>%
   autoplot(LandAvgTemp)+
-  geom_line()+
-  labs(title = "Land Temperature - Global 1839-1899",
+  geom_line(color = '#0088cc')+
+  labs(title = "Land Temperature- Global",
        subtitle = "Average",
-       y="LandAvgTemp Cº",
-       caption = "fig. 14")
+       y="LandAvgTemp Cº")
 
 GlobalTemp %>%
-  filter(year(Date)>=1900, year(Date)<1990) %>%
+  filter(year(Date)>1900, year(Date)<1990) %>%
   autoplot(LandAvgTemp)+
-  geom_line()+
-  labs(title = "Land Temperature - Global 1900-1989",
+  geom_line(color = '#ff3399')+
+  labs(title = "Land Temperature- Global",
        subtitle = "Average",
-       y="LandAvgTemp Cº",
-       caption = "fig. 15")
+       y="LandAvgTemp Cº")
 
 GlobalTemp %>%
-  filter(year(Date)>=1990, year(Date)<2014) %>%
+  filter(year(Date)>1990, year(Date)<2014) %>%
   autoplot(LandAvgTemp)+
-  geom_line()+
-  labs(title = "Land Temperature - Global 1990-2013",
+  geom_line(color = '#cc33ff')+
+  labs(title = "Land Temperature- Global",
        subtitle = "Average",
-       y="LandAvgTemp Cº",
-       caption = "fig. 16")
+       y="LandAvgTemp Cº")
+
+```
+
+As the variations around the trend are of similar magnitudes over time, we will use an Additive Decomposition. There is a consistent up and down wave regarding the seasonality, and the trend is going upward, also in a consistent way, although slowly over time. There is no exponential growth.
+
+
+
+##Decomposing using Classical Decomposition
+
+```{r, warning = False}
+
+land_ocean_global_temp %>%
+  model(classical_decomposition(LandOceanAvgTemp, type = "additive")) %>%
+  components() -> classic_decmp
+
+classic_decmp %>%
+  autoplot() +
+  labs(title = "Land and Ocean Global Temperature Classical Additive Decomposition")
+
+classic_decmp %>%
+  autoplot(random, color = '#ff668c') +
+  labs(title = "Variations not Captured by Classical Decomposition in Land and Ocean")
 
 ```
 
 
-### Time series Components
+How is Classical Decomposition for our time series?
 
-Now we will decompose the series into the seasonal components, the trend-cycle component and a remainder component. As the variations around the trend are of similar magnitudes over time, we will use an Additive Decomposition.
+As Classical Decomposition assumes that the seasonal component repeats from year to year, it fits reasonably in our time series, since temperatures as always higher in the Summer and lower in the Winter, and this pattern in kept. 
 
-```{r}
-# Show components of land & ocean global average temperature
+Now, we will try to decompose the series into the Seasonal components, the Trend component and a Remainder, using STL Decomposition.
+
+
+##Decomposing using STL
+
+```{r, warning = False}
+
 
 GlobalTemp %>%
   select(LandOceanAvgTemp) -> land_ocean_global_temp
 
+  
 dec <- land_ocean_global_temp %>% 
   model(stl = STL(LandOceanAvgTemp))
 
-components(dec)
+#components(dec)
 
-
-# Show components of land global average temperature
 
 GlobalTemp %>%
   select(LandAvgTemp) -> land_global_temp
 
+  
 dec2 <- land_global_temp %>% 
-  model(stl = STL(LandAvgTemp)) 
+  model(stl = STL(LandAvgTemp))
 
-components(dec2)
+#components(dec2)
 
 ```
 
-```{r}
+
+Isolating the trend and the seasonal adjusted temperatures in a graph.
+
+
+```{r, warning = False}
 
 land_ocean_global_temp %>%
   autoplot(LandOceanAvgTemp, color = 'gray') + 
   autolayer(components(dec), trend, color = '#6666ff') + 
   ggtitle('Land and Ocean Global Temperature Trend')
 
+
 land_global_temp %>%
   autoplot(LandAvgTemp, color = 'gray') + 
   autolayer(components(dec2), trend, color = 'purple') + 
-  ggtitle('Land Global Temperature Trend') 
-```
-
-
-
-
-```{r}
+  ggtitle('Land Global Temperature Trend')
 
 components(dec) %>%
-  autoplot() + ggtitle('Land and Ocean Global Temperature') 
+  filter(year(Date)>1900) -> comp_after1900
 
-components(dec2) %>%
-  autoplot() + ggtitle('Land Global Temperature') 
+land_ocean_global_temp %>%
+  filter(year(Date)>1900) %>%
+  autoplot(LandOceanAvgTemp, color = 'gray') + 
+  autolayer(comp_after1900, trend, color = '#6666ff') + 
+  ggtitle('Land and Ocean Global Temperature Trend')
+
+land_global_temp %>%
+  autoplot(LandAvgTemp, color = 'gray') + 
+  autolayer(components(dec2), season_adjust, color = 'purple') + 
+  ggtitle('Seasonal Adjusted Land Global Temperature')
+
 
 ```
 
-Note: we can see the trend is clearly going up.
+In the first graph, it is possible to depict a notable growth in land and ocean temperatures trend over the years. When comparing this graph with the second one (depicting the Land Global temperatures trend), we can see that the second one's trend is not growing as significantly. This may mean that the rising trend in the oceans temperature is contributing highly to the upward trend in land plus oceans temperature.
+
+In the third graph, zooming in to more recent years, we can see the evident growth in land and ocean global average temperatures.  
+
+In the last graph, after adjusting the series regarding seasonal variations, we can clearly see that the land average global temperature is rising, more significantly from 1950 to the current years.
+
+
+
+
+```{r, warning = False}
+
+components(dec) %>%
+  autoplot() + ggtitle('Land and Ocean Global Temperature STL Decomposition')
+
+#components(dec2) %>%
+#  autoplot() + ggtitle('Land Global Temperature') 
+
+components(dec) %>%
+  autoplot(remainder, color = '#ff668c') + ggtitle('Land Global Temperature Remainder') 
+
+#components(dec2) %>%
+#autoplot(remainder, color = '#8c66ff') + ggtitle('Land and Ocean Global Temperature Remainder') 
+
+
+
+```
+
+How is STL for our time series?
+
+Looking at the remainder, there is no clear pattern. That is a sign that the STL model is capturing our season and our trend in an appropriate manner.
+
+
+
+##Decomposing using SEATS Decomposition
+
+```{r, warning = False}
+
+land_ocean_global_temp %>% 
+  filter(year(Date) > 1990) %>%
+  model(seats = feasts::: SEATS(LandOceanAvgTemp)) %>%
+  components() -> seats_dec
+
+autoplot(seats_dec) + labs(title = "Land and Ocean Global Temperature X-13 ARIMA-SEATS Decomposition")
+```
+
+Did SEATS help?
+
+The trend is smoother. It is easiear to see that the trend is going up.
+
+
+
+##Trend in different Continents
+
+```{r, message=FALSE, warning = False}
+
+#----------------------------------------------------------------
+
+GlobalCountryTemp %>%
+  filter(year(Date)> 1850) %>%
+  filter (Country == 'Europe') %>%
+  select(LandAvgTemp) %>%
+  as_tibble() %>%
+  group_by(Date) %>% 
+  summarise_at(vars(LandAvgTemp), list(LandTempEurope = mean)) %>%
+  as_tsibble() %>%
+  fill(LandTempEurope, .direction = 'down') -> tempEurope
+
+decEurope <- tempEurope %>% 
+  model(stl = STL(LandTempEurope))
+
+#components(decEurope)
+
+tempEurope %>%
+  autoplot(LandTempEurope, color = 'gray') + 
+  autolayer(components(decEurope), trend, color = '#9900cc') + 
+  ggtitle('Land Temperature Europe Trend')
+
+#----------------------------------------------------------------
+
+GlobalCountryTemp %>%
+  filter(year(Date)> 1860) %>%
+  filter (Country == 'Africa') %>%
+  select(LandAvgTemp) %>%
+  as_tibble() %>%
+  group_by(Date) %>% 
+  summarise_at(vars(LandAvgTemp), list(LandTempAfrica = mean)) %>%
+  as_tsibble() %>%
+  fill(LandTempAfrica, .direction = 'down') -> tempAfrica
+
+decAfrica <- tempAfrica %>% 
+  model(stl = STL(LandTempAfrica))
+
+#components(decAfrica)
+
+tempAfrica %>%
+  autoplot(LandTempAfrica, color = 'gray') + 
+  autolayer(components(decAfrica), trend, color = '#e65c00') + 
+  ggtitle('Land Temperature Africa Trend')
+
+#----------------------------------------------------------------
+
+GlobalCountryTemp %>%
+  filter(year(Date)> 1850) %>%
+  filter (Country == 'Asia') %>%
+  select(LandAvgTemp) %>%
+  as_tibble() %>%
+  group_by(Date) %>% 
+  summarise_at(vars(LandAvgTemp), list(LandTempAsia = mean)) %>%
+  as_tsibble() %>%
+  fill(LandTempAsia, .direction = 'down') -> tempAsia
+
+decAsia <- tempAsia %>% 
+  model(stl = STL(LandTempAsia))
+
+#components(decAsia)
+
+tempAsia %>%
+  autoplot(LandTempAsia, color = 'gray') + 
+  autolayer(components(decAsia), trend, color = '#ff4d94') + 
+  ggtitle('Land Temperature Asia Trend')
+
+#----------------------------------------------------------------
+
+GlobalCountryTemp %>%
+  filter(year(Date)> 1850) %>%
+  filter (Country == 'South America') %>%
+  select(LandAvgTemp) %>%
+  as_tibble() %>%
+  group_by(Date) %>% 
+  summarise_at(vars(LandAvgTemp), list(LandTempSouthAmerica = mean)) %>%
+  as_tsibble() %>%
+  fill(LandTempSouthAmerica, .direction = 'down') -> tempSouthAmerica
+
+decSouthAmerica <- tempSouthAmerica %>% 
+  model(stl = STL(LandTempSouthAmerica))
+
+#components(decSouthAmerica)
+
+tempSouthAmerica %>%
+  autoplot(LandTempSouthAmerica, color = 'gray') + 
+  autolayer(components(decSouthAmerica), trend, color = '#008040') + 
+  ggtitle('Land Temperature South America Trend')
+
+#----------------------------------------------------------------
+
+GlobalCountryTemp %>%
+  filter(year(Date)> 1850) %>%
+  filter (Country == 'North America') %>%
+  select(LandAvgTemp) %>%
+  as_tibble() %>%
+  group_by(Date) %>% 
+  summarise_at(vars(LandAvgTemp), list(LandTempNorthAmerica = mean)) %>%
+  as_tsibble() %>%
+  fill(LandTempNorthAmerica, .direction = 'down') -> tempNorthAmerica
+
+decNorthAmerica <- tempNorthAmerica %>% 
+  model(stl = STL(LandTempNorthAmerica))
+
+#components(decNorthAmerica)
+
+tempNorthAmerica %>%
+  autoplot(LandTempNorthAmerica, color = 'gray') + 
+  autolayer(components(decNorthAmerica), trend, color = '#009999') + 
+  ggtitle('Land Temperature North America Trend')
+
+#----------------------------------------------------------------
+
+GlobalCountryTemp %>%
+  filter(year(Date)> 1850) %>%
+  filter (Country == 'Oceania') %>%
+  select(LandAvgTemp) %>%
+  as_tibble() %>%
+  group_by(Date) %>% 
+  summarise_at(vars(LandAvgTemp), list(LandTempOceania = mean)) %>%
+  as_tsibble() %>%
+  fill(LandTempOceania, .direction = 'down') -> tempOceania
+
+decOceania <- tempOceania %>% 
+  model(stl = STL(LandTempOceania))
+
+#components(decOceania)
+
+tempOceania %>%
+  autoplot(LandTempOceania, color = 'gray') + 
+  autolayer(components(decOceania), trend, color = '#99004d') + 
+  ggtitle('Land Temperature Oceania Trend')
+
+```
+Analyzing trends on different continents, we can reach some conclusions:
+
+It is important to make the distinction, that the trend over time is ranging from very different values from continent to continent. While in North America the temperatures are much colder in general, in Europe and Asia they are slight more moderate. In Oceania the temperatures are hotter, ranging always above 20Cº, but in Africa and South America the temperatures are alarmingly higher, especially in Africa where temperatures start at about 23ºC  in 1860, and have already over-passed the 25ºC.
+
+In Africa and South America the trend is going upwards significantly, and much faster, compared to other continents.
+In Asia and North America, the trend is increasing, but more slowly than in other continents.
+
+
+## Trend and Seasonal Strenght in different Countries and Continents
 
 
 ```{r}
+europe <- c('Austria', 'Portugal', 'Germany', 'United Kingdom (Europe)', 'Norway',
+           'France (Europe)', 'Ukraine', 'Poland', 'Greece', 'Belgium',
+            'Hungary', 'Italy', 'Albania', 'Spain')
 
-components(dec) %>% gg_subseries(season_year)
-components(dec2) %>% gg_subseries(season_year)
+africa <- c('Algeria', 'Angola', 'Benin', 'Botswana', 'Burkina Faso',
+            'Burundi', 'Cape Verde', 'Mali', 'Congo (Democratic Republic Of #The)', 'Zambia', 'Zimbabwe', 'Morocco', 'Niger', 'Nigeria')
+
+
+asia <- c('China', 'Russia', 'Malaysia', 'Japan', 'Afghanistn', 'Saudi Arabia', 
+          'Taiwan', 'Qatar', 'Armenia', 'Azerbaijan', 'Bahrain',
+          'Bangladesh', 'Bhutan', 'Brunei', 'Cambodia', 'Cyprus', 
+          'Georgia', 'India', 'Indonesia', 'Iran', 'Jordan', 'Yemen')
+
+north_america <- c('Antigua And Barbuda', 'Bahamas', 'Barbados', 
+                   'Belize', 'Canada', 'Costa Rica', 'Cuba', 'Dominica',
+                   'Dominican Republic', 'El Salvador', 'Grenada', 
+                   'Guatemala', 'Haiti', 'Honduras', 'Jamaica', 'Mexico',
+                   'United States', 'Panama')
+
+south_america <- c('Argentina', 'Bolivia', 'Brazil', 'Chile',
+                   'Colombia', 'Peru', 'Paraguay', 'Guyana', 'Ecuador',
+                   'Suriname', 'Uruguay', 'Venezuela')
+
+oceania <- c('Australia', 'Fiji', 'Kiribati', 'Marshall Islands', 
+             'Micronesia', 'Nauru', 'New Zealand', 'Palau', 'Papua New Guinea',
+             'Samoa', 'Tonga')
+
+
+GlobalCountryTemp %>% 
+  fill(LandAvgTemp, .direction = "down") %>%
+  features(LandAvgTemp, feat_stl) %>%
+  drop_na(trend_strength, seasonal_strength_year) %>%
+  mutate(Continent = case_when(
+    Country %in% europe  ~ "Europe" ,
+    Country %in% africa  ~ "Africa" ,
+    Country %in% asia  ~ "Asia" ,
+    Country %in% north_america  ~ "North America",
+    Country %in% south_america  ~ "South America",
+    Country %in% oceania  ~ "Oceania"
+  )
+) %>%
+  drop_na(Continent) %>%
+  ggplot(aes(x = trend_strength, y = seasonal_strength_year, colour = Continent)) +
+  scale_color_manual(values=c('#ff9900', '#ff4d94', '#9900cc', '#009999', '#ffcc00', '#00cc00')) +
+  geom_point() +
+  labs(title= 'Trend and Seasonal Strenght in different Countries')
+
 
 ```
 
+In the scatter plot above, we can evaluate the strength of the trends and seasonal patterns on different countries, grouped by continent.
 
+In all countries in the graph, the seasonal patterns are clearly strong (the majority with a seasonal strength higher than 0.7).
+
+In Europe, we can see countries are in a cluster with a very high seasonal strength (the differences in temperature according to months, are more pronounced) and lower trend strength (it is not going on an upward trend as much). 
+
+In Asia the seasonal strength is very high in almost all plotted countries (above 0.85). Meaning the differences in temperatures in distinct seasons are very significant (colder winters and very hot summers/spring).
+
+In North America, the trend is very string in most of the countries, meaning temperatures are rising quite fast and significantly.
+
+
+
+
+## Subseries of Land and Ocean Global Temperature
+
+```{r, warning = False}
+
+components(dec) %>% gg_subseries(season_year) + 
+  labs(title = 'Subseries by month of Land and Ocean Global Temperatures') 
 
 ```
+
+Moreover, on the next plot we can see that on average both the global land temperature and the global land and ocean temperature are much higher in Summer months, compared to the rest, and much lower in January, February, and December. Interestingly in July and August the trend is going down, so in previous years, temperatures were higher in these months, compared to recent years.
+
+
+
+
+
+
+
 
 
