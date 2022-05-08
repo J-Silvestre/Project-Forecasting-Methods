@@ -334,6 +334,9 @@ As the variations around the trend are of similar magnitudes over time, we will 
 
 ```{r, warning = False}
 
+GlobalTemp %>%
+  select(LandOceanAvgTemp) -> land_ocean_global_temp
+
 land_ocean_global_temp %>%
   model(classical_decomposition(LandOceanAvgTemp, type = "additive")) %>%
   components() -> classic_decmp
@@ -361,10 +364,6 @@ Now, we will try to decompose the series into the Seasonal components, the Trend
 ```{r, warning = False}
 
 
-GlobalTemp %>%
-  select(LandOceanAvgTemp) -> land_ocean_global_temp
-
-  
 dec <- land_ocean_global_temp %>% 
   model(stl = STL(LandOceanAvgTemp))
 
