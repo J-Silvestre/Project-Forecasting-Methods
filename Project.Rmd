@@ -693,6 +693,193 @@ Moreover, on the next plot we can see that on average both the global land tempe
 
 
 
+## 4. The forecaster’s toolbox
+
+In the previous chapters we have already prepared and visualized our data in order to gain a good understanding of our data. Now, we will use some benchmark forecasting methods to forecast our time series. Moreover, techniques for calculating forecast intervals and methods for assessing forecast accuracy will be applied.
+
+
+### Specifying a model
+
+Looking at our data allows us to identify common patterns, and subsequently specify an appropriate model. We have seen in the previous chapters that our time series for Land Average Temperature and Land & Ocean Average temperature reveal a seasonal and a trend pattern. Now, we will check which type of forecasting method is appropriate for this type of time series.
+
+There are several simple forecasting methods. The "Average method" and the "Naïve method" are suitable for time series without any seasonality or trend pattern. Therefore, we won't use these methods for our time series.
+
+The "Seasonal naïve method" is appropriate for data with seasonality and the "Drift Method" for data with a trend pattern. For that reason, we will know apply these forecasting methods to our data and visualize the results.
+
+```{r}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  fill(LandAvgTemp, .direction = "down") %>% 
+  model(Seasonal_naive = SNAIVE(LandAvgTemp),
+        Drift = RW(LandAvgTemp ~ drift())
+        ) %>% forecast(h = "8 years") %>% 
+  autoplot((filter(GlobalCountryTemp, year(Date) > 2000))) + 
+  labs(title = "Global Land Average Temperature - Forecast",
+       subtitle = "Drift and Seasonal naïve method",
+       y="LandAvgTemp Cº",
+       caption = "fig. 20")
+```
+
+
+```{r}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  fill(LandOceanAvgTemp, .direction = "down") %>% 
+  model(Seasonal_naive = SNAIVE(LandOceanAvgTemp),
+        Drift = RW(LandOceanAvgTemp ~ drift())
+        ) %>% forecast(h = "8 years") %>% 
+  autoplot(filter(GlobalCountryTemp, year(Date) > 2000)) +
+  labs(title = "Global Land & Ocean Average Temperature - Forecast",
+       subtitle = "Drift and Seasonal naïve method",
+       y="LandOceanAvgTemp Cº",
+       caption = "fig. 21")
+```
+
+The figures above show the forecasts for the next 8 years (from 2016 onward) estimated by the "Seasonal naïve method" and the "Drift Method" for the times Series "Global Land Average temperature" and "Global Land & Ocean Temperature", respectively. It can be seen that the area for the prediction intervals is high (espicially for the "Drift method"), which means that there is a high uncertainty in the forecasts. One reason for this may be that one method is suitable for data with seasonality and the other method for data with trend. But in fact our time series has both seasonality and trend. 
+
+Let's try to apply the "Drift Method" on the seasonal adjusted data, so that we capture both components in our forecast: Seasonality and Trend.
+
+
+```{r, warning = FALSE}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  fill(LandAvgTemp, .direction = "down") %>%
+  model(stlf = decomposition_model(
+    STL(LandAvgTemp ~ trend(window = 7), robust = TRUE),
+        Drift = RW(season_adjust ~ drift())
+    )) %>% 
+  forecast(h = "8 years") %>% 
+  autoplot(filter(GlobalCountryTemp, year(Date) > 2000)) +
+  labs(title = "Global Land Average Temperature - Forecast",
+       subtitle = "Drift method based on seasonal adjusted data",
+       y="LandAvgTemp Cº",
+       caption = "fig. 22")
+
+```
+
+```{r, warning = FALSE}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  fill(LandOceanAvgTemp, .direction = "down") %>%
+  filter(!is.na(LandOceanAvgTemp)) %>% 
+  model(stlf = decomposition_model(
+    STL(LandOceanAvgTemp ~ trend(window = 7), robust = TRUE),
+        Drift = RW(season_adjust ~ drift())
+    )) %>% 
+  forecast(h = "8 years") %>% 
+  autoplot(filter(GlobalCountryTemp, year(Date) > 2000)) +
+  labs(title = "Global Land & Ocean Average Temperature - Forecast",
+       subtitle = "Drift method based on seasonal adjusted data",
+       y="LandOceanAvgTemp Cº",
+       caption = "fig. 23")
+```
+
+The figures above show the forecasts for the next 8 years (from 2016 onward) estimated by the "Drift Method" based on the seasonal adjusted data (based on STL Decomposition) for the times Series "Global Land Average temperature" and "Global Land & Ocean Temperature", respectively. The prediction intervals are still big, especially for the forecast of the "Global Land Average temperature". When we compare the prediction interval to those of the "Seasonal naïve method" in figure 20 and 21 they seem to be even bigger.
+
+In the following chapter we will calculate the forecasting accuracy and check if our intuition about the best method is true.
+
+
+
+### Accuracy & performance evaluation
+
+In this chapter we will divide our data in training and test sets to evaluate the forecasting accuracy. For this purpose the time series cross-validation is used. In this procedure, there are a number of test sets, each consisting of a single observation. The corresponding training set consists only of observations that occurred before the observation that forms the test set. By averaging over the test series the forecasting accuracy is calculated. 
+
+In the following we will use the one-step ahead forecast with an initial sample size of 3 and the stretch_tsibble function (=extends a growing length window with new data) to calculate the accuracy obtained via time series cross-validation. To increase the performance of the code, only data since 1990 will be considered.
+
+
+#### Global land average temperature forecast
+
+```{r, warning = FALSE}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  filter(year(Date)>=1990) %>%
+  fill(LandAvgTemp, .direction = "down") %>%
+  filter(!is.na(LandAvgTemp)) %>%
+  stretch_tsibble(.init = 3, .step = 1) %>% 
+  model(Seasonal_naive = SNAIVE(LandAvgTemp),
+        Drift = RW(LandAvgTemp ~ drift())
+        ) %>% forecast(h = "8 years") %>% 
+  accuracy(GlobalCountryTemp)
+```
+
+```{r, warning = FALSE}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  filter(year(Date)>=1990) %>%
+  fill(LandAvgTemp, .direction = "down") %>%
+  filter(!is.na(LandAvgTemp)) %>%
+  stretch_tsibble(.init = 3, .step = 1) %>%
+  model(stlf = decomposition_model(
+    STL(LandAvgTemp ~ trend(window = 7), robust = TRUE),
+        Drift = RW(season_adjust ~ drift())
+    )) %>% forecast(h = "8 years") %>% 
+  accuracy(GlobalCountryTemp)
+
+```
+
+In the figures above we can see the accuracy of the three different models for the Average global Land Temperature. The RMSE is a good way to choose the best forecasting model. The RMSE of the "Seasonal naïve method" is the smallest, followed by the "Drift Method" on seasonal adjusted data and then the normal "Drift method".
+
+
+#### Global land and ocean average temperature forecast
+
+```{r}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  filter(year(Date)>=1990) %>%
+  fill(LandOceanAvgTemp, .direction = "down") %>%
+  filter(!is.na(LandOceanAvgTemp)) %>%
+  stretch_tsibble(.init = 3, .step = 1) %>% 
+  model(Seasonal_naive = SNAIVE(LandOceanAvgTemp),
+        Drift = RW(LandOceanAvgTemp ~ drift())
+        ) %>% forecast(h = "8 years") %>% 
+  accuracy(GlobalCountryTemp)
+```
+
+```{r, warning = FALSE}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  filter(year(Date)>=1990) %>%
+  fill(LandOceanAvgTemp, .direction = "down") %>%
+  filter(!is.na(LandOceanAvgTemp)) %>%
+  stretch_tsibble(.init = 3, .step = 1) %>%
+  model(stlf = decomposition_model(
+    STL(LandOceanAvgTemp ~ trend(window = 7), robust = TRUE),
+        Drift = RW(season_adjust ~ drift())
+    )) %>% forecast(h = "8 years") %>% 
+  accuracy(GlobalCountryTemp)
+
+```
+
+In the figures above we can see the accuracy of the three different models for the Average global Land & Ocean Temperature. By evaluating the RMSE we can again see that the forecasting accuracy of the "Seasonal naïve method" is the best, followed by the "Drift Method" on seasonal adjusted data and then the normal "Drift method".
+
+The reason for this may be that our time series shows a strong seasonality but only a slight trend. Therefore, the "Seasonal naïve method" already captures the most important factor. If the forecasting horizon would be bigger it can be assumed, that the performance of the "Drift Method" on seasonal adjusted data increases. Moreover, a different value for the step ahead forecast (we chose one-step ahead forecast) could lead to a different result.
+
+#### Checking Residuals of selected method
+
+Based on our previous analysis, we can conclude that the "Seasonal naïve method" is the most appropriate method for our time series. Let's have a look at the residuals of this method:
+
+```{r, warning = FALSE}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  filter(year(Date)>=1990) %>%
+  fill(LandAvgTemp, .direction = "down") %>% 
+  model(Seasonal_naive = SNAIVE(LandAvgTemp)) %>% 
+  augment() %>% 
+  autoplot(.resid) + labs(title = "Residuals from Seasonal naïve method", caption = "fig. 24")
+
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>%
+  filter(year(Date)>=1990) %>%
+  fill(LandAvgTemp, .direction = "down") %>% 
+  model(Seasonal_naive = SNAIVE(LandAvgTemp)) %>% 
+  augment() %>% 
+  ACF(.resid) %>% 
+  autoplot() + labs(title = "ACF of Residuals from Seasonal naïve method", caption = "fig. 25")
+```
+
+We have limited our time series to data from 1990 onwards, as we do not need data from 1850 onwards. In the two figures above we can see the residuals from the "Seasonal naïve method" and the ACF of the residuals from the "Seasonal naïve method". The ACF value is for some lags very low, but we can also see that there are several outliers. Therefore, we can't say that the residuals of our selected method looks like white noise.
+This means that none of the Benchmark method is optimal for our time series. However, the "Seasonal naïve method" seems to perform good with regard to the forecasting accuracy.
+
 
 
 
