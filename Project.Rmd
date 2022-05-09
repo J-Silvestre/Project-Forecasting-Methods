@@ -99,6 +99,34 @@ MaliTemp <-GlobalCountryTemp %>% filter(Country == "Mali")%>% select(Date, Count
 SouthAfricaTemp <-GlobalCountryTemp %>% filter(Country == "South Africa")%>% select(Date, Country, LandAvgTemp)
 AustraliaTemp <-GlobalCountryTemp %>% filter(Country == "Australia")%>% select(Date, Country, LandAvgTemp)
 GreenlandTemp <- GlobalCountryTemp %>% filter(Country == "Greenland")%>% select(Date, Country, LandAvgTemp)
+
+
+europe <- c('Austria', 'Portugal', 'Germany', 'United Kingdom (Europe)', 'Norway',
+           'France (Europe)', 'Ukraine', 'Poland', 'Greece', 'Belgium',
+            'Hungary', 'Italy', 'Albania', 'Spain')
+
+africa <- c('Algeria', 'Angola', 'Benin', 'Botswana', 'Burkina Faso',
+            'Burundi', 'Cape Verde', 'Mali', 'Congo (Democratic Republic Of #The)', 'Zambia', 'Zimbabwe', 'Morocco', 'Niger', 'Nigeria')
+
+
+asia <- c('China', 'Russia', 'Malaysia', 'Japan', 'Afghanistn', 'Saudi Arabia', 
+          'Taiwan', 'Qatar', 'Armenia', 'Azerbaijan', 'Bahrain',
+          'Bangladesh', 'Bhutan', 'Brunei', 'Cambodia', 'Cyprus', 
+          'Georgia', 'India', 'Indonesia', 'Iran', 'Jordan', 'Yemen')
+
+north_america <- c('Antigua And Barbuda', 'Bahamas', 'Barbados', 
+                   'Belize', 'Canada', 'Costa Rica', 'Cuba', 'Dominica',
+                   'Dominican Republic', 'El Salvador', 'Grenada', 
+                   'Guatemala', 'Haiti', 'Honduras', 'Jamaica', 'Mexico',
+                   'United States', 'Panama')
+
+south_america <- c('Argentina', 'Bolivia', 'Brazil', 'Chile',
+                   'Colombia', 'Peru', 'Paraguay', 'Guyana', 'Ecuador',
+                   'Suriname', 'Uruguay', 'Venezuela')
+
+oceania <- c('Australia', 'Fiji', 'Kiribati', 'Marshall Islands', 
+             'Micronesia', 'Nauru', 'New Zealand', 'Palau', 'Papua New Guinea',
+             'Samoa', 'Tonga')
 ```
 ## 2 Time series graphics
 
@@ -627,33 +655,6 @@ In Asia and North America, the trend is increasing, but more slowly than in othe
 
 
 ```{r}
-europe <- c('Austria', 'Portugal', 'Germany', 'United Kingdom (Europe)', 'Norway',
-           'France (Europe)', 'Ukraine', 'Poland', 'Greece', 'Belgium',
-            'Hungary', 'Italy', 'Albania', 'Spain')
-
-africa <- c('Algeria', 'Angola', 'Benin', 'Botswana', 'Burkina Faso',
-            'Burundi', 'Cape Verde', 'Mali', 'Congo (Democratic Republic Of #The)', 'Zambia', 'Zimbabwe', 'Morocco', 'Niger', 'Nigeria')
-
-
-asia <- c('China', 'Russia', 'Malaysia', 'Japan', 'Afghanistn', 'Saudi Arabia', 
-          'Taiwan', 'Qatar', 'Armenia', 'Azerbaijan', 'Bahrain',
-          'Bangladesh', 'Bhutan', 'Brunei', 'Cambodia', 'Cyprus', 
-          'Georgia', 'India', 'Indonesia', 'Iran', 'Jordan', 'Yemen')
-
-north_america <- c('Antigua And Barbuda', 'Bahamas', 'Barbados', 
-                   'Belize', 'Canada', 'Costa Rica', 'Cuba', 'Dominica',
-                   'Dominican Republic', 'El Salvador', 'Grenada', 
-                   'Guatemala', 'Haiti', 'Honduras', 'Jamaica', 'Mexico',
-                   'United States', 'Panama')
-
-south_america <- c('Argentina', 'Bolivia', 'Brazil', 'Chile',
-                   'Colombia', 'Peru', 'Paraguay', 'Guyana', 'Ecuador',
-                   'Suriname', 'Uruguay', 'Venezuela')
-
-oceania <- c('Australia', 'Fiji', 'Kiribati', 'Marshall Islands', 
-             'Micronesia', 'Nauru', 'New Zealand', 'Palau', 'Papua New Guinea',
-             'Samoa', 'Tonga')
-
 
 GlobalCountryTemp %>% 
   fill(LandAvgTemp, .direction = "down") %>%
