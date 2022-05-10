@@ -3,6 +3,7 @@ title: "ForeCasting Methods Project"
 author: "Group"
 date: "01/05/2022"
 output:
+  pdf_document: default
   html_document:
     code_folding: hide
 ---
@@ -16,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(fpp3)
 library(tidyverse)
 #working directory for github
-setwd("~/Project-Forecasting-Methods")
+setwd("~/Github/Project-Forecasting-Methods")
 
 #--------------------------------------------- be careful with this code below
 
@@ -707,7 +708,7 @@ Moreover, on the next plot we can see that on average both the global land tempe
 
 ## 4. The forecaster’s toolbox
 
-In the previous chapters we have already prepared and visualized our data in order to gain a good understanding of our data. Now, we will use some benchmark forecasting methods to forecast our time series. Moreover, techniques for calculating forecast intervals and methods for assessing forecast accuracy will be applied.
+In the previous chapters we have already prepared and visualized our data in order to gain a good understanding of our data. Now, we will use some benchmark forecasting methods to forecast our time series. Moreover, methods for assessing forecast accuracy will be applied.
 
 
 ### Specifying a model
@@ -894,6 +895,71 @@ This means that none of the Benchmark method is optimal for our time series. How
 
 
 
+## 5. Exponential Smoothing
+
+The second to last topic in this report will focus entirely in applying Exponential Smoothing methods to the given time-series. 
+Firstly, ETS forecasting will be applied to the global average temperatures, as well as land average temperatures for each continent. Secondly, an assessment of the forecast accuracy will be analyzed.
 
 
+
+### Specifying a model
+
+Due to the strong presence of seasonality in our data, as well as a trend, the most appropriate Exponential Smoothing methods would most likely be the ones with a seasonal component, such as Holt-Winters Additive Method or Holt-Winters Multiplicative Method.
+
+Let's first start by looking at time series for Land Average Temperature and Land & Ocean Average Temperature.
+
+```{r, warning = FALSE}
+global_temp <- 
+  GlobalCountryTemp %>% 
+  filter(Country == "Global") %>% 
+  filter(year(Date)>=1990)
+
+fit_global_land <- global_temp %>% 
+  model(
+    ANA_Land = ETS(LandAvgTemp),
+    AAA_Land = ETS(LandAvgTemp ~ error("A") + trend("A") + season("A")),
+    MAM_Land = ETS(LandAvgTemp ~ error("M") + trend("A") + season("M"))
+    )
+
+report(fit_global_land)
+fit_global_land %>% components() %>%  autoplot()
+```
+
+
+```{r, warning = FALSE}
+fit_global_ocean <- global_temp %>% 
+  model(
+    ANA_LandOcean = ETS(LandOceanAvgTemp),
+    AAA_LandOcean = ETS(LandOceanAvgTemp ~ error("A")+trend("A")+season("A")),
+    MAM_LandOcean = ETS(LandOceanAvgTemp ~ error("M")+trend("A")+season("M"))
+  )
+
+report(fit_global_ocean)
+fit_global_ocean %>% components() %>%  autoplot()
+
+```
+
+
+
+
+```{r, warning = FALSE}
+land_continents <- 
+  GlobalCountryTemp %>% 
+  filter(Country %in% c("North America", "South America", "Europe", "Asia", "Oceania", "Africa")) %>% 
+  filter(year(Date)>=1990)
+
+fit_continents <- land_continents %>% 
+  model(
+    ANA_Continents = ETS(LandAvgTemp)
+  )
+
+report(fit_continents)
+
+fit_continents %>% filter(Country == "Oceania") %>% report()
+
+
+
+#land_continents %>% autoplot(LandAvgTemp) + facet_grid(Country~., scales = "free_y")
+
+```
 
