@@ -902,11 +902,9 @@ Firstly, ETS forecasting will be applied to the global average temperatures, as 
 
 
 
-### Specifying a model
+### Global Land Average Temperature
 
-Due to the strong presence of seasonality in our data, as well as a trend, the most appropriate Exponential Smoothing methods would most likely be the ones with a seasonal component, such as Holt-Winters Additive Method or Holt-Winters Multiplicative Method.
-
-Let's first start by looking at time series for Land Average Temperature and Land & Ocean Average Temperature.
+Due to the strong presence of seasonality in our data, the most appropriate Exponential Smoothing methods would most likely be the ones with a seasonal component, such as Holt-Winters Additive Method or Holt-Winters Multiplicative Method. Besides that, a more simple ETS Method without a trend component could also be considered.Therefore, in this first step, these three exponential smoothing methods are applied.
 
 ```{r, warning = FALSE}
 global_temp <- 
@@ -916,31 +914,43 @@ global_temp <-
 
 fit_global_land <- global_temp %>% 
   model(
-    ANA_Land = ETS(LandAvgTemp),
+    ANA_Land = ETS(LandAvgTemp ~ error("A") + trend("N") + season("A")),
     AAA_Land = ETS(LandAvgTemp ~ error("A") + trend("A") + season("A")),
     MAM_Land = ETS(LandAvgTemp ~ error("M") + trend("A") + season("M"))
     )
 
+fit_ANA <- global_temp %>% model(ANA = ETS(LandAvgTemp ~ error("A") + trend("N") + season("A")))
+
 report(fit_global_land)
-fit_global_land %>% components() %>%  autoplot()
+fit_global_land %>% 
+  components() %>% 
+  autoplot() + labs(title = "ETS Components", caption = "fig. 39")
 ```
+It seems that when the time series is limited from 1990 onward, the ideal exponential smoothing method is the one who does not include any trend (slope). Besides that, the ones that do include a trend (Holt-Winters Additive and Multiplicative Methods) seem to have a slope that is nearly equal to zero. The reasoning behind this is most likely related with the fact that although there is an increasing trend in temperature, this trend is quite small when we consider a time range from the 1990's onward. Therefore, the ideal forecasting method in this case, would be the "ANA" ETS, since this is the one that minimizes the AIC, AICc and BIC.
+
 
 
 ```{r, warning = FALSE}
-fit_global_ocean <- global_temp %>% 
-  model(
-    ANA_LandOcean = ETS(LandOceanAvgTemp),
-    AAA_LandOcean = ETS(LandOceanAvgTemp ~ error("A")+trend("A")+season("A")),
-    MAM_LandOcean = ETS(LandOceanAvgTemp ~ error("M")+trend("A")+season("M"))
-  )
+fit_global_land %>% 
+  forecast(h = "8 years") %>% 
+  autoplot(filter(global_temp, year(Date)>2000),level = NULL) + labs(title = "Global Land Average Temperature ETS Forecast", caption = "fig. 40")
+```
+As expected, the ETS forecasts applied to these time series had a very small AICc difference and, therefore, even though ANA was the one that performed the best, the three methods applied do not differ much from one another. Naturally, the Holt Winters multiplicative method was the one that performed the worst because seasonal variations in this case do not change proportionally to the level of the series.
 
-report(fit_global_ocean)
-fit_global_ocean %>% components() %>%  autoplot()
+
+```{r, warning = FALSE}
+fit_ANA %>% 
+  gg_tsresiduals() + labs(title = "Residual plots for Global Average Temperature ETS(A,N,A) Forecast", caption = "fig. 41")
 
 ```
+By looking at the distribution plot of the residuals, it is possible to visualize that the residuals do tend to cluster around zero. Besides that, only 2 out of 24 lags in the ACF are barely significant. This means that the residuals do seem to be white noise. Which leads to the conclusion that the residuals are normal and uncorrelated. Therefore, the forecasts should also follow a normal distribution.
+This indicates that using an exponential smoothing method that is comprised of an additive error with a null trend and additive seasonal component would yield fairly decent forecasts.
 
 
 
+### Continents' Land Average Temperature
+
+Similarly to what was done for global land average temperature, this time around, exponential smoothing methods will be applied to forecast average temperatures for each continent available in the data set that is being studied.
 
 ```{r, warning = FALSE}
 land_continents <- 
@@ -953,13 +963,34 @@ fit_continents <- land_continents %>%
     ANA_Continents = ETS(LandAvgTemp)
   )
 
-report(fit_continents)
-
-fit_continents %>% filter(Country == "Oceania") %>% report()
-
-
-
-#land_continents %>% autoplot(LandAvgTemp) + facet_grid(Country~., scales = "free_y")
+fit_continents %>% report()
+fit_continents %>% 
+  components() %>% 
+  autoplot() + labs(title = "ETS Components", caption = "fig. 42")
 
 ```
+The exponential smoothing method that minimizes the AIC, Corrected AIC and BIC for all the six continents available in the data set is the ANA Exponential Smoothing Method. This was also the best exponential smoothing method for the global land average temperature time series that we have previously seen.
+
+It is important to highlight that the level and seasonality ETS components differ drastically from continent to continent. Africa, South America and Oceania have a level above 20. Whereas Europe, Asia and North America have a level below 10. This is obviously related with the fact that temperatures in the latter three continents are significantly lower than in the former three. Besides that, there seems to be a much higher seasonal variation in Europe, Asia and North America than in Africa, Oceania and South America.
+
+
+```{r, warning = FALSE}
+fit_continents %>% 
+  forecast(h = "8 years") %>% 
+  autoplot(land_continents) + facet_grid(Country~., scales = "free_y", shrink = T)  + labs(title = "Land Average Temperature ETS Forecast by Continent", caption = "fig. 43")
+```
+The forecasts applied to each time series for each continent clearly differ significantly from continent to continent. The seasonal differences that were previously analysed are also visible in the ETS forecast since only North America, Europe and Asia have forecasts of negative or close to negative temperatures.
+
+Lastly, the residuals for the forecast of each continent must be plotted.
+```{r, warning = FALSE}
+fit_continents %>% 
+  augment() %>% 
+  autoplot(.resid) + facet_grid(Country~., scales = "free_y", shrink = T) + labs(title = "Residuals from ANA ETS per Continent", caption = "fig. 44")
+
+fit_continents %>% 
+  augment() %>% 
+  ACF(.resid) %>% 
+  autoplot() + facet_grid(Country~., scales = "free_y", shrink = T) + labs(title = "Residuals from ANA ETS per Continent", caption = "fig. 44")
+```
+In a similar fashion to what was seen for the Global Land Average Temperature forecast residuals, the residuals for the continents also seem to follow white noise. Only North America, Europe and Asia have two barely significant lags in a total of 24. On the other hand, Oceania and South America have 1, whereas Africa has none. Interestingly enough, the continents that had two significant lags are the ones with a higher seasonal variation. Regardless, this means that there is statistical evidence that indicates that these residuals do follow white noise.
 
