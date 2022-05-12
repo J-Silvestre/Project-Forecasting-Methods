@@ -979,7 +979,7 @@ fit_continents %>%
   forecast(h = "8 years") %>% 
   autoplot(land_continents) + facet_grid(Country~., scales = "free_y", shrink = T)  + labs(title = "Land Average Temperature ETS Forecast by Continent", caption = "fig. 43")
 ```
-The forecasts applied to each time series for each continent clearly differ significantly from continent to continent. The seasonal differences that were previously analysed are also visible in the ETS forecast since only North America, Europe and Asia have forecasts of negative or close to negative temperatures.
+The forecasts applied to each time series for each continent clearly differ significantly from one-another. The seasonal differences that were previously analyzed are also visible in the ETS forecast since only North America, Europe and Asia have forecasts of negative or close to negative temperatures. Additionally, it is important to highlight that Africa and South America seem to have a larger confidence interval in its forecast than other continents. Hence, the forecast for these continents seem to be less precise than for the others.
 
 Lastly, the residuals for the forecast of each continent must be plotted.
 ```{r, warning = FALSE}
