@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #loading libraries
 library(fpp3)
 library(tidyverse)
+
 #working directory for github
 setwd("~/Github/Project-Forecasting-Methods")
 
@@ -497,7 +498,7 @@ autoplot(seats_dec) + labs(title = "Land and Ocean Global Temperature X-13 ARIMA
 
 Did SEATS help?
 
-The trend is smoother. It is easiear to see that the trend is going up.
+The trend is smoother. It is easier to see that the trend is going up.
 
 
 
