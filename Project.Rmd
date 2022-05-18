@@ -1004,8 +1004,7 @@ ARIMA (part 5)
 
 GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
 autoplot(LandAvgTemp)
-GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
-autoplot(LandOceanAvgTemp)
+
 ```
 We plotted the time series of interest in view of beggining the process to fit ARIMA models to the data. Both showed high seasonality and some moderate positive linear trend. 
 
@@ -1013,8 +1012,7 @@ We plotted the time series of interest in view of beggining the process to fit A
 GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
 autoplot(LandAvgTemp %>% difference(12))
 
-GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
-autoplot(LandOceanAvgTemp %>% difference(12)) 
+
 #GlobalCountryTemp %>%  filter(Country=="Global") %>% autoplot(LandAvgTemp %>% difference(12) %>% difference())
 ```
 After differencing to remove the seasonal trend, these looked far more stationary. 
@@ -1023,11 +1021,11 @@ After differencing to remove the seasonal trend, these looked far more stationar
 GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)  %>%mutate(diff_lat = (difference(LandAvgTemp, 12)))%>%
   features(diff_lat, unitroot_pp)
 #GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff_lat = (difference(difference(LandAvgTemp, 12)))) %>%
-  features(diff_lat, unitroot_pp)
+ # features(diff_lat, unitroot_pp)
 GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)%>% mutate(diff_lat = (difference(LandAvgTemp, 12))) %>%
   features(diff_lat, unitroot_kpss)
 #GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)  %>% mutate(diff_lat = (difference(difference(LandAvgTemp, 12)))) %>%
-  features(diff_lat, unitroot_kpss)
+ # features(diff_lat, unitroot_kpss)
 ```
 First we wanted to check for any necessary differencing or box-cox transformations before moving into ARIMA modelling. The variance appeared to be very stable, so we did not feel that there was any need for a log transformation. We have already mentioned that there was high seasonality in the data, which is no surprise as it is to do with weather. To handle this, we first differenced at lag 12. The positive linear trend was very weak but still existed in the data; we had to decide whether it was necessary to difference it out or not. We used some tests to help us make the decision; the pp and the kpss tests. The pp test had a p-value of 0.01, rejecting H0 of a unit root, and the kpss test had a p-value of 0.1, not rejecting H0 that there was not a unit root. The tests agreed that an extra difference for trend was not necessary. 
 
@@ -1037,41 +1035,83 @@ GlobalCountryTemp %>% filter(Country == "Global", year(Date)>1899) %>% mutate(di
 ```
 
 
+
+
+
 ```{r}
-fitting <- GlobalCountryTemp %>% filter(Country == "Global", year(Date)>1899) %>% mutate(diff = difference(LandAvgTemp, 12)) %>%
+GlobalCountryTemp %>% filter(Country=="Global", year(Date) > 1899) %>% mutate(diff = difference(LandAvgTemp, 12)) %>% gg_tsdisplay(diff, plot_type = 'partial', lag_max = 15)
+```
+
+```{r}
+
+fitting_land <- GlobalCountryTemp %>% filter(Country == "Global", year(Date)>1899) %>% mutate(diff = difference(LandAvgTemp, 12)) %>%
   model(
-        ar3 = ARIMA(diff ~ pdq(4, 1, 0) + PDQ(0,0,0)),
-        ar2 = ARIMA(diff ~ pdq(3, 1, 0) + PDQ(0,0,0)),
+        ar3 = ARIMA(diff ~ pdq(3, 0, 0) + PDQ(0,0,0)),
+        ar2 = ARIMA(diff ~ pdq(2, 0, 0) + PDQ(0,0,0)), 
         arma11 = ARIMA(diff ~ pdq(1, 1, 1) + PDQ(0,0,0)), 
-        auto1 = ARIMA(diff),
-        auto2 = ARIMA(diff ~ pdq(d=1))
+        auto1 = ARIMA(diff)
         )
-fitting %>% tidy()
-#fitting %>% tidy() %>% filter(.model == "ar3")
-fitting %>% augment()
-fitting %>% select(ar3) %>% augment()
+fitting_land %>% tidy()
+fitting_land %>% glance() %>% arrange(AICc)
+```
+```{r}
+fit_land <- GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff = difference(LandAvgTemp, 12)) %>%  model(arima = ARIMA(diff ~ pdq(3, 0, 0)+ PDQ(0,0,0)))
+
+fit_land %>% gg_tsresiduals(lag_max=15)
+augment(fit_land) %>%
+  features(.resid, ljung_box, lag = 10, dof = 3)
+```
+```{r}
+fit_land %>%  forecast(h="8 years") %>% autoplot() #%>% (
+  #GlobalCountryTemp %>% filter(Country == "Global", year(Date)>2000) %>% mutate(diff = difference(LandAvgTemp, 12)) %>% autoplot()
+# )
+  
+```
+
+Now for Land and Ocean
+```{r}
+GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
+autoplot(LandOceanAvgTemp)
+
+```
+```{r}
+GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% autoplot(LandOceanAvgTemp %>% difference(12))
 ```
 
 
 ```{r}
-GlobalCountryTemp %>% filter(Country=="Global", year(Date) > 1899) %>% mutate(diff = difference(LandAvgTemp, 12)) %>% gg_tsdisplay(diff, plot_type = 'partial')
-GlobalCountryTemp %>% filter(Country=="Global", year(Date) > 1899) %>% mutate(diff = difference(LandOceanAvgTemp, 12)) %>% gg_tsdisplay(diff, plot_type = 'partial')
+GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)  %>%mutate(diff_lat = (difference(LandAvgTemp, 12)))%>%
+  features(diff_lat, unitroot_pp)
+
+GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)%>% mutate(diff_lat = (difference(LandAvgTemp, 12))) %>%
+  features(diff_lat, unitroot_kpss)
 ```
 
 ```{r}
-fit <-   GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff = difference(LandOceanAvgTemp, 12)) %>%  model(arima = ARIMA(diff ~ pdq(d=1))) %>% fabletools::report()
+GlobalCountryTemp %>% filter(Country=="Global", year(Date) > 1899) %>% mutate(diff = difference(LandOceanAvgTemp, 12)) %>% gg_tsdisplay(diff, plot_type = 'partial', lag_max = 15)
+```
+
+```{r}
+fitting_land_ocean <- GlobalCountryTemp %>% filter(Country == "Global", year(Date) > 1899) %>% mutate(diff = difference(LandOceanAvgTemp, 12)) %>%
+  model(
+        ar3 = ARIMA(diff ~ pdq(3, 0, 0) + PDQ(0,0,0)),
+        ar2 = ARIMA(diff ~ pdq(2, 0, 0) + PDQ(0,0,0)), 
+        arma11 = ARIMA(diff ~ pdq(1, 1, 1) + PDQ(0,0,0)), 
+        auto1 = ARIMA(diff)
+        )
+fitting_land_ocean %>% tidy()
+fitting_land_ocean %>% glance() %>% arrange(AICc)
 ```
 
 
 ```{r}
-fit2 <-   GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff = difference(LandAvgTemp, 12)) %>%  model(arima = ARIMA(diff))
+fit_land_ocean <- GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff = difference(LandOceanAvgTemp, 12)) %>%  model(arima = ARIMA(diff ~ pdq(3, 0, 0)+ PDQ(0,0,0)))
 
-fabletools::report(fit2)
-
-fit3 <-   GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff = difference(LandAvgTemp, 12)) %>%  model(arima = ARIMA(diff ~ pdq(4, 1, 0) + PDQ(0,0,0)))
-
-fabletools::report(fit3)
-
-
+fit_land_ocean %>% gg_tsresiduals(lag_max=15)
+augment(fit_land_ocean) %>%
+  features(.resid, ljung_box, lag = 10, dof = 3) # as there are 3 parameters
 ```
+
+
+
 
