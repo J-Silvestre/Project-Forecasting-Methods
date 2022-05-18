@@ -1001,117 +1001,120 @@ ARIMA (part 5)
 
 
 ```{r}
+library(patchwork)
 
 GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
 autoplot(LandAvgTemp)
-
-```
-We plotted the time series of interest in view of beggining the process to fit ARIMA models to the data. Both showed high seasonality and some moderate positive linear trend. 
-
-```{r}
-GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
-autoplot(LandAvgTemp %>% difference(12))
-
-
-#GlobalCountryTemp %>%  filter(Country=="Global") %>% autoplot(LandAvgTemp %>% difference(12) %>% difference())
-```
-After differencing to remove the seasonal trend, these looked far more stationary. 
-
-```{r}
-GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)  %>%mutate(diff_lat = (difference(LandAvgTemp, 12)))%>%
-  features(diff_lat, unitroot_pp)
-#GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff_lat = (difference(difference(LandAvgTemp, 12)))) %>%
- # features(diff_lat, unitroot_pp)
-GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)%>% mutate(diff_lat = (difference(LandAvgTemp, 12))) %>%
-  features(diff_lat, unitroot_kpss)
-#GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)  %>% mutate(diff_lat = (difference(difference(LandAvgTemp, 12)))) %>%
- # features(diff_lat, unitroot_kpss)
-```
-First we wanted to check for any necessary differencing or box-cox transformations before moving into ARIMA modelling. The variance appeared to be very stable, so we did not feel that there was any need for a log transformation. We have already mentioned that there was high seasonality in the data, which is no surprise as it is to do with weather. To handle this, we first differenced at lag 12. The positive linear trend was very weak but still existed in the data; we had to decide whether it was necessary to difference it out or not. We used some tests to help us make the decision; the pp and the kpss tests. The pp test had a p-value of 0.01, rejecting H0 of a unit root, and the kpss test had a p-value of 0.1, not rejecting H0 that there was not a unit root. The tests agreed that an extra difference for trend was not necessary. 
-
-```{r}
-GlobalCountryTemp %>% filter(Country == "Global", year(Date)>1899) %>% mutate(diff = difference(LandAvgTemp, 12)) %>% autoplot(diff)
-
-```
-
-
-
-
-
-```{r}
-GlobalCountryTemp %>% filter(Country=="Global", year(Date) > 1899) %>% mutate(diff = difference(LandAvgTemp, 12)) %>% gg_tsdisplay(diff, plot_type = 'partial', lag_max = 15)
-```
-
-```{r}
-
-fitting_land <- GlobalCountryTemp %>% filter(Country == "Global", year(Date)>1899) %>% mutate(diff = difference(LandAvgTemp, 12)) %>%
-  model(
-        ar3 = ARIMA(diff ~ pdq(3, 0, 0) + PDQ(0,0,0)),
-        ar2 = ARIMA(diff ~ pdq(2, 0, 0) + PDQ(0,0,0)), 
-        arma11 = ARIMA(diff ~ pdq(1, 1, 1) + PDQ(0,0,0)), 
-        auto1 = ARIMA(diff)
-        )
-fitting_land %>% tidy()
-fitting_land %>% glance() %>% arrange(AICc)
-```
-```{r}
-fit_land <- GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff = difference(LandAvgTemp, 12)) %>%  model(arima = ARIMA(diff ~ pdq(3, 0, 0)+ PDQ(0,0,0)))
-
-fit_land %>% gg_tsresiduals(lag_max=15)
-augment(fit_land) %>%
-  features(.resid, ljung_box, lag = 10, dof = 3)
-```
-```{r}
-fit_land %>%  forecast(h="8 years") %>% autoplot() #%>% (
-  #GlobalCountryTemp %>% filter(Country == "Global", year(Date)>2000) %>% mutate(diff = difference(LandAvgTemp, 12)) %>% autoplot()
-# )
-  
-```
-
-Now for Land and Ocean
-```{r}
 GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
 autoplot(LandOceanAvgTemp)
 
 ```
-```{r}
-GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% autoplot(LandOceanAvgTemp %>% difference(12))
+We plotted the time series of interest in view of beginning the process to fit ARIMA models to the data. Both showed high seasonality and some moderate positive linear trend. 
+
+```{r, warning = FALSE}
+GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
+autoplot(LandAvgTemp %>% difference(12))
+GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
+autoplot(LandOceanAvgTemp %>% difference(12))
+
 ```
+After differencing to remove the seasonal trend, these looked far more stationary. 
 
-
-```{r}
+```{r, warning = FALSE}
 GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)  %>%mutate(diff_lat = (difference(LandAvgTemp, 12)))%>%
   features(diff_lat, unitroot_pp)
 
 GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)%>% mutate(diff_lat = (difference(LandAvgTemp, 12))) %>%
   features(diff_lat, unitroot_kpss)
-```
 
-```{r}
-GlobalCountryTemp %>% filter(Country=="Global", year(Date) > 1899) %>% mutate(diff = difference(LandOceanAvgTemp, 12)) %>% gg_tsdisplay(diff, plot_type = 'partial', lag_max = 15)
-```
 
-```{r}
-fitting_land_ocean <- GlobalCountryTemp %>% filter(Country == "Global", year(Date) > 1899) %>% mutate(diff = difference(LandOceanAvgTemp, 12)) %>%
+GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)  %>%mutate(diff_lat = (difference(LandOceanAvgTemp, 12)))%>%
+  features(diff_lat, unitroot_pp)
+
+GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)%>% mutate(diff_lat = (difference(LandOceanAvgTemp, 12))) %>%
+  features(diff_lat, unitroot_kpss)
+```
+First we wanted to check for any necessary differencing or box-cox transformations before moving into ARIMA modelling. For both series, the variance appeared to be very stable, so we did not feel that there was any need for a log transformation. We have already mentioned that there was high seasonality in the data, which is no surprise as it is to do with weather. To handle this, we first differenced both series at lag 12. The positive linear trend was very weak but still existed in the data; we had to decide whether it was necessary to difference it out or not. We used some tests to help us make the decision; the pp and the kpss tests. For both series, the pp test had a p-value of 0.01, rejecting H0 of a unit root, and the kpss test had a p-value of 0.1, not rejecting H0 that there was not a unit root. The tests agreed that an extra difference to remove unit root was not necessary for either series. 
+
+```{r, warning = FALSE}
+#create variables for seasonally differenced data
+z1 <- GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff1 = difference(LandAvgTemp, 12))
+
+z2 <- GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff2 = difference(LandOceanAvgTemp, 12)) 
+
+```
+The next step was to examine the sample autocorrelation and partial autocorrelation plots, and use them to try and make inference about possible arima models to fit. For both series, the sacf plot had a decaying sine wave and the pacf had a fast decay, with lag 3 being the last significant value. These both suggested that an ARMA(3,0) model be a good option to try. However, there were some spikes later on in the pacf plot around lag 12 which implied that the simple ARMA may have problems. 
+
+```{r, warning = FALSE}
+z1 %>% gg_tsdisplay(diff1, plot_type = 'partial', lag_max = 15)
+z2 %>% gg_tsdisplay(diff2, plot_type = 'partial', lag_max = 15)
+```
+For the Land temperature series, we trained the following models; an ARMA(3,0), ARMA(2,0), ARIMA(1,1) and the optimal model from R given by the ARIMA built in function. We compared these models using the tidy function, showing a combined AIC, AICc and BIC comparison, and then just with the AICc for simplicity. We found that the best model was by far the SARIMA(4,0,0)(2,0,0) model, with an AICc of 863.7; a far lower score than that of the ARMA(3,0) which had an AICc of 1451.9. 
+```{r, warning = FALSE}
+fitting_land <- z1 %>%
   model(
-        ar3 = ARIMA(diff ~ pdq(3, 0, 0) + PDQ(0,0,0)),
-        ar2 = ARIMA(diff ~ pdq(2, 0, 0) + PDQ(0,0,0)), 
-        arma11 = ARIMA(diff ~ pdq(1, 1, 1) + PDQ(0,0,0)), 
-        auto1 = ARIMA(diff)
+        ar3 = ARIMA(diff1 ~ pdq(3, 0, 0) + PDQ(0,0,0)),
+        ar2 = ARIMA(diff1 ~ pdq(2, 0, 0) + PDQ(0,0,0)), 
+        arma11 = ARIMA(diff1 ~ pdq(1, 1, 1) + PDQ(0,0,0)), 
+        auto1 = ARIMA(diff1)
+        )
+fitting_land %>% tidy()
+fitting_land %>% glance() %>% arrange(AICc)
+```
+
+For the Land and Ocean series, we obtained similar results when model selecting. The best ARMA model was again the ARMA(3,0), with an AICc of -1524.2, however this was greatly bettered by the SARIMA(4,0,0)(2,0,0) which had an AICc of -2120.3. 
+```{r, warning = FALSE}
+fitting_land_ocean <- z2 %>%
+  model(
+        ar3 = ARIMA(diff2 ~ pdq(3, 0, 0) + PDQ(0,0,0)),
+        ar2 = ARIMA(diff2 ~ pdq(2, 0, 0) + PDQ(0,0,0)), 
+        arma11 = ARIMA(diff2 ~ pdq(1, 1, 1) + PDQ(0,0,0)), 
+        auto1 = ARIMA(diff2)
         )
 fitting_land_ocean %>% tidy()
 fitting_land_ocean %>% glance() %>% arrange(AICc)
 ```
 
+```{r warning=FALSE}
 
-```{r}
-fit_land_ocean <- GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff = difference(LandOceanAvgTemp, 12)) %>%  model(arima = ARIMA(diff ~ pdq(3, 0, 0)+ PDQ(0,0,0)))
+sarima_land <- z1 %>% model(arima = ARIMA(diff1))
+arima_land <- z1 %>%  model(arima = ARIMA(diff1 ~ pdq(3, 0, 0) + PDQ(0,0,0))) 
+sarima_land %>% gg_tsresiduals(lag_max=15)
+augment(sarima_land) %>%
+  features(.resid, ljung_box, lag = 10, dof = 3)
 
-fit_land_ocean %>% gg_tsresiduals(lag_max=15)
-augment(fit_land_ocean) %>%
-  features(.resid, ljung_box, lag = 10, dof = 3) # as there are 3 parameters
+arima_land %>% gg_tsresiduals(lag_max=15)
+augment(arima_land) %>%
+  features(.resid, ljung_box, lag = 10, dof = 3)
+
+
+
+
 ```
 
+```{r warning=FALSE}
+sarima_land_ocean <- z2 %>%  model(arima = ARIMA(diff2)) 
+arima_land_ocean <- z2 %>%  model(arima = ARIMA(diff2 ~ pdq(3, 0, 0) + PDQ(0,0,0))) 
 
+
+sarima_land_ocean %>% gg_tsresiduals(lag_max=15)
+augment(sarima_land_ocean) %>%
+  features(.resid, ljung_box, lag = 10, dof = 3)# as there are 3 parameters
+
+
+arima_land_ocean %>% gg_tsresiduals(lag_max=15)
+augment(arima_land_ocean) %>%
+  features(.resid, ljung_box, lag = 10, dof = 3)
+```
+
+We decided to compare the two models further by checking that the residuals exhibited white noise. For both series we obtained similar results; the residuals showed white noise behaviour in their plots, however the autocorrelation function for the residuals of the ARMA(3,0) showed a strong seasonal component whereas this was far less prominent in the SARIMA model. The S part of the SARIMA model deals with this seasonality as expected, further confirming that this should be the model to use for forecasting.
+```{r warning=FALSE}
+sarima_land %>% forecast(h = "8 years") %>% 
+  autoplot(filter(z1, year(Date)>2000))
+sarima_land_ocean %>% forecast(h = "8 years") %>% 
+  autoplot(filter(z2, year(Date)>2000))
+```
+
+Lastly, to complete the ARIMA box-jenkins process we plotted the forecast for 8 years in advance for the two series, obtaining what looked like to be very precise forecasts, especially on the 4 year margin.  
 
 
