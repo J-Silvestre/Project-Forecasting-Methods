@@ -936,7 +936,7 @@ fit_global_land %>%
   forecast(h = "8 years") %>% 
   autoplot(filter(global_temp, year(Date)>2000),level = NULL) + labs(title = "Global Land Average Temperature ETS Forecast", caption = "fig. 40")
 ```
-As expected, the ETS forecasts applied to these time series had a very small AICc difference and, therefore, even though ANA was the one that performed the best, the three methods applied do not differ much from one another. Naturally, the Holt Winters multiplicative method was the one that performed the worst because seasonal variations in this case do not change proportionally to the level of the series.
+As expected, the ETS forecasts applied to these time series had a very small AICc difference and, therefore, even though ANA was the one that performed the best, the three methods applied do not differ much from one another. This is mainly due to the fact that the models that did have a trend component (Holt-Winters Additive and Multiplicative), had a very small trend value. Naturally, the Holt Winters multiplicative method was the one that performed the worst because seasonal variations in this case do not change proportionally to the level of the series.
 
 
 ```{r, warning = FALSE}
