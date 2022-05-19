@@ -934,6 +934,7 @@ fit_ANA %>%
 
 By looking at the distribution plot of the residuals, it is possible to visualize that the residuals do tend to cluster around zero. Besides that, only 2 out of 24 lags in the ACF are barely significant. This means that the residuals do seem to be white noise. Which leads to the conclusion that the residuals are normal and uncorrelated. Therefore, the forecasts should also follow a normal distribution. This indicates that using an exponential smoothing method that is comprised of an additive error with a null trend and additive seasonal component would yield fairly decent forecasts.
 
+
 ### Continents' Land Average Temperature
 
 Similarly to what was done for global land average temperature, this time around, exponential smoothing methods will be applied to forecast average temperatures for each continent available in the data set that is being studied.
@@ -1033,7 +1034,7 @@ z2 <- GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% m
 
 ```
 
-The next step was to examine the sample autocorrelation and partial autocorrelation plots, and use them to try and make inference about possible arima models to fit. For both series, the sacf plot had a decaying sine wave and the pacf had a fast decay, with lag 3 being the last significant value. These both suggested that an ARMA(3,0) model be a good option to try. However, there were some spikes later on in the pacf plot around lag 12 which implied that the simple ARMA may have problems.
+The next step was to examine the sample autocorrelation and partial autocorrelation plots, and use them to try and make inference about possible ARIMA models to fit. For both series, the acf plot had a decaying sine wave and the pacf had a fast decay, with lag 3 being the last significant value. These both suggested that an ARMA(3,0) model be a good option to try. However, there were some spikes later on in the pacf plot around lag 12 which implied that the simple ARMA may have problems.
 
 ```{r, warning = FALSE}
 z1 %>% gg_tsdisplay(diff1, plot_type = 'partial', lag_max = 15)
