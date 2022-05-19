@@ -1,0 +1,1868 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\title{ForeCasting Methods Project}
+\author{Group}
+\date{01/05/2022}
+
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={ForeCasting Methods Project},
+  pdfauthor={Group},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\begin{document}
+\maketitle
+
+\hypertarget{time-series-graphics}{%
+\subsection{2 Time series graphics}\label{time-series-graphics}}
+
+In this section the group will explore the dataset by ploting time
+series graphics and analyzing them, this section is really important as
+it provides the group an overall view of the temperature changing
+through the time and allows the group to identify possible patterns,
+such as trends, cycles and seasonalities during the time.
+
+\hypertarget{general-overview-of-the-dataset}{%
+\subsubsection{General overview of the
+dataset}\label{general-overview-of-the-dataset}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalTemp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{autoplot}\NormalTok{(LandOceanAvgTemp)}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{color=}\StringTok{"blue"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Land \& Ocean Temperature {-} Global"}\NormalTok{,}
+       \AttributeTok{subtitle =} \StringTok{"Average"}\NormalTok{,}
+       \AttributeTok{y=}\StringTok{"LandOceanAvgTemp Cº"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 1"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Country }\SpecialCharTok{==} \StringTok{"Brazil"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{autoplot}\NormalTok{(LandAvgTemp)}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{color=}\StringTok{"green"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Land Temperature in Brazil {-} Since 1850"}\NormalTok{,}
+       \AttributeTok{subtitle=}\StringTok{"Average"}\NormalTok{,}
+       \AttributeTok{y=}\StringTok{"LandAvgTemp Cº"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 2"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-3-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{autoplot}\NormalTok{(LandAvgTempUnc)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Land Average temperature Uncertainty {-} Evolution through time"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 3"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-3-3.pdf}
+
+The dataset provides three different views that can be combined and
+analysed in multiple different ways.
+
+The first view is the Global Land \& Ocean average temperature (see
+fig.~1), it provides an interesting sight on how the combination of both
+land and ocean temperature has been changing since 1850.
+
+The central view of the dataset is the Land temperature analysis, which
+can be divided into two parts:
+
+\begin{itemize}
+\tightlist
+\item
+  A global analysis that contains average, max and min temperature
+  values
+\item
+  A more narrow analysis by country that allows us to observe particular
+  countries average temperatures over the years. Note that the years in
+  analyse may differ from country to country due to missing data in the
+  dataset, especially for years before 1900. Figure 2 shows the time
+  series of Land Temperature of Brazil.
+\end{itemize}
+
+The final view is related with the uncertainty of the average
+temperature values and how it has changed over time (see fig.~3).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalTempV }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{ggplot}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{data=}\NormalTok{GlobalTempV, }\FunctionTok{aes}\NormalTok{(Date, LandMaxTemp, }\AttributeTok{col=}\StringTok{"LandMaxTemp"}\NormalTok{))}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{data=}\NormalTok{GlobalTempV, }\FunctionTok{aes}\NormalTok{(Date,LandAvgTemp,}\AttributeTok{col=}\StringTok{"LandAvgTemp"}\NormalTok{),}\AttributeTok{lwd=}\DecValTok{2}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{data=}\NormalTok{GlobalTempV, }\FunctionTok{aes}\NormalTok{(Date, LandMinTemp, }\AttributeTok{col=}\StringTok{"LandMinTemp"}\NormalTok{))}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Land temperature {-} Global overview"}\NormalTok{,}
+       \AttributeTok{y=}\StringTok{"LandTemp Cº"}\NormalTok{,}
+       \AttributeTok{color=}\StringTok{"Temperature Type"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 4"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values=} \FunctionTok{c}\NormalTok{(}\StringTok{"red"}\NormalTok{,}\StringTok{"black"}\NormalTok{,}\StringTok{"blue"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Country }\SpecialCharTok{\%in\%}\NormalTok{ countries) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}}\DecValTok{1984}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{autoplot}\NormalTok{(LandAvgTemp)}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{data=}\NormalTok{GlobalTempV ,}\FunctionTok{aes}\NormalTok{(Date, LandAvgTemp, }\AttributeTok{col=} \StringTok{"Global"}\NormalTok{),}\AttributeTok{lwd=}\DecValTok{2}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title=} \StringTok{"Global \& Country Land Temperature {-} Last 30 years"}\NormalTok{,}
+            \AttributeTok{subtitle =} \StringTok{"Average"}\NormalTok{,}
+            \AttributeTok{y=} \StringTok{"LandAvgTemp Cº"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 5"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ylim}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{30}\NormalTok{,}\DecValTok{40}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"right"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-4-2.pdf} !
+@Rodrigo: You should also add a small description for fig.~4. What can
+we see?
+
+Figure 5 shows the average temperature in the last 30 years of three
+selected countries and ``global''. As we start looking at these time
+series plots we can see that the temperature behaves differently
+according to the countries analysed, some countries belong to hot
+regions like Mali and even Portugal and therefore have higher
+temperatures while other countries like Greenland are in more northern
+zones and have colder temperatures. The global temperature is nothing
+else but the weighted average of the temperature of all countries in the
+original dataset and therefore it appears on the ``middle'' of the time
+series graph. The same reasoning can be applied to the max and min
+global temperature in figure 4.
+
+When we take a closer look to these graphs it's possible to start
+observing some seasonal and trending patterns. Regarding the trending
+patterns, we can clearly see a very smooth crescent trend when it comes
+to land and ocean temperatures (fig.~1), which makes sense as a result
+of a direct effect of the global warming in the temperature, making it
+rise. On the other hand, there is a very clear decrescent trending on
+the temperature uncertainty (fig.~3), which makes sense from a point
+where as the time pass, the practices to measure temperature are better
+and more precise.
+
+Looking now at the seasonal pattern, when we highlight the two graphs
+starting from 1985 onwards (fig.~4 and 5), it becomes explicit that
+there is a seasonal behavior every year. There are four seasons (winter,
+spring, summer and autumn) and we can clearly see that each of those has
+its temperature characteristics.
+
+\hypertarget{focusing-on-seasonality-cycles-and-trends}{%
+\subsubsection{Focusing on seasonality, cycles and
+trends}\label{focusing-on-seasonality-cycles-and-trends}}
+
+In this section, the objective is to focus on the seasonal and trending
+pattern identified previously and confirm them.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#seasonal and trending}
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{gg\_season}\NormalTok{(LandAvgTemp)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Seasonality in global temperature {-} Land"}\NormalTok{,}
+       \AttributeTok{y=}\StringTok{"LandAvgTemp Cº"}\NormalTok{,}
+       \AttributeTok{color=}\StringTok{"Years"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 6"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{gg\_season}\NormalTok{(LandOceanAvgTemp)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Seasonality in global temperature {-} Land and Ocean"}\NormalTok{,}
+       \AttributeTok{y=}\StringTok{"LandOceanAvgTemp Cº"}\NormalTok{,}
+       \AttributeTok{color=}\StringTok{"Years"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 7"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-5-2.pdf}
+
+These graphs (figure 5 and 6) give us some very interesting insights on
+the previous spotted seasonality.
+
+We can clearly see that in winter months (December, January and
+February), the temperature reaches the lowest values while in summer
+months (June, July, August), the temperature reaches its peak. Besides
+showing the seasonality, this graph clearly shows the crescent trending
+as the years go by. The lines that represent the years keep going up in
+the graph.
+
+Another very important aspect that we can spot is that in years around
+1800 the values have some kind of spikes, this results from the fact
+that there was a big uncertainty around the temperature in these years
+and as time pass by, the uncertainty decreases and the lines become more
+stable. The land and ocean seasonality graph clearly shows that
+difference as it doesn't have values below 1900.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#subseries}
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{gg\_subseries}\NormalTok{(LandAvgTemp)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Subseries {-} monthly global analysis"}\NormalTok{,}
+       \AttributeTok{y=}\StringTok{"LandAvgTemp Cº"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 8"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country }\SpecialCharTok{\%in\%}\NormalTok{ countries2) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{gg\_subseries}\NormalTok{(LandAvgTemp)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Subseries {-} monthly analysis"}\NormalTok{,}
+         \AttributeTok{y=}\StringTok{"LandAvgTemp Cº"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 9"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-6-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country }\SpecialCharTok{\%in\%}\NormalTok{ countries3) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{gg\_subseries}\NormalTok{(LandAvgTemp)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Subseries {-} monthly analysis"}\NormalTok{,}
+         \AttributeTok{y=}\StringTok{"LandAvgTemp Cº"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 10"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-6-3.pdf}
+
+The subseries analysis also provides some more details regarding the
+seasonality and trending.
+
+Especially figure 8 shows clearly high discrepancies in early 1800
+temperature values due to the high uncertainty. However, it is still
+clear to see that there is a growing trend, at a global perspective.
+
+The country subseries analysis in figure 9 and 10 reveals again a strong
+seasonality. However, it also shows a new perspective regarding the
+seasonality. Some countries have their seasonality ``swaped'' when
+compared to the global seasonality. This is due to the fact that the
+temperature in the countries of the northern hemisphere is the opposite
+of that in the countries of the southern hemisphere: If it's summer in
+the north (June, July, August), it's winter in the south. Nevertheless
+we can still identify the growing trend of the temperature in most
+countries.
+
+\hypertarget{looking-at-autocorrelation-and-white-noise}{%
+\subsubsection{Looking at autocorrelation and white
+noise}\label{looking-at-autocorrelation-and-white-noise}}
+
+Lastly, we analyse the autocorrelation and examine whether white noise
+exists.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#6, 12 or 24 lags{-}{-}\textgreater{} monthly data}
+\CommentTok{\#In this case 12 looks the best as it captures all months of one year}
+
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{ACF}\NormalTok{(LandAvgTemp,}\AttributeTok{lag\_max =} \DecValTok{12}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{autoplot}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Autocorrelation in LandAvgTemp {-} Global"}\NormalTok{,}
+       \AttributeTok{subtitle =} \StringTok{"12 month lag"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 11"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-7-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country }\SpecialCharTok{\%in\%}\NormalTok{ countries2)}\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{ACF}\NormalTok{(LandAvgTemp,}\AttributeTok{lag\_max =} \DecValTok{12}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{autoplot}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Autocorrelation in LandAvgTemp {-} Country"}\NormalTok{,}
+       \AttributeTok{subtitle =} \StringTok{"12 month lag"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 12"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-7-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#transforming it into yearly data since there is no seasonality}
+\CommentTok{\#showing the first 48 years}
+\NormalTok{uncertainty}\OtherTok{\textless{}{-}}\NormalTok{ GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Year=} \FunctionTok{year}\NormalTok{(Date)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{as\_tibble}\NormalTok{(GlobalCountryTemp) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(Year)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{Date) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{LandAvgTempUnc=} \FunctionTok{mean}\NormalTok{(LandAvgTempUnc))}
+
+\NormalTok{uncertainty }\SpecialCharTok{\%\textgreater{}\%}\FunctionTok{as\_tsibble}\NormalTok{(}\AttributeTok{index=}\NormalTok{Year) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Year}\SpecialCharTok{\textgreater{}} \StringTok{"1752"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{ACF}\NormalTok{(LandAvgTempUnc, }\AttributeTok{lag\_max =} \DecValTok{48}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{autoplot}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Autocorrelation in LandAvgTempUnc {-} Global"}\NormalTok{,}
+       \AttributeTok{subtitle =} \StringTok{"48 years lag"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 13"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-7-3.pdf}
+
+By looking at the autocorrelation plots, regarding the Land Average
+Temperature (see figure 11 and 12), we used a lag of 12 months since
+it's more appropriate for monthly data and it captures all the months of
+one year. It clearly shows that autocorrelation exists between the time
+series and its lags period. We can also spot that the autocorrelation
+peaks on month 6 and 12 which correspond to the highest and lowest
+temperature peeks of the seasonality, respectively.
+
+For the autocorrelation analysis of Land Average temperature Uncertainty
+(see figure 13), we first changed the monthly data to yearly data as
+there is no seasonality and it helps on the visualization. Moreover, we
+defined a lag period of 48 years which is about 1/3 of our total data.
+We can observe that it follows the typical trend behavior: Small lags
+have larger values as they are close to the previous value and tend to
+get smaller as the time goes by.
+
+Since our autocorrelation values are mostly above the significant
+interval our time series don't follow ``white noise''.
+
+\hypertarget{time-series-decomposition}{%
+\section{3. Time Series Decomposition}\label{time-series-decomposition}}
+
+First of all, we are replacing missing values, by the last available
+value for that variable (in a up-down manner), so that we keep our time
+series without missing gaps, to be able to decompose it.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fill}\NormalTok{(LandAvgTemp, }\AttributeTok{.direction =} \StringTok{\textquotesingle{}down\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fill}\NormalTok{(LandOceanAvgTemp, }\AttributeTok{.direction =} \StringTok{\textquotesingle{}down\textquotesingle{}}\NormalTok{) }\OtherTok{{-}\textgreater{}}\NormalTok{ GlobalCountryTemp }
+  
+\CommentTok{\#colSums(is.na(GlobalCountryTemp))}
+\end{Highlighting}
+\end{Shaded}
+
+Now we are going to see if the series need adjustments. As we can see in
+the graphs below, our variation does not change with the level of the
+time series. So, we will not use mathematical transformations.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalTemp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}}\DecValTok{1838}\NormalTok{, }\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textless{}}\DecValTok{1900}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(LandAvgTemp)}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{color =} \StringTok{\textquotesingle{}\#0088cc\textquotesingle{}}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Land Temperature{-} Global"}\NormalTok{,}
+       \AttributeTok{subtitle =} \StringTok{"Average"}\NormalTok{,}
+       \AttributeTok{y=}\StringTok{"LandAvgTemp Cº"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 14"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalTemp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}}\DecValTok{1900}\NormalTok{, }\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textless{}}\DecValTok{1990}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(LandAvgTemp)}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{color =} \StringTok{\textquotesingle{}\#ff3399\textquotesingle{}}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Land Temperature{-} Global"}\NormalTok{,}
+       \AttributeTok{subtitle =} \StringTok{"Average"}\NormalTok{,}
+       \AttributeTok{y=}\StringTok{"LandAvgTemp Cº"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 15"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-9-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalTemp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}}\DecValTok{1990}\NormalTok{, }\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textless{}}\DecValTok{2014}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(LandAvgTemp)}\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{color =} \StringTok{\textquotesingle{}\#cc33ff\textquotesingle{}}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Land Temperature{-} Global"}\NormalTok{,}
+       \AttributeTok{subtitle =} \StringTok{"Average"}\NormalTok{,}
+       \AttributeTok{y=}\StringTok{"LandAvgTemp Cº"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 16"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-9-3.pdf}
+
+As the variations around the trend are of similar magnitudes over time,
+we will use an Additive Decomposition. There is a consistent up and down
+wave regarding the seasonality, and the trend is going upward, also in a
+consistent way, although slowly over time. There is no exponential
+growth.
+
+\#\#Decomposing using Classical Decomposition
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalTemp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(LandOceanAvgTemp) }\OtherTok{{-}\textgreater{}}\NormalTok{ land\_ocean\_global\_temp}
+
+\NormalTok{land\_ocean\_global\_temp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}\FunctionTok{classical\_decomposition}\NormalTok{(LandOceanAvgTemp, }\AttributeTok{type =} \StringTok{"additive"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{components}\NormalTok{() }\OtherTok{{-}\textgreater{}}\NormalTok{ classic\_decmp}
+
+\NormalTok{classic\_decmp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Land and Ocean Global Temperature Classical Additive Decomposition"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 17"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{classic\_decmp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(random, }\AttributeTok{color =} \StringTok{\textquotesingle{}\#ff668c\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Variations not Captured by Classical Decomposition in Land and Ocean"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 18"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-10-2.pdf}
+
+How is Classical Decomposition for our time series?
+
+As Classical Decomposition assumes that the seasonal component repeats
+from year to year, it fits reasonably in our time series, since
+temperatures as always higher in the Summer and lower in the Winter, and
+this pattern in kept.
+
+Now, we will try to decompose the series into the Seasonal components,
+the Trend component and a Remainder, using STL Decomposition.
+
+\#\#Decomposing using STL
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dec }\OtherTok{\textless{}{-}}\NormalTok{ land\_ocean\_global\_temp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{stl =} \FunctionTok{STL}\NormalTok{(LandOceanAvgTemp))}
+
+\CommentTok{\#components(dec)}
+
+
+\NormalTok{GlobalTemp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(LandAvgTemp) }\OtherTok{{-}\textgreater{}}\NormalTok{ land\_global\_temp}
+
+  
+\NormalTok{dec2 }\OtherTok{\textless{}{-}}\NormalTok{ land\_global\_temp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{stl =} \FunctionTok{STL}\NormalTok{(LandAvgTemp))}
+
+\CommentTok{\#components(dec2)}
+\end{Highlighting}
+\end{Shaded}
+
+Isolating the trend and the seasonal adjusted temperatures in a graph.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{land\_ocean\_global\_temp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(LandOceanAvgTemp, }\AttributeTok{color =} \StringTok{\textquotesingle{}gray\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{autolayer}\NormalTok{(}\FunctionTok{components}\NormalTok{(dec), trend, }\AttributeTok{color =} \StringTok{\textquotesingle{}\#6666ff\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{\textquotesingle{}Land and Ocean Global Temperature Trend\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{caption =} \StringTok{"fig. 19"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-12-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{land\_global\_temp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(LandAvgTemp, }\AttributeTok{color =} \StringTok{\textquotesingle{}gray\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{autolayer}\NormalTok{(}\FunctionTok{components}\NormalTok{(dec2), trend, }\AttributeTok{color =} \StringTok{\textquotesingle{}purple\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{\textquotesingle{}Land Global Temperature Trend\textquotesingle{}}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{caption =} \StringTok{"fig. 20"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-12-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{components}\NormalTok{(dec) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}}\DecValTok{1900}\NormalTok{) }\OtherTok{{-}\textgreater{}}\NormalTok{ comp\_after1900}
+
+\NormalTok{land\_ocean\_global\_temp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}}\DecValTok{1900}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(LandOceanAvgTemp, }\AttributeTok{color =} \StringTok{\textquotesingle{}gray\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{autolayer}\NormalTok{(comp\_after1900, trend, }\AttributeTok{color =} \StringTok{\textquotesingle{}\#6666ff\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{\textquotesingle{}Land and Ocean Global Temperature Trend\textquotesingle{}}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{caption =} \StringTok{"fig. 21"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-12-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{land\_global\_temp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(LandAvgTemp, }\AttributeTok{color =} \StringTok{\textquotesingle{}gray\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{autolayer}\NormalTok{(}\FunctionTok{components}\NormalTok{(dec2), season\_adjust, }\AttributeTok{color =} \StringTok{\textquotesingle{}purple\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{\textquotesingle{}Seasonal Adjusted Land Global Temperature\textquotesingle{}}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{caption =} \StringTok{"fig. 22"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-12-4.pdf}
+
+In the first graph, it is possible to depict a notable growth in land
+and ocean temperatures trend over the years. When comparing this graph
+with the second one (depicting the Land Global temperatures trend), we
+can see that the second one's trend is not growing as significantly.
+This may mean that the rising trend in the oceans temperature is
+contributing highly to the upward trend in land plus oceans temperature.
+
+In the third graph, zooming in to more recent years, we can see the
+evident growth in land and ocean global average temperatures.
+
+In the last graph, after adjusting the series regarding seasonal
+variations, we can clearly see that the land average global temperature
+is rising, more significantly from 1950 to the current years.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{components}\NormalTok{(dec) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{ggtitle}\NormalTok{(}\StringTok{\textquotesingle{}Land and Ocean Global Temperature STL Decomposition\textquotesingle{}}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{caption =} \StringTok{"fig. 23"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-13-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#components(dec2) \%\textgreater{}\%}
+\CommentTok{\#  autoplot() + ggtitle(\textquotesingle{}Land Global Temperature\textquotesingle{}) }
+
+\FunctionTok{components}\NormalTok{(dec) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(remainder, }\AttributeTok{color =} \StringTok{\textquotesingle{}\#ff668c\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{ggtitle}\NormalTok{(}\StringTok{\textquotesingle{}Land Global Temperature Remainder\textquotesingle{}}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{caption =} \StringTok{"fig. 24"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-13-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#components(dec2) \%\textgreater{}\%}
+\CommentTok{\#autoplot(remainder, color = \textquotesingle{}\#8c66ff\textquotesingle{}) + ggtitle(\textquotesingle{}Land and Ocean Global Temperature Remainder\textquotesingle{}) }
+\end{Highlighting}
+\end{Shaded}
+
+How is STL for our time series?
+
+Looking at the remainder, there is no clear pattern. That is a sign that
+the STL model is capturing our season and our trend in an appropriate
+manner.
+
+\#\#Decomposing using SEATS Decomposition
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{land\_ocean\_global\_temp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}} \DecValTok{1990}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{seats =}\NormalTok{ feasts}\SpecialCharTok{:::} \FunctionTok{SEATS}\NormalTok{(LandOceanAvgTemp)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{components}\NormalTok{() }\OtherTok{{-}\textgreater{}}\NormalTok{ seats\_dec}
+
+\FunctionTok{autoplot}\NormalTok{(seats\_dec) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Land and Ocean Global Temperature X{-}13 ARIMA{-}SEATS Decomposition"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 25"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-14-1.pdf}
+
+Did SEATS help?
+
+The trend is smoother. It is easier to see that the trend is going up.
+
+\hypertarget{trend-in-different-continents}{%
+\subsection{Trend in different
+Continents}\label{trend-in-different-continents}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}} \DecValTok{1850}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{ (Country }\SpecialCharTok{==} \StringTok{\textquotesingle{}Europe\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(LandAvgTemp) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tibble}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(Date) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarise\_at}\NormalTok{(}\FunctionTok{vars}\NormalTok{(LandAvgTemp), }\FunctionTok{list}\NormalTok{(}\AttributeTok{LandTempEurope =}\NormalTok{ mean)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tsibble}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fill}\NormalTok{(LandTempEurope, }\AttributeTok{.direction =} \StringTok{\textquotesingle{}down\textquotesingle{}}\NormalTok{) }\OtherTok{{-}\textgreater{}}\NormalTok{ tempEurope}
+
+\NormalTok{decEurope }\OtherTok{\textless{}{-}}\NormalTok{ tempEurope }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{stl =} \FunctionTok{STL}\NormalTok{(LandTempEurope))}
+
+\CommentTok{\#components(decEurope)}
+
+\NormalTok{tempEurope }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(LandTempEurope, }\AttributeTok{color =} \StringTok{\textquotesingle{}gray\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{autolayer}\NormalTok{(}\FunctionTok{components}\NormalTok{(decEurope), trend, }\AttributeTok{color =} \StringTok{\textquotesingle{}\#9900cc\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{\textquotesingle{}Land Temperature Europe Trend\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{caption =} \StringTok{"fig. 26"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-15-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}} \DecValTok{1860}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{ (Country }\SpecialCharTok{==} \StringTok{\textquotesingle{}Africa\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(LandAvgTemp) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tibble}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(Date) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarise\_at}\NormalTok{(}\FunctionTok{vars}\NormalTok{(LandAvgTemp), }\FunctionTok{list}\NormalTok{(}\AttributeTok{LandTempAfrica =}\NormalTok{ mean)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tsibble}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fill}\NormalTok{(LandTempAfrica, }\AttributeTok{.direction =} \StringTok{\textquotesingle{}down\textquotesingle{}}\NormalTok{) }\OtherTok{{-}\textgreater{}}\NormalTok{ tempAfrica}
+
+\NormalTok{decAfrica }\OtherTok{\textless{}{-}}\NormalTok{ tempAfrica }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{stl =} \FunctionTok{STL}\NormalTok{(LandTempAfrica))}
+
+\CommentTok{\#components(decAfrica)}
+
+\NormalTok{tempAfrica }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(LandTempAfrica, }\AttributeTok{color =} \StringTok{\textquotesingle{}gray\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{autolayer}\NormalTok{(}\FunctionTok{components}\NormalTok{(decAfrica), trend, }\AttributeTok{color =} \StringTok{\textquotesingle{}\#e65c00\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{\textquotesingle{}Land Temperature Africa Trend\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{caption =} \StringTok{"fig. 27"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-15-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}} \DecValTok{1850}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{ (Country }\SpecialCharTok{==} \StringTok{\textquotesingle{}Asia\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(LandAvgTemp) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tibble}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(Date) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarise\_at}\NormalTok{(}\FunctionTok{vars}\NormalTok{(LandAvgTemp), }\FunctionTok{list}\NormalTok{(}\AttributeTok{LandTempAsia =}\NormalTok{ mean)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tsibble}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fill}\NormalTok{(LandTempAsia, }\AttributeTok{.direction =} \StringTok{\textquotesingle{}down\textquotesingle{}}\NormalTok{) }\OtherTok{{-}\textgreater{}}\NormalTok{ tempAsia}
+
+\NormalTok{decAsia }\OtherTok{\textless{}{-}}\NormalTok{ tempAsia }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{stl =} \FunctionTok{STL}\NormalTok{(LandTempAsia))}
+
+\CommentTok{\#components(decAsia)}
+
+\NormalTok{tempAsia }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(LandTempAsia, }\AttributeTok{color =} \StringTok{\textquotesingle{}gray\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{autolayer}\NormalTok{(}\FunctionTok{components}\NormalTok{(decAsia), trend, }\AttributeTok{color =} \StringTok{\textquotesingle{}\#ff4d94\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{\textquotesingle{}Land Temperature Asia Trend\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{caption =} \StringTok{"fig. 28"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-15-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}} \DecValTok{1850}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{ (Country }\SpecialCharTok{==} \StringTok{\textquotesingle{}South America\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(LandAvgTemp) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tibble}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(Date) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarise\_at}\NormalTok{(}\FunctionTok{vars}\NormalTok{(LandAvgTemp), }\FunctionTok{list}\NormalTok{(}\AttributeTok{LandTempSouthAmerica =}\NormalTok{ mean)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tsibble}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fill}\NormalTok{(LandTempSouthAmerica, }\AttributeTok{.direction =} \StringTok{\textquotesingle{}down\textquotesingle{}}\NormalTok{) }\OtherTok{{-}\textgreater{}}\NormalTok{ tempSouthAmerica}
+
+\NormalTok{decSouthAmerica }\OtherTok{\textless{}{-}}\NormalTok{ tempSouthAmerica }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{stl =} \FunctionTok{STL}\NormalTok{(LandTempSouthAmerica))}
+
+\CommentTok{\#components(decSouthAmerica)}
+
+\NormalTok{tempSouthAmerica }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(LandTempSouthAmerica, }\AttributeTok{color =} \StringTok{\textquotesingle{}gray\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{autolayer}\NormalTok{(}\FunctionTok{components}\NormalTok{(decSouthAmerica), trend, }\AttributeTok{color =} \StringTok{\textquotesingle{}\#008040\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{\textquotesingle{}Land Temperature South America Trend\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{caption =} \StringTok{"fig. 29"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-15-4.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}} \DecValTok{1850}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{ (Country }\SpecialCharTok{==} \StringTok{\textquotesingle{}North America\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(LandAvgTemp) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tibble}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(Date) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarise\_at}\NormalTok{(}\FunctionTok{vars}\NormalTok{(LandAvgTemp), }\FunctionTok{list}\NormalTok{(}\AttributeTok{LandTempNorthAmerica =}\NormalTok{ mean)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tsibble}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fill}\NormalTok{(LandTempNorthAmerica, }\AttributeTok{.direction =} \StringTok{\textquotesingle{}down\textquotesingle{}}\NormalTok{) }\OtherTok{{-}\textgreater{}}\NormalTok{ tempNorthAmerica}
+
+\NormalTok{decNorthAmerica }\OtherTok{\textless{}{-}}\NormalTok{ tempNorthAmerica }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{stl =} \FunctionTok{STL}\NormalTok{(LandTempNorthAmerica))}
+
+\CommentTok{\#components(decNorthAmerica)}
+
+\NormalTok{tempNorthAmerica }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(LandTempNorthAmerica, }\AttributeTok{color =} \StringTok{\textquotesingle{}gray\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{autolayer}\NormalTok{(}\FunctionTok{components}\NormalTok{(decNorthAmerica), trend, }\AttributeTok{color =} \StringTok{\textquotesingle{}\#009999\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{\textquotesingle{}Land Temperature North America Trend\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{caption =} \StringTok{"fig. 30"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-15-5.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}} \DecValTok{1850}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{ (Country }\SpecialCharTok{==} \StringTok{\textquotesingle{}Oceania\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(LandAvgTemp) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tibble}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(Date) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarise\_at}\NormalTok{(}\FunctionTok{vars}\NormalTok{(LandAvgTemp), }\FunctionTok{list}\NormalTok{(}\AttributeTok{LandTempOceania =}\NormalTok{ mean)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as\_tsibble}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fill}\NormalTok{(LandTempOceania, }\AttributeTok{.direction =} \StringTok{\textquotesingle{}down\textquotesingle{}}\NormalTok{) }\OtherTok{{-}\textgreater{}}\NormalTok{ tempOceania}
+
+\NormalTok{decOceania }\OtherTok{\textless{}{-}}\NormalTok{ tempOceania }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{stl =} \FunctionTok{STL}\NormalTok{(LandTempOceania))}
+
+\CommentTok{\#components(decOceania)}
+
+\NormalTok{tempOceania }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(LandTempOceania, }\AttributeTok{color =} \StringTok{\textquotesingle{}gray\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{autolayer}\NormalTok{(}\FunctionTok{components}\NormalTok{(decOceania), trend, }\AttributeTok{color =} \StringTok{\textquotesingle{}\#99004d\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{\textquotesingle{}Land Temperature Oceania Trend\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{caption =} \StringTok{"fig. 31"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-15-6.pdf}
+Analyzing trends on different continents, we can reach some conclusions:
+
+It is important to make the distinction, that the trend over time is
+ranging from very different values from continent to continent. While in
+North America the temperatures are much colder in general, in Europe and
+Asia they are slight more moderate. In Oceania the temperatures are
+hotter, ranging always above 20Cº, but in Africa and South America the
+temperatures are alarmingly higher, especially in Africa where
+temperatures start at about 23ºC in 1860, and have already over-passed
+the 25ºC.
+
+In Africa and South America the trend is going upwards significantly,
+and much faster, compared to other continents. In Asia and North
+America, the trend is increasing, but more slowly than in other
+continents.
+
+\hypertarget{trend-and-seasonal-strenght-in-different-countries-and-continents}{%
+\subsection{Trend and Seasonal Strenght in different Countries and
+Continents}\label{trend-and-seasonal-strenght-in-different-countries-and-continents}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{fill}\NormalTok{(LandAvgTemp, }\AttributeTok{.direction =} \StringTok{"down"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{features}\NormalTok{(LandAvgTemp, feat\_stl) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{drop\_na}\NormalTok{(trend\_strength, seasonal\_strength\_year) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Continent =} \FunctionTok{case\_when}\NormalTok{(}
+\NormalTok{    Country }\SpecialCharTok{\%in\%}\NormalTok{ europe  }\SpecialCharTok{\textasciitilde{}} \StringTok{"Europe"}\NormalTok{ ,}
+\NormalTok{    Country }\SpecialCharTok{\%in\%}\NormalTok{ africa  }\SpecialCharTok{\textasciitilde{}} \StringTok{"Africa"}\NormalTok{ ,}
+\NormalTok{    Country }\SpecialCharTok{\%in\%}\NormalTok{ asia  }\SpecialCharTok{\textasciitilde{}} \StringTok{"Asia"}\NormalTok{ ,}
+\NormalTok{    Country }\SpecialCharTok{\%in\%}\NormalTok{ north\_america  }\SpecialCharTok{\textasciitilde{}} \StringTok{"North America"}\NormalTok{,}
+\NormalTok{    Country }\SpecialCharTok{\%in\%}\NormalTok{ south\_america  }\SpecialCharTok{\textasciitilde{}} \StringTok{"South America"}\NormalTok{,}
+\NormalTok{    Country }\SpecialCharTok{\%in\%}\NormalTok{ oceania  }\SpecialCharTok{\textasciitilde{}} \StringTok{"Oceania"}
+\NormalTok{  )}
+\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{drop\_na}\NormalTok{(Continent) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ trend\_strength, }\AttributeTok{y =}\NormalTok{ seasonal\_strength\_year, }\AttributeTok{colour =}\NormalTok{ Continent)) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values=}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}\#ff9900\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#ff4d94\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#9900cc\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#009999\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#ffcc00\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#00cc00\textquotesingle{}}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title=} \StringTok{\textquotesingle{}Trend and Seasonal Strenght in different Countries\textquotesingle{}}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 32"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-16-1.pdf}
+
+In the scatter plot above, we can evaluate the strength of the trends
+and seasonal patterns on different countries, grouped by continent.
+
+In all countries in the graph, the seasonal patterns are clearly strong
+(the majority with a seasonal strength higher than 0.7).
+
+In Europe, we can see countries are in a cluster with a very high
+seasonal strength (the differences in temperature according to months,
+are more pronounced) and lower trend strength (it is not going on an
+upward trend as much).
+
+In Asia the seasonal strength is very high in almost all plotted
+countries (above 0.85). Meaning the differences in temperatures in
+distinct seasons are very significant (colder winters and very hot
+summers/spring).
+
+In North America, the trend is very string in most of the countries,
+meaning temperatures are rising quite fast and significantly.
+
+\hypertarget{subseries-of-land-and-ocean-global-temperature}{%
+\subsection{Subseries of Land and Ocean Global
+Temperature}\label{subseries-of-land-and-ocean-global-temperature}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{components}\NormalTok{(dec) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{gg\_subseries}\NormalTok{(season\_year) }\SpecialCharTok{+} 
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Subseries by month of Land and Ocean Global Temperatures\textquotesingle{}}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 33"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-17-1.pdf}
+
+Moreover, on the next plot we can see that on average both the global
+land temperature and the global land and ocean temperature are much
+higher in Summer months, compared to the rest, and much lower in
+January, February, and December. Interestingly in July and August the
+trend is going down, so in previous years, temperatures were higher in
+these months, compared to recent years.
+
+\hypertarget{the-forecasters-toolbox}{%
+\subsection{4. The forecaster's toolbox}\label{the-forecasters-toolbox}}
+
+In the previous chapters we have already prepared and visualized our
+data in order to gain a good understanding of our data. Now, we will use
+some benchmark forecasting methods to forecast our time series.
+Moreover, methods for assessing forecast accuracy will be applied.
+
+\hypertarget{specifying-a-model}{%
+\subsubsection{Specifying a model}\label{specifying-a-model}}
+
+Looking at our data allows us to identify common patterns, and
+subsequently specify an appropriate model. We have seen in the previous
+chapters that our time series for Land Average Temperature and Land \&
+Ocean Average temperature reveal a seasonal and a trend pattern. Now, we
+will check which type of forecasting method is appropriate for this type
+of time series.
+
+There are several simple forecasting methods. The ``Average method'' and
+the ``Naïve method'' are suitable for time series without any
+seasonality or trend pattern. Therefore, we won't use these methods for
+our time series.
+
+The ``Seasonal naïve method'' is appropriate for data with seasonality
+and the ``Drift Method'' for data with a trend pattern. For that reason,
+we will know apply these forecasting methods to our data and visualize
+the results.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{fill}\NormalTok{(LandAvgTemp, }\AttributeTok{.direction =} \StringTok{"down"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{Seasonal\_naive =} \FunctionTok{SNAIVE}\NormalTok{(LandAvgTemp),}
+        \AttributeTok{Drift =} \FunctionTok{RW}\NormalTok{(LandAvgTemp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{drift}\NormalTok{())}
+\NormalTok{        ) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"8 years"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{autoplot}\NormalTok{((}\FunctionTok{filter}\NormalTok{(GlobalCountryTemp, }\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}} \DecValTok{2000}\NormalTok{))) }\SpecialCharTok{+} 
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Global Land Average Temperature {-} Forecast"}\NormalTok{,}
+       \AttributeTok{subtitle =} \StringTok{"Drift and Seasonal naïve method"}\NormalTok{,}
+       \AttributeTok{y=}\StringTok{"LandAvgTemp Cº"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 34"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-18-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{fill}\NormalTok{(LandOceanAvgTemp, }\AttributeTok{.direction =} \StringTok{"down"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{Seasonal\_naive =} \FunctionTok{SNAIVE}\NormalTok{(LandOceanAvgTemp),}
+        \AttributeTok{Drift =} \FunctionTok{RW}\NormalTok{(LandOceanAvgTemp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{drift}\NormalTok{())}
+\NormalTok{        ) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"8 years"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{autoplot}\NormalTok{(}\FunctionTok{filter}\NormalTok{(GlobalCountryTemp, }\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}} \DecValTok{2000}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Global Land \& Ocean Average Temperature {-} Forecast"}\NormalTok{,}
+       \AttributeTok{subtitle =} \StringTok{"Drift and Seasonal naïve method"}\NormalTok{,}
+       \AttributeTok{y=}\StringTok{"LandOceanAvgTemp Cº"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 35"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-19-1.pdf}
+
+The figures above show the forecasts for the next 8 years (from 2016
+onward) estimated by the ``Seasonal naïve method'' and the ``Drift
+Method'' for the times Series ``Global Land Average temperature'' and
+``Global Land \& Ocean Temperature'', respectively. It can be seen that
+the area for the prediction intervals is high (espicially for the
+``Drift method''), which means that there is a high uncertainty in the
+forecasts. One reason for this may be that one method is suitable for
+data with seasonality and the other method for data with trend. But in
+fact our time series has both seasonality and trend.
+
+Let's try to apply the ``Drift Method'' on the seasonal adjusted data,
+so that we capture both components in our forecast: Seasonality and
+Trend.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{fill}\NormalTok{(LandAvgTemp, }\AttributeTok{.direction =} \StringTok{"down"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{stlf =} \FunctionTok{decomposition\_model}\NormalTok{(}
+    \FunctionTok{STL}\NormalTok{(LandAvgTemp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{trend}\NormalTok{(}\AttributeTok{window =} \DecValTok{7}\NormalTok{), }\AttributeTok{robust =} \ConstantTok{TRUE}\NormalTok{),}
+        \AttributeTok{Drift =} \FunctionTok{RW}\NormalTok{(season\_adjust }\SpecialCharTok{\textasciitilde{}} \FunctionTok{drift}\NormalTok{())}
+\NormalTok{    )) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"8 years"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{autoplot}\NormalTok{(}\FunctionTok{filter}\NormalTok{(GlobalCountryTemp, }\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}} \DecValTok{2000}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Global Land Average Temperature {-} Forecast"}\NormalTok{,}
+       \AttributeTok{subtitle =} \StringTok{"Drift method based on seasonal adjusted data"}\NormalTok{,}
+       \AttributeTok{y=}\StringTok{"LandAvgTemp Cº"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 36"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-20-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{fill}\NormalTok{(LandOceanAvgTemp, }\AttributeTok{.direction =} \StringTok{"down"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(LandOceanAvgTemp)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{stlf =} \FunctionTok{decomposition\_model}\NormalTok{(}
+    \FunctionTok{STL}\NormalTok{(LandOceanAvgTemp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{trend}\NormalTok{(}\AttributeTok{window =} \DecValTok{7}\NormalTok{), }\AttributeTok{robust =} \ConstantTok{TRUE}\NormalTok{),}
+        \AttributeTok{Drift =} \FunctionTok{RW}\NormalTok{(season\_adjust }\SpecialCharTok{\textasciitilde{}} \FunctionTok{drift}\NormalTok{())}
+\NormalTok{    )) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"8 years"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{autoplot}\NormalTok{(}\FunctionTok{filter}\NormalTok{(GlobalCountryTemp, }\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}} \DecValTok{2000}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Global Land \& Ocean Average Temperature {-} Forecast"}\NormalTok{,}
+       \AttributeTok{subtitle =} \StringTok{"Drift method based on seasonal adjusted data"}\NormalTok{,}
+       \AttributeTok{y=}\StringTok{"LandOceanAvgTemp Cº"}\NormalTok{,}
+       \AttributeTok{caption =} \StringTok{"fig. 37"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-21-1.pdf}
+
+The figures above show the forecasts for the next 8 years (from 2016
+onward) estimated by the ``Drift Method'' based on the seasonal adjusted
+data (based on STL Decomposition) for the times Series ``Global Land
+Average temperature'' and ``Global Land \& Ocean Temperature'',
+respectively. The prediction intervals are still big, especially for the
+forecast of the ``Global Land Average temperature''. When we compare the
+prediction interval to those of the ``Seasonal naïve method'' in the
+figures before they seem to be even bigger.
+
+In the following chapter we will calculate the forecasting accuracy and
+check if our intuition about the best method is true.
+
+\hypertarget{accuracy-performance-evaluation}{%
+\subsubsection{Accuracy \& performance
+evaluation}\label{accuracy-performance-evaluation}}
+
+In this chapter we will divide our data in training and test sets to
+evaluate the forecasting accuracy. For this purpose the time series
+cross-validation is used. In this procedure, there are a number of test
+sets, each consisting of a single observation. The corresponding
+training set consists only of observations that occurred before the
+observation that forms the test set. By averaging over the test series
+the forecasting accuracy is calculated.
+
+In the following we will use the one-step ahead forecast with an initial
+sample size of 3 and the stretch\_tsibble function (=extends a growing
+length window with new data) to calculate the accuracy obtained via time
+series cross-validation. To increase the performance of the code, only
+data since 1990 will be considered.
+
+\hypertarget{global-land-average-temperature-forecast}{%
+\paragraph{Global land average temperature
+forecast}\label{global-land-average-temperature-forecast}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}=}\DecValTok{1990}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fill}\NormalTok{(LandAvgTemp, }\AttributeTok{.direction =} \StringTok{"down"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(LandAvgTemp)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{stretch\_tsibble}\NormalTok{(}\AttributeTok{.init =} \DecValTok{3}\NormalTok{, }\AttributeTok{.step =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{Seasonal\_naive =} \FunctionTok{SNAIVE}\NormalTok{(LandAvgTemp),}
+        \AttributeTok{Drift =} \FunctionTok{RW}\NormalTok{(LandAvgTemp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{drift}\NormalTok{())}
+\NormalTok{        ) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"8 years"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{accuracy}\NormalTok{(GlobalCountryTemp)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 2 x 11
+##   .model    Country .type     ME   RMSE   MAE     MPE   MAPE   MASE  RMSSE  ACF1
+##   <chr>     <chr>   <chr>  <dbl>  <dbl> <dbl>   <dbl>  <dbl>  <dbl>  <dbl> <dbl>
+## 1 Drift     Global  Test  -5.77  19.9   9.53  -109.   140.   14.0   17.9   0.983
+## 2 Seasonal~ Global  Test   0.113  0.455 0.355    1.06   5.30  0.521  0.409 0.319
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}=}\DecValTok{1990}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fill}\NormalTok{(LandAvgTemp, }\AttributeTok{.direction =} \StringTok{"down"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(LandAvgTemp)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{stretch\_tsibble}\NormalTok{(}\AttributeTok{.init =} \DecValTok{3}\NormalTok{, }\AttributeTok{.step =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{stlf =} \FunctionTok{decomposition\_model}\NormalTok{(}
+    \FunctionTok{STL}\NormalTok{(LandAvgTemp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{trend}\NormalTok{(}\AttributeTok{window =} \DecValTok{7}\NormalTok{), }\AttributeTok{robust =} \ConstantTok{TRUE}\NormalTok{),}
+        \AttributeTok{Drift =} \FunctionTok{RW}\NormalTok{(season\_adjust }\SpecialCharTok{\textasciitilde{}} \FunctionTok{drift}\NormalTok{())}
+\NormalTok{    )) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"8 years"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{accuracy}\NormalTok{(GlobalCountryTemp)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 11
+##   .model Country .type    ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
+##   <chr>  <chr>   <chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+## 1 stlf   Global  Test  -3.35  18.2  3.89 -51.0  57.5  5.71  16.4 0.988
+\end{verbatim}
+
+In the figures above we can see the accuracy of the three different
+models for the Average global Land Temperature. The RMSE is a good way
+to choose the best forecasting model. The RMSE of the ``Seasonal naïve
+method'' is the smallest, followed by the ``Drift Method'' on seasonal
+adjusted data and then the normal ``Drift method''.
+
+\hypertarget{global-land-and-ocean-average-temperature-forecast}{%
+\paragraph{Global land and ocean average temperature
+forecast}\label{global-land-and-ocean-average-temperature-forecast}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}=}\DecValTok{1990}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fill}\NormalTok{(LandOceanAvgTemp, }\AttributeTok{.direction =} \StringTok{"down"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(LandOceanAvgTemp)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{stretch\_tsibble}\NormalTok{(}\AttributeTok{.init =} \DecValTok{3}\NormalTok{, }\AttributeTok{.step =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{Seasonal\_naive =} \FunctionTok{SNAIVE}\NormalTok{(LandOceanAvgTemp),}
+        \AttributeTok{Drift =} \FunctionTok{RW}\NormalTok{(LandOceanAvgTemp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{drift}\NormalTok{())}
+\NormalTok{        ) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"8 years"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{accuracy}\NormalTok{(GlobalCountryTemp)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: The future dataset is incomplete, incomplete out-of-sample data will be treated as missing. 
+## 96 observations are missing between 2016 jan and 2023 dez
+\end{verbatim}
+
+\begin{verbatim}
+## # A tibble: 2 x 11
+##   .model       Country .type      ME  RMSE   MAE     MPE  MAPE  MASE RMSSE  ACF1
+##   <chr>        <chr>   <chr>   <dbl> <dbl> <dbl>   <dbl> <dbl> <dbl> <dbl> <dbl>
+## 1 Drift        Global  Test  -1.66   5.88  2.79  -11.2   18.0  18.4  30.1  0.983
+## 2 Seasonal_na~ Global  Test   0.0701 0.197 0.156   0.436  1.00  1.03  1.01 0.605
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}=}\DecValTok{1990}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fill}\NormalTok{(LandOceanAvgTemp, }\AttributeTok{.direction =} \StringTok{"down"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(LandOceanAvgTemp)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{stretch\_tsibble}\NormalTok{(}\AttributeTok{.init =} \DecValTok{3}\NormalTok{, }\AttributeTok{.step =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{stlf =} \FunctionTok{decomposition\_model}\NormalTok{(}
+    \FunctionTok{STL}\NormalTok{(LandOceanAvgTemp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{trend}\NormalTok{(}\AttributeTok{window =} \DecValTok{7}\NormalTok{), }\AttributeTok{robust =} \ConstantTok{TRUE}\NormalTok{),}
+        \AttributeTok{Drift =} \FunctionTok{RW}\NormalTok{(season\_adjust }\SpecialCharTok{\textasciitilde{}} \FunctionTok{drift}\NormalTok{())}
+\NormalTok{    )) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"8 years"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{accuracy}\NormalTok{(GlobalCountryTemp)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 11
+##   .model Country .type     ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
+##   <chr>  <chr>   <chr>  <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+## 1 stlf   Global  Test  -0.952  5.40  1.20 -6.20  7.74  7.86  27.6 0.988
+\end{verbatim}
+
+In the figures above we can see the accuracy of the three different
+models for the Average global Land \& Ocean Temperature. By evaluating
+the RMSE we can again see that the forecasting accuracy of the
+``Seasonal naïve method'' is the best, followed by the ``Drift Method''
+on seasonal adjusted data and then the normal ``Drift method''.
+
+The reason for this may be that our time series shows a strong
+seasonality but only a slight trend. Therefore, the ``Seasonal naïve
+method'' already captures the most important factor. If the forecasting
+horizon would be bigger it can be assumed, that the performance of the
+``Drift Method'' on seasonal adjusted data increases. Moreover, a
+different value for the step ahead forecast (we chose one-step ahead
+forecast) could lead to a different result.
+
+\hypertarget{checking-residuals-of-selected-method}{%
+\paragraph{Checking Residuals of selected
+method}\label{checking-residuals-of-selected-method}}
+
+Based on our previous analysis, we can conclude that the ``Seasonal
+naïve method'' is the most appropriate method for our time series. Let's
+have a look at the residuals of this method:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}=}\DecValTok{1990}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fill}\NormalTok{(LandAvgTemp, }\AttributeTok{.direction =} \StringTok{"down"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{Seasonal\_naive =} \FunctionTok{SNAIVE}\NormalTok{(LandAvgTemp)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{augment}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{autoplot}\NormalTok{(.resid) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Residuals from Seasonal naïve method"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 24"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-26-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}=}\DecValTok{1990}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fill}\NormalTok{(LandAvgTemp, }\AttributeTok{.direction =} \StringTok{"down"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}\AttributeTok{Seasonal\_naive =} \FunctionTok{SNAIVE}\NormalTok{(LandAvgTemp)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{augment}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{ACF}\NormalTok{(.resid) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{autoplot}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"ACF of Residuals from Seasonal naïve method"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 38"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-26-2.pdf}
+
+We have limited our time series to data from 1990 onwards, as we do not
+need data from 1850 onwards. In the two figures above we can see the
+residuals from the ``Seasonal naïve method'' and the ACF of the
+residuals from the ``Seasonal naïve method''. The ACF value is for some
+lags very low, but we can also see that there are several outliers.
+Therefore, we can't say that the residuals of our selected method looks
+like white noise. This means that none of the Benchmark method is
+optimal for our time series. However, the ``Seasonal naïve method''
+seems to perform good with regard to the forecasting accuracy.
+
+\hypertarget{exponential-smoothing}{%
+\subsection{5. Exponential Smoothing}\label{exponential-smoothing}}
+
+The second to last topic in this report will focus entirely in applying
+Exponential Smoothing methods to the given time-series. Firstly, ETS
+forecasting will be applied to the global average temperatures, as well
+as land average temperatures for each continent. Secondly, an assessment
+of the forecast accuracy will be analyzed.
+
+\hypertarget{global-land-average-temperature}{%
+\subsubsection{Global Land Average
+Temperature}\label{global-land-average-temperature}}
+
+Due to the strong presence of seasonality in our data, the most
+appropriate Exponential Smoothing methods would most likely be the ones
+with a seasonal component, such as Holt-Winters Additive Method or
+Holt-Winters Multiplicative Method. Besides that, a more simple ETS
+Method without a trend component could also be considered.Therefore, in
+this first step, these three exponential smoothing methods are applied.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{global\_temp }\OtherTok{\textless{}{-}} 
+\NormalTok{  GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country }\SpecialCharTok{==} \StringTok{"Global"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}=}\DecValTok{1990}\NormalTok{)}
+
+\NormalTok{fit\_global\_land }\OtherTok{\textless{}{-}}\NormalTok{ global\_temp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{ANA\_Land =} \FunctionTok{ETS}\NormalTok{(LandAvgTemp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"N"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"A"}\NormalTok{)),}
+    \AttributeTok{AAA\_Land =} \FunctionTok{ETS}\NormalTok{(LandAvgTemp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"A"}\NormalTok{)),}
+    \AttributeTok{MAM\_Land =} \FunctionTok{ETS}\NormalTok{(LandAvgTemp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"M"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"M"}\NormalTok{))}
+\NormalTok{    )}
+
+\NormalTok{fit\_ANA }\OtherTok{\textless{}{-}}\NormalTok{ global\_temp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{model}\NormalTok{(}\AttributeTok{ANA =} \FunctionTok{ETS}\NormalTok{(LandAvgTemp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{error}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{trend}\NormalTok{(}\StringTok{"N"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{season}\NormalTok{(}\StringTok{"A"}\NormalTok{)))}
+
+\FunctionTok{report}\NormalTok{(fit\_global\_land)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 10
+##   Country .model    sigma2 log_lik   AIC  AICc   BIC    MSE   AMSE    MAE
+##   <chr>   <chr>      <dbl>   <dbl> <dbl> <dbl> <dbl>  <dbl>  <dbl>  <dbl>
+## 1 Global  ANA_Land 0.0900    -513. 1056. 1058. 1112. 0.0860 0.0947 0.231 
+## 2 Global  AAA_Land 0.0909    -514. 1061. 1063. 1125. 0.0862 0.0947 0.231 
+## 3 Global  MAM_Land 0.00340   -663. 1360. 1362. 1423. 0.119  0.135  0.0381
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit\_global\_land }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{components}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{autoplot}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"ETS Components"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 39"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-27-1.pdf} It
+seems that when the time series is limited from 1990 onward, the ideal
+exponential smoothing method is the one who does not include any trend
+(slope). Besides that, the ones that do include a trend (Holt-Winters
+Additive and Multiplicative Methods) seem to have a slope that is nearly
+equal to zero. The reasoning behind this is most likely related with the
+fact that although there is an increasing trend in temperature, this
+trend is quite small when we consider a time range from the 1990's
+onward. Therefore, the ideal forecasting method in this case, would be
+the ``ANA'' ETS, since this is the one that minimizes the AIC, AICc and
+BIC.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit\_global\_land }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"8 years"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{autoplot}\NormalTok{(}\FunctionTok{filter}\NormalTok{(global\_temp, }\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}}\DecValTok{2000}\NormalTok{),}\AttributeTok{level =} \ConstantTok{NULL}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Global Land Average Temperature ETS Forecast"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 40"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-28-1.pdf} As
+expected, the ETS forecasts applied to these time series had a very
+small AICc difference and, therefore, even though ANA was the one that
+performed the best, the three methods applied do not differ much from
+one another. This is mainly due to the fact that the models that did
+have a trend component (Holt-Winters Additive and Multiplicative), had a
+very small trend value. Naturally, the Holt Winters multiplicative
+method was the one that performed the worst because seasonal variations
+in this case do not change proportionally to the level of the series.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit\_ANA }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{gg\_tsresiduals}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Residual plots for Global Average Temperature ETS(A,N,A) Forecast"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 41"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-29-1.pdf} By
+looking at the distribution plot of the residuals, it is possible to
+visualize that the residuals do tend to cluster around zero. Besides
+that, only 2 out of 24 lags in the ACF are barely significant. This
+means that the residuals do seem to be white noise. Which leads to the
+conclusion that the residuals are normal and uncorrelated. Therefore,
+the forecasts should also follow a normal distribution. This indicates
+that using an exponential smoothing method that is comprised of an
+additive error with a null trend and additive seasonal component would
+yield fairly decent forecasts.
+
+\hypertarget{continents-land-average-temperature}{%
+\subsubsection{Continents' Land Average
+Temperature}\label{continents-land-average-temperature}}
+
+Similarly to what was done for global land average temperature, this
+time around, exponential smoothing methods will be applied to forecast
+average temperatures for each continent available in the data set that
+is being studied.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{land\_continents }\OtherTok{\textless{}{-}} 
+\NormalTok{  GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(Country }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"North America"}\NormalTok{, }\StringTok{"South America"}\NormalTok{, }\StringTok{"Europe"}\NormalTok{, }\StringTok{"Asia"}\NormalTok{, }\StringTok{"Oceania"}\NormalTok{, }\StringTok{"Africa"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}=}\DecValTok{1990}\NormalTok{)}
+
+\NormalTok{fit\_continents }\OtherTok{\textless{}{-}}\NormalTok{ land\_continents }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{model}\NormalTok{(}
+    \AttributeTok{ANA\_Continents =} \FunctionTok{ETS}\NormalTok{(LandAvgTemp)}
+\NormalTok{  )}
+
+\NormalTok{fit\_continents }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{report}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 10
+##   Country       .model       sigma2 log_lik   AIC  AICc   BIC    MSE  AMSE   MAE
+##   <chr>         <chr>         <dbl>   <dbl> <dbl> <dbl> <dbl>  <dbl> <dbl> <dbl>
+## 1 Africa        ANA_Contine~  0.105   -477.  984.  986. 1039. 0.0997 0.118 0.242
+## 2 Asia          ANA_Contine~  0.618   -730. 1489. 1491. 1544. 0.588  0.597 0.538
+## 3 Europe        ANA_Contine~  1.46    -853. 1735. 1737. 1790. 1.39   1.39  0.865
+## 4 North America ANA_Contine~  0.662   -739. 1509. 1511. 1564. 0.629  0.680 0.612
+## 5 Oceania       ANA_Contine~  0.450   -685. 1399. 1401. 1454. 0.428  0.466 0.497
+## 6 South America ANA_Contine~  0.125   -502. 1035. 1037. 1090. 0.119  0.129 0.250
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit\_continents }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{components}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{autoplot}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"ETS Components"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 42"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-30-1.pdf} The
+exponential smoothing method that minimizes the AIC, Corrected AIC and
+BIC for all the six continents available in the data set is the ANA
+Exponential Smoothing Method. This was also the best exponential
+smoothing method for the global land average temperature time series
+that we have previously seen.
+
+It is important to highlight that the level and seasonality ETS
+components differ drastically from continent to continent. Africa, South
+America and Oceania have a level above 20. Whereas Europe, Asia and
+North America have a level below 10. This is obviously related with the
+fact that temperatures in the latter three continents are significantly
+lower than in the former three. Besides that, there seems to be a much
+higher seasonal variation in Europe, Asia and North America than in
+Africa, Oceania and South America.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit\_continents }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"8 years"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{autoplot}\NormalTok{(land\_continents) }\SpecialCharTok{+} \FunctionTok{facet\_grid}\NormalTok{(Country}\SpecialCharTok{\textasciitilde{}}\NormalTok{., }\AttributeTok{scales =} \StringTok{"free\_y"}\NormalTok{, }\AttributeTok{shrink =}\NormalTok{ T)  }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Land Average Temperature ETS Forecast by Continent"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 43"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-31-1.pdf} The
+forecasts applied to each time series for each continent clearly differ
+significantly from one-another. The seasonal differences that were
+previously analyzed are also visible in the ETS forecast since only
+North America, Europe and Asia have forecasts of negative or close to
+negative temperatures. Additionally, it is important to highlight that
+Africa and South America seem to have a larger confidence interval in
+its forecast than other continents. Hence, the forecast for these
+continents seem to be less precise than for the others.
+
+Lastly, the residuals for the forecast of each continent must be
+plotted.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit\_continents }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{augment}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{autoplot}\NormalTok{(.resid) }\SpecialCharTok{+} \FunctionTok{facet\_grid}\NormalTok{(Country}\SpecialCharTok{\textasciitilde{}}\NormalTok{., }\AttributeTok{scales =} \StringTok{"free\_y"}\NormalTok{, }\AttributeTok{shrink =}\NormalTok{ T) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Residuals from ANA ETS per Continent"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 44"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-32-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit\_continents }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{augment}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{ACF}\NormalTok{(.resid) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{autoplot}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_grid}\NormalTok{(Country}\SpecialCharTok{\textasciitilde{}}\NormalTok{., }\AttributeTok{scales =} \StringTok{"free\_y"}\NormalTok{, }\AttributeTok{shrink =}\NormalTok{ T) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Residuals from ANA ETS per Continent"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"fig. 44"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-32-2.pdf} In a
+similar fashion to what was seen for the Global Land Average Temperature
+forecast residuals, the residuals for the continents also seem to follow
+white noise. Only North America, Europe and Asia have two barely
+significant lags in a total of 24. On the other hand, Oceania and South
+America have 1, whereas Africa has none. Interestingly enough, the
+continents that had two significant lags are the ones with a higher
+seasonal variation. Regardless, this means that there is statistical
+evidence that indicates that these residuals do follow white noise.
+
+ARIMA (part 5)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(patchwork)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'patchwork' was built under R version 4.1.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%}  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{,  }\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}} \DecValTok{1899}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+\FunctionTok{autoplot}\NormalTok{(LandAvgTemp)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-33-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%}  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{,  }\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}} \DecValTok{1899}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+\FunctionTok{autoplot}\NormalTok{(LandOceanAvgTemp)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-33-2.pdf} We
+plotted the time series of interest in view of beginning the process to
+fit ARIMA models to the data. Both showed high seasonality and some
+moderate positive linear trend.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%}  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{,  }\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}} \DecValTok{1899}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+\FunctionTok{autoplot}\NormalTok{(LandAvgTemp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{difference}\NormalTok{(}\DecValTok{12}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-34-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%}  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{,  }\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}} \DecValTok{1899}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+\FunctionTok{autoplot}\NormalTok{(LandOceanAvgTemp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{difference}\NormalTok{(}\DecValTok{12}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-34-2.pdf}
+After differencing to remove the seasonal trend, these looked far more
+stationary.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{,  }\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}} \DecValTok{1899}\NormalTok{)  }\SpecialCharTok{\%\textgreater{}\%}\FunctionTok{mutate}\NormalTok{(}\AttributeTok{diff\_lat =}\NormalTok{ (}\FunctionTok{difference}\NormalTok{(LandAvgTemp, }\DecValTok{12}\NormalTok{)))}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{features}\NormalTok{(diff\_lat, unitroot\_pp)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 3
+##   Country pp_stat pp_pvalue
+##   <chr>     <dbl>     <dbl>
+## 1 Global    -26.5      0.01
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{,  }\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}} \DecValTok{1899}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{diff\_lat =}\NormalTok{ (}\FunctionTok{difference}\NormalTok{(LandAvgTemp, }\DecValTok{12}\NormalTok{))) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{features}\NormalTok{(diff\_lat, unitroot\_kpss)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 3
+##   Country kpss_stat kpss_pvalue
+##   <chr>       <dbl>       <dbl>
+## 1 Global     0.0448         0.1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{,  }\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}} \DecValTok{1899}\NormalTok{)  }\SpecialCharTok{\%\textgreater{}\%}\FunctionTok{mutate}\NormalTok{(}\AttributeTok{diff\_lat =}\NormalTok{ (}\FunctionTok{difference}\NormalTok{(LandOceanAvgTemp, }\DecValTok{12}\NormalTok{)))}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{features}\NormalTok{(diff\_lat, unitroot\_pp)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 3
+##   Country pp_stat pp_pvalue
+##   <chr>     <dbl>     <dbl>
+## 1 Global    -19.0      0.01
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{,  }\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}} \DecValTok{1899}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{diff\_lat =}\NormalTok{ (}\FunctionTok{difference}\NormalTok{(LandOceanAvgTemp, }\DecValTok{12}\NormalTok{))) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{features}\NormalTok{(diff\_lat, unitroot\_kpss)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 3
+##   Country kpss_stat kpss_pvalue
+##   <chr>       <dbl>       <dbl>
+## 1 Global     0.0747         0.1
+\end{verbatim}
+
+First we wanted to check for any necessary differencing or box-cox
+transformations before moving into ARIMA modelling. For both series, the
+variance appeared to be very stable, so we did not feel that there was
+any need for a log transformation. We have already mentioned that there
+was high seasonality in the data, which is no surprise as it is to do
+with weather. To handle this, we first differenced both series at lag
+12. The positive linear trend was very weak but still existed in the
+data; we had to decide whether it was necessary to difference it out or
+not. We used some tests to help us make the decision; the pp and the
+kpss tests. For both series, the pp test had a p-value of 0.01,
+rejecting H0 of a unit root, and the kpss test had a p-value of 0.1, not
+rejecting H0 that there was not a unit root. The tests agreed that an
+extra difference to remove unit root was not necessary for either
+series.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#create variables for seasonally differenced data}
+\NormalTok{z1 }\OtherTok{\textless{}{-}}\NormalTok{ GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{,  }\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}} \DecValTok{1899}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{diff1 =} \FunctionTok{difference}\NormalTok{(LandAvgTemp, }\DecValTok{12}\NormalTok{))}
+
+\NormalTok{z2 }\OtherTok{\textless{}{-}}\NormalTok{ GlobalCountryTemp }\SpecialCharTok{\%\textgreater{}\%}  \FunctionTok{filter}\NormalTok{(Country}\SpecialCharTok{==}\StringTok{"Global"}\NormalTok{,  }\FunctionTok{year}\NormalTok{(Date) }\SpecialCharTok{\textgreater{}} \DecValTok{1899}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{diff2 =} \FunctionTok{difference}\NormalTok{(LandOceanAvgTemp, }\DecValTok{12}\NormalTok{)) }
+\end{Highlighting}
+\end{Shaded}
+
+The next step was to examine the sample autocorrelation and partial
+autocorrelation plots, and use them to try and make inference about
+possible arima models to fit. For both series, the sacf plot had a
+decaying sine wave and the pacf had a fast decay, with lag 3 being the
+last significant value. These both suggested that an ARMA(3,0) model be
+a good option to try. However, there were some spikes later on in the
+pacf plot around lag 12 which implied that the simple ARMA may have
+problems.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{z1 }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{gg\_tsdisplay}\NormalTok{(diff1, }\AttributeTok{plot\_type =} \StringTok{\textquotesingle{}partial\textquotesingle{}}\NormalTok{, }\AttributeTok{lag\_max =} \DecValTok{15}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-37-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{z2 }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{gg\_tsdisplay}\NormalTok{(diff2, }\AttributeTok{plot\_type =} \StringTok{\textquotesingle{}partial\textquotesingle{}}\NormalTok{, }\AttributeTok{lag\_max =} \DecValTok{15}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-37-2.pdf} For
+the Land temperature series, we trained the following models; an
+ARMA(3,0), ARMA(2,0), ARIMA(1,1) and the optimal model from R given by
+the ARIMA built in function. We compared these models using the tidy
+function, showing a combined AIC, AICc and BIC comparison, and then just
+with the AICc for simplicity. We found that the best model was by far
+the SARIMA(4,0,0)(2,0,0) model, with an AICc of 863.7; a far lower score
+than that of the ARMA(3,0) which had an AICc of 1451.9.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fitting\_land }\OtherTok{\textless{}{-}}\NormalTok{ z1 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}
+        \AttributeTok{ar3 =} \FunctionTok{ARIMA}\NormalTok{(diff1 }\SpecialCharTok{\textasciitilde{}} \FunctionTok{pdq}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{PDQ}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)),}
+        \AttributeTok{ar2 =} \FunctionTok{ARIMA}\NormalTok{(diff1 }\SpecialCharTok{\textasciitilde{}} \FunctionTok{pdq}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{PDQ}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)), }
+        \AttributeTok{arma11 =} \FunctionTok{ARIMA}\NormalTok{(diff1 }\SpecialCharTok{\textasciitilde{}} \FunctionTok{pdq}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{PDQ}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)), }
+        \AttributeTok{auto1 =} \FunctionTok{ARIMA}\NormalTok{(diff1)}
+\NormalTok{        )}
+\NormalTok{fitting\_land }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tidy}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 11 x 7
+##    Country .model term  estimate std.error statistic   p.value
+##    <chr>   <chr>  <chr>    <dbl>     <dbl>     <dbl>     <dbl>
+##  1 Global  ar3    ar1     0.310     0.0269     11.6  1.53e- 29
+##  2 Global  ar3    ar2     0.115     0.0280      4.12 3.97e-  5
+##  3 Global  ar3    ar3     0.0723    0.0269      2.69 7.26e-  3
+##  4 Global  ar2    ar1     0.320     0.0267     12.0  1.14e- 31
+##  5 Global  ar2    ar2     0.138     0.0267      5.18 2.51e-  7
+##  6 Global  auto1  ar1     0.312     0.0270     11.6  1.12e- 29
+##  7 Global  auto1  ar2     0.128     0.0282      4.54 5.99e-  6
+##  8 Global  auto1  ar3     0.0470    0.0283      1.66 9.66e-  2
+##  9 Global  auto1  ar4     0.0781    0.0271      2.88 4.00e-  3
+## 10 Global  auto1  sar1   -0.701     0.0260    -27.0  2.54e-129
+## 11 Global  auto1  sar2   -0.302     0.0259    -11.6  6.64e- 30
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fitting\_land }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{glance}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{arrange}\NormalTok{(AICc)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 9
+##   Country .model sigma2 log_lik   AIC  AICc   BIC ar_roots   ma_roots 
+##   <chr>   <chr>   <dbl>   <dbl> <dbl> <dbl> <dbl> <list>     <list>   
+## 1 Global  auto1   0.107   -425.  864.  864.  900. <cpl [28]> <cpl [0]>
+## 2 Global  ar3     0.166   -722. 1452. 1452. 1473. <cpl [3]>  <cpl [0]>
+## 3 Global  ar2     0.166   -726. 1457. 1457. 1473. <cpl [2]>  <cpl [0]>
+\end{verbatim}
+
+For the Land and Ocean series, we obtained similar results when model
+selecting. The best ARMA model was again the ARMA(3,0), with an AICc of
+-1524.2, however this was greatly bettered by the SARIMA(4,0,0)(2,0,0)
+which had an AICc of -2120.3.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fitting\_land\_ocean }\OtherTok{\textless{}{-}}\NormalTok{ z2 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{model}\NormalTok{(}
+        \AttributeTok{ar3 =} \FunctionTok{ARIMA}\NormalTok{(diff2 }\SpecialCharTok{\textasciitilde{}} \FunctionTok{pdq}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{PDQ}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)),}
+        \AttributeTok{ar2 =} \FunctionTok{ARIMA}\NormalTok{(diff2 }\SpecialCharTok{\textasciitilde{}} \FunctionTok{pdq}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{PDQ}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)), }
+        \AttributeTok{arma11 =} \FunctionTok{ARIMA}\NormalTok{(diff2 }\SpecialCharTok{\textasciitilde{}} \FunctionTok{pdq}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{PDQ}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)), }
+        \AttributeTok{auto1 =} \FunctionTok{ARIMA}\NormalTok{(diff2)}
+\NormalTok{        )}
+\NormalTok{fitting\_land\_ocean }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tidy}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 11 x 7
+##    Country .model term  estimate std.error statistic   p.value
+##    <chr>   <chr>  <chr>    <dbl>     <dbl>     <dbl>     <dbl>
+##  1 Global  ar3    ar1     0.466     0.0269     17.4  3.28e- 61
+##  2 Global  ar3    ar2     0.194     0.0292      6.64 4.61e- 11
+##  3 Global  ar3    ar3     0.0691    0.0269      2.57 1.04e-  2
+##  4 Global  ar2    ar1     0.482     0.0262     18.4  1.19e- 67
+##  5 Global  ar2    ar2     0.227     0.0263      8.64 1.47e- 17
+##  6 Global  auto1  ar1     0.477     0.0269     17.7  2.66e- 63
+##  7 Global  auto1  ar2     0.202     0.0298      6.77 1.93e- 11
+##  8 Global  auto1  ar3     0.0541    0.0298      1.81 7.03e-  2
+##  9 Global  auto1  ar4     0.0752    0.0271      2.77 5.66e-  3
+## 10 Global  auto1  sar1   -0.711     0.0260    -27.4  3.41e-132
+## 11 Global  auto1  sar2   -0.315     0.0258    -12.2  1.08e- 32
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fitting\_land\_ocean }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{glance}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{arrange}\NormalTok{(AICc)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 9
+##   Country .model sigma2 log_lik    AIC   AICc    BIC ar_roots   ma_roots 
+##   <chr>   <chr>   <dbl>   <dbl>  <dbl>  <dbl>  <dbl> <list>     <list>   
+## 1 Global  auto1  0.0124   1067. -2120. -2120. -2084. <cpl [28]> <cpl [0]>
+## 2 Global  ar3    0.0192    766. -1524. -1524. -1503. <cpl [3]>  <cpl [0]>
+## 3 Global  ar2    0.0192    763. -1520. -1520. -1504. <cpl [2]>  <cpl [0]>
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sarima\_land }\OtherTok{\textless{}{-}}\NormalTok{ z1 }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{model}\NormalTok{(}\AttributeTok{arima =} \FunctionTok{ARIMA}\NormalTok{(diff1))}
+\NormalTok{arima\_land }\OtherTok{\textless{}{-}}\NormalTok{ z1 }\SpecialCharTok{\%\textgreater{}\%}  \FunctionTok{model}\NormalTok{(}\AttributeTok{arima =} \FunctionTok{ARIMA}\NormalTok{(diff1 }\SpecialCharTok{\textasciitilde{}} \FunctionTok{pdq}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{PDQ}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{))) }
+\NormalTok{sarima\_land }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{gg\_tsresiduals}\NormalTok{(}\AttributeTok{lag\_max=}\DecValTok{15}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-40-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{augment}\NormalTok{(sarima\_land) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{features}\NormalTok{(.resid, ljung\_box, }\AttributeTok{lag =} \DecValTok{10}\NormalTok{, }\AttributeTok{dof =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 4
+##   Country .model lb_stat lb_pvalue
+##   <chr>   <chr>    <dbl>     <dbl>
+## 1 Global  arima     9.19     0.240
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{arima\_land }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{gg\_tsresiduals}\NormalTok{(}\AttributeTok{lag\_max=}\DecValTok{15}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-40-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{augment}\NormalTok{(arima\_land) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{features}\NormalTok{(.resid, ljung\_box, }\AttributeTok{lag =} \DecValTok{10}\NormalTok{, }\AttributeTok{dof =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 4
+##   Country .model lb_stat lb_pvalue
+##   <chr>   <chr>    <dbl>     <dbl>
+## 1 Global  arima     4.99     0.661
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sarima\_land\_ocean }\OtherTok{\textless{}{-}}\NormalTok{ z2 }\SpecialCharTok{\%\textgreater{}\%}  \FunctionTok{model}\NormalTok{(}\AttributeTok{arima =} \FunctionTok{ARIMA}\NormalTok{(diff2)) }
+\NormalTok{arima\_land\_ocean }\OtherTok{\textless{}{-}}\NormalTok{ z2 }\SpecialCharTok{\%\textgreater{}\%}  \FunctionTok{model}\NormalTok{(}\AttributeTok{arima =} \FunctionTok{ARIMA}\NormalTok{(diff2 }\SpecialCharTok{\textasciitilde{}} \FunctionTok{pdq}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{PDQ}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{))) }
+
+
+\NormalTok{sarima\_land\_ocean }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{gg\_tsresiduals}\NormalTok{(}\AttributeTok{lag\_max=}\DecValTok{15}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-41-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{augment}\NormalTok{(sarima\_land\_ocean) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{features}\NormalTok{(.resid, ljung\_box, }\AttributeTok{lag =} \DecValTok{10}\NormalTok{, }\AttributeTok{dof =} \DecValTok{3}\NormalTok{)}\CommentTok{\# as there are 3 parameters}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 4
+##   Country .model lb_stat lb_pvalue
+##   <chr>   <chr>    <dbl>     <dbl>
+## 1 Global  arima     6.39     0.495
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{arima\_land\_ocean }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{gg\_tsresiduals}\NormalTok{(}\AttributeTok{lag\_max=}\DecValTok{15}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-41-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{augment}\NormalTok{(arima\_land\_ocean) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{features}\NormalTok{(.resid, ljung\_box, }\AttributeTok{lag =} \DecValTok{10}\NormalTok{, }\AttributeTok{dof =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 4
+##   Country .model lb_stat lb_pvalue
+##   <chr>   <chr>    <dbl>     <dbl>
+## 1 Global  arima     7.73     0.357
+\end{verbatim}
+
+We decided to compare the two models further by checking that the
+residuals exhibited white noise. For both series we obtained similar
+results; the residuals showed white noise behaviour in their plots,
+however the autocorrelation function for the residuals of the ARMA(3,0)
+showed a strong seasonal component whereas this was far less prominent
+in the SARIMA model. The S part of the SARIMA model deals with this
+seasonality as expected, further confirming that this should be the
+model to use for forecasting.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sarima\_land }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"8 years"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{autoplot}\NormalTok{(}\FunctionTok{filter}\NormalTok{(z1, }\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}}\DecValTok{2000}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-42-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sarima\_land\_ocean }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{forecast}\NormalTok{(}\AttributeTok{h =} \StringTok{"8 years"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{autoplot}\NormalTok{(}\FunctionTok{filter}\NormalTok{(z2, }\FunctionTok{year}\NormalTok{(Date)}\SpecialCharTok{\textgreater{}}\DecValTok{2000}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project_files/figure-latex/unnamed-chunk-42-2.pdf}
+
+Lastly, to complete the ARIMA box-jenkins process we plotted the
+forecast for 8 years in advance for the two series, obtaining what
+looked like to be very precise forecasts, especially on the 4 year
+margin.
+
+\end{document}
