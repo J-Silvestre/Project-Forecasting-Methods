@@ -132,7 +132,7 @@ oceania <- c('Australia', 'Fiji', 'Kiribati', 'Marshall Islands',
              'Samoa', 'Tonga')
 ```
 
-## 1 Introduction
+## 1. Introduction
 
 In this work, the group is going to focus on analyzing the temperature changes over the last three centuries, from 1800 to 2015. We decide to work with this variable since climate changes and global warming are one of the biggest issues that the countries face nowadays.
 
@@ -140,7 +140,7 @@ In this work, the group is going to focus on analyzing the temperature changes o
 
 ```
 
-## 2 Time series graphics
+## 2. Time series graphics
 
 In this section the group will explore the dataset by ploting time series graphics and analyzing them, this section is really important as it provides the group an overall view of the temperature changing through the time and allows the group to identify possible patterns, such as trends, cycles and seasonalities during the time.
 
@@ -285,11 +285,11 @@ Fig11 <-GlobalCountryTemp %>% filter(Country=="Global") %>% ACF(LandAvgTemp,lag_
        subtitle = "12 month lag",
        caption = "fig. 11")
 
-Fig12 <-GlobalCountryTemp %>% 
+Fig13 <-GlobalCountryTemp %>% 
   filter(Country %in% countries2)%>% ACF(LandAvgTemp,lag_max = 12) %>% autoplot()+
   labs(title = "Autocorrelation in LandAvgTemp - Country",
        subtitle = "12 month lag",
-       caption = "fig. 12")
+       caption = "fig. 13")
 
 #transforming it into yearly data since there is no seasonality
 #showing the first 48 years
@@ -300,15 +300,15 @@ uncertainty<- GlobalCountryTemp %>% filter(Country=="Global") %>%
   select(-Date) %>%
   summarise(LandAvgTempUnc= mean(LandAvgTempUnc))
 
-Fig13 <-uncertainty %>%as_tsibble(index=Year) %>% filter(Year> "1752") %>% 
+Fig12 <-uncertainty %>%as_tsibble(index=Year) %>% filter(Year> "1752") %>% 
   ACF(LandAvgTempUnc, lag_max = 48) %>% autoplot()+
   labs(title = "Autocorrelation in LandAvgTempUnc - Global",
        subtitle = "48 years lag",
-       caption = "fig. 13")
+       caption = "fig. 12")
 
-(Fig11 / Fig13)
+(Fig11 / Fig12)
 
-Fig12
+Fig13
 ```
 
 By looking at the autocorrelation plots, regarding the Land Average Temperature (see figure 11 and 12), we used a lag of 12 months since it's more appropriate for monthly data and it captures all the months of one year. It clearly shows that autocorrelation exists between the time series and its lags period. We can also spot that the autocorrelation peaks on month 6 and 12 which correspond to the highest and lowest temperature peeks of the seasonality, respectively.
@@ -976,11 +976,14 @@ fit_continents %>%
 
 In a similar fashion to what was seen for the Global Land Average Temperature forecast residuals, the residuals for the continents also seem to follow white noise. Only North America, Europe and Asia have two barely significant lags in a total of 24. On the other hand, Oceania and South America have 1, whereas Africa has none. Interestingly enough, the continents that had two significant lags are the ones with a higher seasonal variation. Regardless, this means that there is statistical evidence that indicates that these residuals do follow white noise.
 
-ARIMA (part 5)
+# 5. ARIMA 
 
 ```{r}
 GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
-autoplot(LandAvgTemp)
+autoplot(LandAvgTemp) +labs(title = "Land Average Temperature",
+       subtitle = "Drift method based on seasonal adjusted data",
+       y="LandOceanAvgTemp Cº",
+       caption = "fig. 37")
 GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
 autoplot(LandOceanAvgTemp)
 
