@@ -19,7 +19,7 @@ library(tidyverse)
 library(patchwork)
 #install.packages("seasonal")
 #working directory for github
-setwd("~/Github/Project-Forecasting-Methods")
+setwd("~/Project-Forecasting-Methods")
 
 #code to modify our original data files so we could merge them
 #--------------------------------------------- 
@@ -134,7 +134,7 @@ oceania <- c('Australia', 'Fiji', 'Kiribati', 'Marshall Islands',
 
 ## 1. Introduction
 
-In this work, the group is going to focus on analyzing the temperature changes over the last three centuries, from 1800 to 2015. We decide to work with this variable since climate changes and global warming are one of the biggest issues that the countries face nowadays.
+In this work, the group is going to focus on analyzing the temperature changes over the last three centuries, from 1800 to 2015. We decide to work with this variable since climate change and global warming are one of the biggest issues that the world faces nowadays.
 
 ```{r}
 
@@ -142,27 +142,28 @@ In this work, the group is going to focus on analyzing the temperature changes o
 
 ## 2. Time series graphics
 
-In this section the group will explore the dataset by ploting time series graphics and analyzing them, this section is really important as it provides the group an overall view of the temperature changing through the time and allows the group to identify possible patterns, such as trends, cycles and seasonalities during the time.
+In this section, the group explores the dataset by creating time series graphics and analyzing them. This part is very important as it provides the group with an overall view of temperature changes over time and allows them to identify possible patterns such as trends, cycles and seasonal variation over time.
 
 ### General overview of the dataset
 
 ```{r, warning = FALSE}
 Fig1 <- GlobalTemp %>% autoplot(LandOceanAvgTemp)+
   geom_line(color="blue")+
-  labs(title = "Land & Ocean Temperature - Global",
+  labs(title = "Gloabal Land & Ocean Temperature",
        subtitle = "Average",
        y="LandOceanAvgTemp Cº",
        caption = "fig. 1")
 
 Fig2 <- GlobalCountryTemp %>% filter(Country == "Brazil") %>% autoplot(LandAvgTemp)+
   geom_line(color="green")+
-  labs(title = "Land Temperature in Brazil - Since 1850",
+  labs(title = "Land Temperature in Brazil",
        subtitle="Average",
        y="LandAvgTemp Cº",
        caption = "fig. 2")
 
 Fig3 <- GlobalCountryTemp %>% filter(Country=="Global") %>% autoplot(LandAvgTempUnc)+
-  labs(title = "Land Average temperature Uncertainty - Evolution through time",
+  labs(title = "Land Temperature Uncertainty - Evolution over time",
+       subtitle="Average",
        caption = "fig. 3")
 
 (Fig1 | Fig2 ) / Fig3
@@ -170,12 +171,12 @@ Fig3 <- GlobalCountryTemp %>% filter(Country=="Global") %>% autoplot(LandAvgTemp
 
 The dataset provides three different views that can be combined and analysed in multiple different ways.
 
-The first view is the Global Land & Ocean average temperature (see fig. 1), it provides an interesting sight on how the combination of both land and ocean temperature has been changing since 1850.
+The first view is the global land & ocean average temperature (see fig. 1). It provides an interesting overview on how the combination of both land and ocean temperature has been changing since 1850.
 
-The central view of the dataset is the Land temperature analysis, which can be divided into two parts:
+The central view of the dataset is the land temperature analysis, which can be divided into two parts:
 
 -   A global analysis that contains average, max and min temperature values
--   A more narrow analysis by country that allows us to observe particular countries average temperatures over the years. Note that the years in analyse may differ from country to country due to missing data in the dataset, especially for years before 1900. Figure 2 shows the time series of Land Temperature of Brazil.
+-   A more narrow analysis by country that allows us to observe particular average temperatures over the years by country. Note that the years analysed may differ from country to country due to missing data in the dataset, especially for years before 1900. Figure 2 shows the time series of Land Temperature of Brazil to illustrate the time series of one country as an example.
 
 The final view is related with the uncertainty of the average temperature values and how it has changed over time (see fig. 3).
 
@@ -201,11 +202,10 @@ GlobalCountryTemp %>% filter(Country %in% countries) %>% filter(year(Date)>1984)
   theme(legend.position = "right")
 ```
 <br>
-! @Rodrigo: You should also add a small description for fig. 4. What can we see?
 
-Figure 5 shows the average temperature in the last 30 years of three selected countries and "global". As we start looking at these time series plots we can see that the temperature behaves differently according to the countries analysed, some countries belong to hot regions like Mali and even Portugal and therefore have higher temperatures while other countries like Greenland are in more northern zones and have colder temperatures. The global temperature is nothing else but the weighted average of the temperature of all countries in the original dataset and therefore it appears on the "middle" of the time series graph. The same reasoning can be applied to the max and min global temperature in figure 4.
+Figure 5 shows the average temperature in the last 30 years of three selected countries and "global". By looking at these time series, we can see that the temperature behaves differently depending on the country analysed. Some countries belong to hot regions like Mali and even Portugal and therefore have higher temperatures while other countries like Greenland are in more northern zones and have colder temperatures. The global temperature is nothing more than the weighted average of the temperature of all countries in the original dataset and therefore it appears in the "middle" of the time series graph. The same reasoning can be applied to the max and min global temperature in figure 4.
 
-When we take a closer look to these graphs it's possible to start observing some seasonal and trending patterns. Regarding the trending patterns, we can clearly see a very smooth crescent trend when it comes to land and ocean temperatures (fig. 1), which makes sense as a result of a direct effect of the global warming in the temperature, making it rise. On the other hand, there is a very clear decrescent trending on the temperature uncertainty (fig. 3), which makes sense from a point where as the time pass, the practices to measure temperature are better and more precise.
+When we take a closer look to these graphs it's possible to start observing some seasonal and trending patterns. Regarding the trending patterns, we can clearly see a very smooth crescent trend when it comes to land and ocean temperatures (fig. 1), which makes sense as a result of a direct effect of the global warming in the temperature, making it rise. On the other hand, there is a clear downward trend on the temperature uncertainty (fig. 3), which makes sense as temperature measurement methods become better and more accurate over time.
 
 Looking now at the seasonal pattern, when we highlight the two graphs starting from 1985 onwards (fig. 4 and 5), it becomes explicit that there is a seasonal behavior every year. There are four seasons (winter, spring, summer and autumn) and we can clearly see that each of those has its temperature characteristics.
 
@@ -234,7 +234,7 @@ Fig7<- GlobalCountryTemp %>%
 Fig6 + Fig7
 ```
 
-These graphs (figure 5 and 6) give us some very interesting insights on the previous spotted seasonality.
+The two graphs above give us some interesting insights into the seasonality observed previously.
 
 We can clearly see that in winter months (December, January and February), the temperature reaches the lowest values while in summer months (June, July, August), the temperature reaches its peak. Besides showing the seasonality, this graph clearly shows the crescent trending as the years go by. The lines that represent the years keep going up in the graph.
 
