@@ -218,7 +218,7 @@ In this section, the objective is to focus on the seasonal and trending pattern 
 Fig6 <-GlobalCountryTemp %>% 
   filter(Country=="Global") %>% 
   gg_season(LandAvgTemp)+
-  labs(title = "Global land temperature seasonality",
+  labs(title = "Global Land Temperature Seasonality",
        y="LandAvgTemp Cº",
        color="Years",
        caption = "fig. 6")
@@ -226,7 +226,7 @@ Fig6 <-GlobalCountryTemp %>%
 Fig7<- GlobalCountryTemp %>% 
   filter(Country=="Global") %>% 
   gg_season(LandOceanAvgTemp)+
-  labs(title = "Global land & ocean temp. seasonality",
+  labs(title = "Global Land & Ocean Temp. Seasonality",
        y="LandOceanAvgTemp Cº",
        color="Years",
        caption = "fig. 7")
@@ -236,7 +236,7 @@ Fig6 + Fig7
 
 The two graphs above give us some interesting insights into the seasonality observed previously.
 
-We can clearly see that in winter months (December, January and February), the temperature reaches the lowest values while in summer months (June, July, August), the temperature reaches its peak. Besides showing the seasonality, this graph clearly shows the crescent trending as the years go by. The lines that represent the years keep going up in the graph.
+We can clearly see that in winter months (December, January and February), the temperature reaches the lowest values while in summer months (June, July, August), the temperature reaches its peak. Besides showing the seasonality, this graph shows the crescent trending as the years go by. The lines that represent the years keep going up in the graph.
 
 Another very important aspect that we can spot is that in years around 1800 the values have some kind of spikes, this results from the fact that there was a big uncertainty around the temperature in these years and as time pass by, the uncertainty decreases and the lines become more stable. The land and ocean seasonality graph clearly shows that difference as it doesn't have values below 1900.
 
@@ -245,30 +245,30 @@ Another very important aspect that we can spot is that in years around 1800 the 
 GlobalCountryTemp %>% 
   filter(Country=="Global") %>% 
   gg_subseries(LandAvgTemp)+
-  labs(title = "Subseries - monthly global analysis",
+  labs(title = "Subseries - Monthly Global Analysis",
        y="LandAvgTemp Cº",
        caption = "fig. 8")
 
 GlobalCountryTemp %>% 
   filter(Country %in% countries2) %>% 
   gg_subseries(LandAvgTemp)+
-  labs(title = "Subseries - monthly analysis",
+  labs(title = "Subseries - Monthly Analysis",
          y="LandAvgTemp Cº",
        caption = "fig. 9")
 
 GlobalCountryTemp %>% 
   filter(Country %in% countries3) %>% 
   gg_subseries(LandAvgTemp)+
-  labs(title = "Subseries - monthly analysis",
+  labs(title = "Subseries - Monthly Analysis",
          y="LandAvgTemp Cº",
        caption = "fig. 10")
 
 
 ```
 
-The subseries analysis also provides some more details regarding the seasonality and trending.
+The subseries analysis also provides some more details about seasonality and trend.
 
-Especially figure 8 shows clearly high discrepancies in early 1800 temperature values due to the high uncertainty. However, it is still clear to see that there is a growing trend, at a global perspective.
+Especially figure 8 shows clearly high discrepancies in early 1800 temperature values due to the high uncertainty. However, it is still clear that the trend is increasing globally.
 
 The country subseries analysis in figure 9 and 10 reveals again a strong seasonality. However, it also shows a new perspective regarding the seasonality. Some countries have their seasonality "swaped" when compared to the global seasonality. This is due to the fact that the temperature in the countries of the northern hemisphere is the opposite of that in the countries of the southern hemisphere: If it's summer in the north (June, July, August), it's winter in the south. Nevertheless we can still identify the growing trend of the temperature in most countries.
 
@@ -311,15 +311,15 @@ Fig12 <-uncertainty %>%as_tsibble(index=Year) %>% filter(Year> "1752") %>%
 Fig13
 ```
 
-By looking at the autocorrelation plots, regarding the Land Average Temperature (see figure 11 and 12), we used a lag of 12 months since it's more appropriate for monthly data and it captures all the months of one year. It clearly shows that autocorrelation exists between the time series and its lags period. We can also spot that the autocorrelation peaks on month 6 and 12 which correspond to the highest and lowest temperature peeks of the seasonality, respectively.
+By looking at the autocorrelation plots, regarding the Land Average Temperature (see figure 11 and 12), we used a lag of 12 months since it's more appropriate for monthly data and it captures all the months of one year. It clearly shows that autocorrelation exists between the time series and its lags period. We can also spot that the autocorrelation peaks in months 6 and 12, which correspond to the highest and lowest temperature peaks of the seasonality, respectively.
 
-For the autocorrelation analysis of Land Average temperature Uncertainty (see figure 13), we first changed the monthly data to yearly data as there is no seasonality and it helps on the visualization. Moreover, we defined a lag period of 48 years which is about 1/3 of our total data. We can observe that it follows the typical trend behavior: Small lags have larger values as they are close to the previous value and tend to get smaller as the time goes by.
+For the autocorrelation analysis of land average temperature uncertainty (see figure 13), we first changed the monthly data to yearly data as there is no seasonality and it helps with the visualization. Moreover, we defined a lag period of 48 years which is about 1/3 of our total data. We can observe that it follows the typical trend behavior: Small lags have larger values as they are close to the previous value and tend to get smaller as the time goes by.
 
 Since our autocorrelation values are mostly above the significant interval our time series don't follow "white noise".
 
 # 3. Time Series Decomposition
 
-First of all, we are replacing missing values, by the last available value for that variable (in a up-down manner), so that we keep our time series without missing gaps, to be able to decompose it.
+First of all, we replaced missing values, by the last available value for that variable (in an up-down manner), so that we keep our time series without missing gaps, to be able to decompose it.
 
 ```{r, warning = FALSE}
 
@@ -331,7 +331,7 @@ GlobalCountryTemp %>%
 
 ```
 
-Now we are going to see if the series need adjustments. As we can see in the graphs below, our variation does not change with the level of the time series. So, we will not use mathematical transformations.
+Now, we are going to see if the series need adjustments. As we can see in the graphs below, our variation does not change with the level of the time series. So, we will not use mathematical transformations.
 
 ```{r, warning = FALSE}
 
@@ -363,7 +363,7 @@ Fig14 + Fig15 / Fig16
 
 ```
 
-As the variations around the trend are of similar magnitudes over time, we will use an Additive Decomposition. There is a consistent up and down wave regarding the seasonality, and the trend is going upward, also in a consistent way, although slowly over time. There is no exponential growth.
+As the variations around the trend are of similar magnitudes over time, we will use an Additive Decomposition. There are constant ups and downs in terms of seasonality, and the trend is also steadily going upwards, although slowly over time. There is no exponential growth.
 
 ## Decomposing using Classical Decomposition
 
@@ -378,19 +378,19 @@ land_ocean_global_temp %>%
 
 classic_decmp %>%
   autoplot() +
-  labs(title = "Land and Ocean Global Temperature Classical Additive Decomposition", caption = "fig. 17")
+  labs(title = "Land and Ocean Global Temperature - Classical Additive Decomposition", caption = "fig. 17")
 
 classic_decmp %>%
   autoplot(random, color = '#ff668c') +
-  labs(title = "Variations not Captured by Classical Decomposition in Land and Ocean", caption = "fig. 18")
+  labs(title = "Variations not captured by Classical Decomposition in Land and Ocean", caption = "fig. 18")
 
 
 
 ```
 
-How is Classical Decomposition for our time series?
+**How does Classical Decomposition fit our time series?**
 
-As Classical Decomposition assumes that the seasonal component repeats from year to year, it fits reasonably in our time series, since temperatures as always higher in the Summer and lower in the Winter, and this pattern in kept.
+Since classical decomposition assumes that the seasonal component repeats from year to year, it fits well with our time series, as temperatures are always higher in summer and lower in winter and this pattern is maintained.
 
 Now, we will try to decompose the series into the Seasonal components, the Trend component and a Remainder, using STL Decomposition.
 
@@ -416,7 +416,7 @@ dec2 <- land_global_temp %>%
 
 ```
 
-Isolating the trend and the seasonal adjusted temperatures in a graph.
+We now isolate the trend and the seasonal adjusted temperatures in graphs.
 
 ```{r, warning = FALSE}
 
@@ -486,6 +486,8 @@ Looking at the remainder, there is no clear pattern. That is a sign that the STL
 
 ## Decomposing using SEATS Decomposition
 
+Now, we will try the X-13 ARIMA-SEATS Decomposition.
+
 ```{r, warning = FALSE}
 
 land_ocean_global_temp %>% 
@@ -499,6 +501,7 @@ autoplot(seats_dec) + labs(title = "Land and Ocean Global Temperature X-13 ARIMA
 **Did SEATS help?**
 
 The trend is smoother. It is easier to see that the trend is going up.
+
 
 ## Trend in different Continents
 
@@ -646,11 +649,12 @@ Fig28 + Fig29
 Fig30 + Fig31
 ```
 
-Analyzing trends on different continents, we can reach some conclusions:
+By analysing the trends on the different continents, we can draw some conclusions:
 
 It is important to make the distinction, that the trend over time is ranging from very different values from continent to continent. While in North America the temperatures are much colder in general, in Europe and Asia they are slight more moderate. In Oceania the temperatures are hotter, ranging always above 20Cº, but in Africa and South America the temperatures are alarmingly higher, especially in Africa where temperatures start at about 23ºC in 1860, and have already over-passed the 25ºC.
 
-In Africa and South America the trend is going upwards significantly, and much faster, compared to other continents. In Asia and North America, the trend is increasing, but more slowly than in other continents.
+In Africa and South America the trend is going upwards significantly, and much faster, compared to other continents. In Asia and North America, the trend is increasing, but more slowly than on other continents.
+
 
 ## Trend and Seasonal Strenght in different Countries and Continents
 
@@ -682,13 +686,16 @@ In the scatter plot above, we can evaluate the strength of the trends and season
 
 In all countries in the graph, the seasonal patterns are clearly strong (the majority with a seasonal strength higher than 0.7).
 
-In Europe, we can see countries are in a cluster with a very high seasonal strength (the differences in temperature according to months, are more pronounced) and lower trend strength (it is not going on an upward trend as much).
+In Europe, we can see countries are in a cluster with a very high seasonal strength (temperature differences by month are more pronounced) and lower trend strength (it is not going on an upward trend as much).
 
 In Asia the seasonal strength is very high in almost all plotted countries (above 0.85). Meaning the differences in temperatures in distinct seasons are very significant (colder winters and very hot summers/spring).
 
-In North America, the trend is very string in most of the countries, meaning temperatures are rising quite fast and significantly.
+In North America, the trend is very strong in most of the countries, meaning temperatures are rising quite fast and significantly.
+
 
 ## Subseries of Land and Ocean Global Temperature
+
+Moreover, on the next plot we can see that on average both the global land temperature and the global land and ocean temperature are much higher in summer months, compared to the rest, and much lower in January, February, and December. Interestingly in July and August the trend is going down. So in previous years, temperatures were higher in these months, compared to recent years.
 
 ```{r, warning = FALSE}
 
@@ -697,7 +704,6 @@ components(dec) %>% gg_subseries(season_year) +
 
 ```
 
-Moreover, on the next plot we can see that on average both the global land temperature and the global land and ocean temperature are much higher in Summer months, compared to the rest, and much lower in January, February, and December. Interestingly in July and August the trend is going down, so in previous years, temperatures were higher in these months, compared to recent years.
 
 ## 4. The forecaster’s toolbox
 
@@ -880,13 +886,14 @@ Fig38 / Fig39
 
 We have limited our time series to data from 1990 onwards, as we do not need data from 1850 onwards. In the two figures above we can see the residuals from the "Seasonal naïve method" and the ACF of the residuals from the "Seasonal naïve method". The ACF value is for some lags very low, but we can also see that there are several outliers. Therefore, we can't say that the residuals of our selected method looks like white noise. This means that none of the Benchmark method is optimal for our time series. However, the "Seasonal naïve method" seems to perform good with regard to the forecasting accuracy.
 
+
 ## 5. Exponential Smoothing
 
 The second to last topic in this report will focus entirely in applying Exponential Smoothing methods to the given time-series. Firstly, ETS forecasting will be applied to the global average temperatures, as well as land average temperatures for each continent. Secondly, an assessment of the forecast accuracy will be analyzed.
 
 ### Global Land Average Temperature
 
-Due to the strong presence of seasonality in our data, the most appropriate Exponential Smoothing methods would most likely be the ones with a seasonal component, such as Holt-Winters Additive Method or Holt-Winters Multiplicative Method. Besides that, a more simple ETS Method without a trend component could also be considered.Therefore, in this first step, these three exponential smoothing methods are applied.
+Due to the strong presence of seasonality in our data, the most appropriate Exponential Smoothing methods would most likely be the ones with a seasonal component, such as Holt-Winters Additive Method or Holt-Winters Multiplicative Method. Besides that, a more simpel ETS Method without a trend component could also be considered.Therefore, in this first step, these three exponential smoothing methods are applied.
 
 ```{r, warning = FALSE}
 global_temp <- 
@@ -909,7 +916,7 @@ fit_global_land %>%
   autoplot() + labs(title = "ETS Components", caption = "fig. 40")
 ```
 
-It seems that when the time series is limited from 1990 onward, the ideal exponential smoothing method is the one who does not include any trend (slope). Besides that, the ones that do include a trend (Holt-Winters Additive and Multiplicative Methods) seem to have a slope that is nearly equal to zero. The reasoning behind this is most likely related with the fact that although there is an increasing trend in temperature, this trend is quite small when we consider a time range from the 1990's onward. Therefore, the ideal forecasting method in this case, would be the "ANA" ETS, since this is the one that minimizes the AIC, AICc and BIC.
+It seems that when the time series is limited from 1990 onward, the ideal exponential smoothing method is the one which does not include any trend (slope). Besides that, the ones that do include a trend (Holt-Winters Additive and Multiplicative Methods) seem to have a slope that is nearly equal to zero. The reasoning behind this is most likely related with the fact that although there is an increasing trend in temperature, this trend is quite small when we consider a time range from the 1990's onward. Therefore, the ideal forecasting method in this case, would be the "ANA" ETS, since this is the one that minimizes the AIC, AICc and BIC.
 
 ```{r, warning = FALSE}
 fit_global_land %>% 
