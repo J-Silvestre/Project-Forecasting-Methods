@@ -134,12 +134,19 @@ oceania <- c('Australia', 'Fiji', 'Kiribati', 'Marshall Islands',
 
 ## 1. Introduction
 
-In this work, the group is going to focus on analyzing the temperature changes over the last three centuries, from 1800 to 2015. We decide to work with this variable since climate change and global warming are one of the biggest issues that the world faces nowadays.
+    In this work, the group is going to focus on analyzing the temperature changes over the last three centuries, from 1800 to 2015. We decide to work with this variable since climate change and global warming are one of the biggest issues that the world faces nowadays. With this work, we expect to acquire more knowledge about how temperature has behaved through the years, especially in this last century with the global warming. Understand how the pace of temperature is diferent among the countries and continents, identify seasonality and trending patterns and explore diferent forecasting aproaches in hopes to find the one the model that best suit our data and provides better accuracy.
+    
+    Our time series dataset has a range from around 1800 until 2015, and its monthly data, it has some NA's, especially on the earliest years of data available. The dataset provides us a land average temperature for every country and a global perspective with land average temperature, ocean and land average temperature and it's associated uncertainty value, it also provides the land max and min values. The dataset comes from Berkeley earth website which has compiled temperature records.
 
+Methodology missing
 ```{r}
-
+GlobalTemp
+GlobalCountryTemp %>% select(Date, Country, LandAvgTemp)
 ```
+<br>
 
+
+<br>
 ## 2. Time series graphics
 
 In this section, the group explores the dataset by creating time series graphics and analyzing them. This part is very important as it provides the group with an overall view of temperature changes over time and allows them to identify possible patterns such as trends, cycles and seasonal variation over time.
