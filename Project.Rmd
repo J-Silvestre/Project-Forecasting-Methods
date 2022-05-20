@@ -19,7 +19,7 @@ library(tidyverse)
 library(patchwork)
 #install.packages("seasonal")
 #working directory for github
-setwd("~/Project-Forecasting-Methods")
+#setwd("Github/Project-Forecasting-Methods")
 
 #code to modify our original data files so we could merge them
 #--------------------------------------------- 
@@ -1123,3 +1123,25 @@ sarima_land_ocean %>% forecast(h = "8 years") %>%
 ```
 
 Lastly, to complete the ARIMA box-jenkins process we plotted the forecast for 8 years in advance for the two series, obtaining what looked like to be very precise forecasts, especially on the 4 year margin.
+
+
+## 7. Conclusion
+
+```{r, warning = FALSE}
+z1 %>% 
+  filter(!is.na(LandAvgTemp)) %>%
+  slide_tsibble(.size = 120, .step = 12) %>% 
+  model(Seasonal_Naive = SNAIVE(LandAvgTemp),
+        ANA_ETS = ETS(LandAvgTemp ~ error("A") + trend("N") + season("A"))
+        ) %>% 
+  forecast(h = "4 years") %>% 
+  accuracy(z1)
+
+z1 %>% 
+  filter(!is.na(LandAvgTemp)) %>%
+  slide_tsibble(.size = 120, .step = 12) %>% 
+  model(auto1 = ARIMA(diff1)
+        ) %>% 
+  forecast(h = "4 years") %>% 
+  accuracy(z1)
+```
