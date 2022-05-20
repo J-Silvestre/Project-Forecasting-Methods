@@ -5,7 +5,9 @@ date: "01/05/2022"
 output:
   html_document:
     code_folding: hide
-  pdf_document: default
+    toc: true
+    toc_float:
+      smooth_scroll: false
 ---
 
 ```{r setup, include=FALSE}
@@ -18,8 +20,14 @@ library(fpp3)
 library(tidyverse)
 library(patchwork)
 #install.packages("seasonal")
+#install.packages("patchwork")
 #working directory for github
+
+#setwd("~/Project-Forecasting-Methods")
+setwd("~/GitHub/Project-Forecasting-Methods")
+
 #setwd("Github/Project-Forecasting-Methods")
+
 
 #code to modify our original data files so we could merge them
 #--------------------------------------------- 
@@ -134,11 +142,16 @@ oceania <- c('Australia', 'Fiji', 'Kiribati', 'Marshall Islands',
 
 ## 1. Introduction
 
-    In this work, the group is going to focus on analyzing the temperature changes over the last three centuries, from 1800 to 2015. We decide to work with this variable since climate change and global warming are one of the biggest issues that the world faces nowadays. With this work, we expect to acquire more knowledge about how temperature has behaved through the years, especially in this last century with the global warming. Understand how the pace of temperature is diferent among the countries and continents, identify seasonality and trending patterns and explore diferent forecasting aproaches in hopes to find the one the model that best suit our data and provides better accuracy.
-    
-    Our time series dataset has a range from around 1800 until 2015, and its monthly data, it has some NA's, especially on the earliest years of data available. The dataset provides us a land average temperature for every country and a global perspective with land average temperature, ocean and land average temperature and it's associated uncertainty value, it also provides the land max and min values. The dataset comes from Berkeley earth website which has compiled temperature records.
+In this work, the group will focus on the analysis of temperature changes over the last three centuries, from 1800 to 2015. We have chosen this variable because climate change and global warming are one of the biggest problems the world is facing today. With this project, we expect to gain more knowledge about how temperature has behaved over the years, especially in this last century with global warming. We aim to understand how temperature patterns differ across countries and continents, identify seasonal variations and trend patterns. Moreover, we will explore different prediction methods hoping to find a model that best fits our data and provides higher accuracy.
 
-Methodology missing
+Our time-series dataset ranges from about 1800 to 2015. Since it is monthly data, it contains some NAs, especially in the earliest years of available data. The dataset provides us with a land average temperature for each country as well as a global perspective with land average temperature, ocean & land average temperature and the associated uncertainty value. The maximum and minimum values for land temperature are also given. The dataset comes from the Berkeley Earth website, which has compiled temperature records.
+
+In this report, we will follow certain steps to achieve our desired goals. First, we explore the dataset by creating time series graphs and analyzing them. In this way, we aim to identify possible patterns such as trends, cycles and seasonal fluctuations over time. Then, common methods to extract these components are applied in order to improve the forecast accuracy thereafter.
+In chapter 4 we will use several benchmark forecasting methods to forecast our time series and assess forecast accuracy.
+
+Exponential Smoothing methods
+
+
 ```{r}
 GlobalTemp
 GlobalCountryTemp %>% select(Date, Country, LandAvgTemp)
@@ -147,6 +160,7 @@ GlobalCountryTemp %>% select(Date, Country, LandAvgTemp)
 
 
 <br>
+
 ## 2. Time series graphics
 
 In this section, the group explores the dataset by creating time series graphics and analyzing them. This part is very important as it provides the group with an overall view of temperature changes over time and allows them to identify possible patterns such as trends, cycles and seasonal variation over time.
@@ -324,7 +338,7 @@ For the autocorrelation analysis of land average temperature uncertainty (see fi
 
 Since our autocorrelation values are mostly above the significant interval our time series don't follow "white noise".
 
-# 3. Time Series Decomposition
+## 3. Time Series Decomposition
 
 First of all, we replaced missing values, by the last available value for that variable (in an up-down manner), so that we keep our time series without missing gaps, to be able to decompose it.
 
@@ -372,7 +386,7 @@ Fig14 + Fig15 / Fig16
 
 As the variations around the trend are of similar magnitudes over time, we will use an Additive Decomposition. There are constant ups and downs in terms of seasonality, and the trend is also steadily going upwards, although slowly over time. There is no exponential growth.
 
-## Decomposing using Classical Decomposition
+### Decomposing using Classical Decomposition
 
 ```{r, warning = FALSE}
 
@@ -401,7 +415,7 @@ Since classical decomposition assumes that the seasonal component repeats from y
 
 Now, we will try to decompose the series into the Seasonal components, the Trend component and a Remainder, using STL Decomposition.
 
-## Decomposing using STL
+### Decomposing using STL
 
 ```{r, warning = FALSE}
 
@@ -491,7 +505,7 @@ components(dec) %>%
 
 Looking at the remainder, there is no clear pattern. That is a sign that the STL model is capturing our season and our trend in an appropriate manner.
 
-## Decomposing using SEATS Decomposition
+### Decomposing using SEATS Decomposition
 
 Now, we will try the X-13 ARIMA-SEATS Decomposition.
 
@@ -510,7 +524,7 @@ autoplot(seats_dec) + labs(title = "Land and Ocean Global Temperature X-13 ARIMA
 The trend is smoother. It is easier to see that the trend is going up.
 
 
-## Trend in different Continents
+### Trend in different Continents
 
 ```{r, message=FALSE, warning = FALSE}
 
@@ -663,7 +677,7 @@ It is important to make the distinction, that the trend over time is ranging fro
 In Africa and South America the trend is going upwards significantly, and much faster, compared to other continents. In Asia and North America, the trend is increasing, but more slowly than on other continents.
 
 
-## Trend and Seasonal Strenght in different Countries and Continents
+### Trend and Seasonal Strenght in different Countries and Continents
 
 ```{r}
 
@@ -700,7 +714,7 @@ In Asia the seasonal strength is very high in almost all plotted countries (abov
 In North America, the trend is very strong in most of the countries, meaning temperatures are rising quite fast and significantly.
 
 
-## Subseries of Land and Ocean Global Temperature
+### Subseries of Land and Ocean Global Temperature
 
 Moreover, on the next plot we can see that on average both the global land temperature and the global land and ocean temperature are much higher in summer months, compared to the rest, and much lower in January, February, and December. Interestingly in July and August the trend is going down. So in previous years, temperatures were higher in these months, compared to recent years.
 
@@ -991,7 +1005,7 @@ fit_continents %>%
 
 In a similar fashion to what was seen for the Global Land Average Temperature forecast residuals, the residuals for the continents also seem to follow white noise. Only North America, Europe and Asia have two barely significant lags in a total of 24. On the other hand, Oceania and South America have 1, whereas Africa has none. Interestingly enough, the continents that had two significant lags are the ones with a higher seasonal variation. Regardless, this means that there is statistical evidence that indicates that these residuals do follow white noise.
 
-# 5. ARIMA 
+## 5. ARIMA 
 
 ```{r}
 GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
