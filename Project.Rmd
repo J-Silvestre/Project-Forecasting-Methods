@@ -1134,6 +1134,8 @@ Lastly, to complete the ARIMA box-jenkins process we plotted the forecast for 8 
 
 ## 7. Conclusion
 
+Lastly, a comparison between the best performing naive, ETS and ARIMA models will be made. This comparison will be made using cross validation. However, there are some computational constraints. Cross validation for three distinct models applied to the land average temperature time series, which is quite large, takes a long time. Therefore, the "slide_tsibble" function with a size of 10 years and steps of 12 months was applied. The results can be seen below: 
+
 ```{r, warning = FALSE}
 z1 %>% 
   filter(!is.na(LandAvgTemp)) %>%
@@ -1152,3 +1154,8 @@ z1 %>%
   forecast(h = "4 years") %>% 
   accuracy(z1)
 ```
+
+According to the model tables depicted above, the forecasting method that minimizes the RMSE is the ETS with additive errors and seasonal component. The auto ARIMA and seasonal naive are closely behind, but did not perform as well as the exponential smoothing one.
+
+Overall, the group observed that the temperature has been increasing steadily  over the years. This is most likely due to global warming, which was mentioned previously throughout the report. Furthermore, our forecasts indicate that it is likely that the temperature keeps increasing in the following years. Therefore, there must be cooperation between countries worldwide to reverse this increasing trend in temperature.
+
