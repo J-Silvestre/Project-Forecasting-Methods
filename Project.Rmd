@@ -23,8 +23,8 @@ library(patchwork)
 #install.packages("patchwork")
 #working directory for github
 
-#setwd("~/Project-Forecasting-Methods")
-setwd("~/GitHub/Project-Forecasting-Methods")
+setwd("~/Project-Forecasting-Methods")
+#setwd("~/GitHub/Project-Forecasting-Methods")
 
 #setwd("Github/Project-Forecasting-Methods")
 
@@ -232,7 +232,7 @@ Looking now at the seasonal pattern, when we highlight the two graphs starting f
 
 In this section, the objective is to focus on the seasonal and trending pattern identified previously and confirm them.
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, fig.width = 6}
 #seasonal and trending
 Fig6 <-GlobalCountryTemp %>% 
   filter(Country=="Global") %>% 
@@ -1003,7 +1003,7 @@ fit_continents %>%
 
 In a similar fashion to what was seen for the Global Land Average Temperature forecast residuals, the residuals for the continents also seem to follow white noise. Only North America, Europe and Asia have two barely significant lags in a total of 24. On the other hand, Oceania and South America have 1, whereas Africa has none. Interestingly enough, the continents that had two significant lags are the ones with a higher seasonal variation. Regardless, this means that there is statistical evidence that indicates that these residuals do follow white noise.
 
-## 5. ARIMA 
+## 6. ARIMA 
 
 ```{r}
 GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
