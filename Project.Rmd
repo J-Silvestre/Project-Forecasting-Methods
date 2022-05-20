@@ -147,9 +147,7 @@ In this work, the group will focus on the analysis of temperature changes over t
 Our time-series dataset ranges from about 1800 to 2015. Since it is monthly data, it contains some NAs, especially in the earliest years of available data. The dataset provides us with a land average temperature for each country as well as a global perspective with land average temperature, ocean & land average temperature and the associated uncertainty value. The maximum and minimum values for land temperature are also given. The dataset comes from the Berkeley Earth website, which has compiled temperature records.
 
 In this report, we will follow certain steps to achieve our desired goals. First, we explore the dataset by creating time series graphs and analyzing them. In this way, we aim to identify possible patterns such as trends, cycles and seasonal fluctuations over time. Then, common methods to extract these components are applied in order to improve the forecast accuracy thereafter.
-In chapter 4 we will use several benchmark forecasting methods to forecast our time series and assess forecast accuracy.
-
-Exponential Smoothing methods
+In chapter 4 we will use several benchmark forecasting methods to forecast our time series and assess forecast accuracy. In the following to sections first the most appropriate Exponential Smooting Methods and then ARIMA Models are applied. Finally, we will compare the different models in a conclusion and summarize our results.
 
 
 ```{r}
