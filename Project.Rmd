@@ -23,7 +23,7 @@ library(patchwork)
 #install.packages("patchwork")
 #working directory for github
 
-setwd("~/Project-Forecasting-Methods")
+setwd("~/GitHub/Project-Forecasting-Methods")
 #setwd("~/GitHub/Project-Forecasting-Methods")
 
 #setwd("Github/Project-Forecasting-Methods")
@@ -1003,30 +1003,38 @@ fit_continents %>%
 
 In a similar fashion to what was seen for the Global Land Average Temperature forecast residuals, the residuals for the continents also seem to follow white noise. Only North America, Europe and Asia have two barely significant lags in a total of 24. On the other hand, Oceania and South America have 1, whereas Africa has none. Interestingly enough, the continents that had two significant lags are the ones with a higher seasonal variation. Regardless, this means that there is statistical evidence that indicates that these residuals do follow white noise.
 
-## 6. ARIMA 
+## 6. ARIMA
 
+The last step for our analysis was to use the box-jenkins methodology to fit ARIMA/SARIMA models. This involved a process of examining the data for differencing in view of trend and seasonality, before applying model fitting and then checking diagnostics to ensure a good fit. When the final models were chosen, we plotted a forecast and compared with that of the exponential smoothing and the Naive method. 
+
+### Plotting both the and the Land and Ocean series before and after a seasonal difference.
 ```{r}
-GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
+Fig47 <- GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
 autoplot(LandAvgTemp) +labs(title = "Land Average Temperature",
-       subtitle = "Drift method based on seasonal adjusted data",
-       y="LandOceanAvgTemp Cº",
-       caption = "fig. 37")
-GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
-autoplot(LandOceanAvgTemp)
+       subtitle = "Plot of data from 1900 onwards",
+       y="AvgTemp Cº",
+       caption = "fig. 47")
+Fig48 <- GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
+autoplot(LandOceanAvgTemp)+labs(title = "Land + Ocean Average Temperature",
+       subtitle = "Plot of data from 1900 onwards",
+       y="AvgTemp Cº",
+       caption = "fig. 48")
+Fig49 <- GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
+autoplot(LandAvgTemp %>% difference(12)) + labs(title = "Land Average Temperature", subtitle = "Plot of data with seasonal difference", 
+       y="AvgTemp Cº differenced",
+       caption = "fig. 49")
+Fig50 <- GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
+autoplot(LandOceanAvgTemp %>% difference(12)) + labs(title = "Land + Ocean Average Temperature", subtitle = "Plot of data with seasonal difference", 
+       y="AvgTemp Cº differenced",
+       caption = "fig. 50")
+(Fig47 + Fig48)/(Fig49 + Fig50)
 
 ```
 
 We plotted the time series of interest in view of beginning the process to fit ARIMA models to the data. Both showed high seasonality and some moderate positive linear trend.
-
-```{r, warning = FALSE}
-GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
-autoplot(LandAvgTemp %>% difference(12))
-GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
-autoplot(LandOceanAvgTemp %>% difference(12))
-
-```
-
 After differencing to remove the seasonal trend, these looked far more stationary.
+
+### Unit Root tests
 
 ```{r, warning = FALSE}
 GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)  %>%mutate(diff_lat = (difference(LandAvgTemp, 12)))%>%
@@ -1045,25 +1053,29 @@ GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)%>% mutate(di
 
 First we wanted to check for any necessary differencing or box-cox transformations before moving into ARIMA modelling. For both series, the variance appeared to be very stable, so we did not feel that there was any need for a log transformation. We have already mentioned that there was high seasonality in the data, which is no surprise as it is to do with weather. To handle this, we first differenced both series at lag 12. The positive linear trend was very weak but still existed in the data; we had to decide whether it was necessary to difference it out or not. We used some tests to help us make the decision; the pp and the kpss tests. For both series, the pp test had a p-value of 0.01, rejecting H0 of a unit root, and the kpss test had a p-value of 0.1, not rejecting H0 that there was not a unit root. The tests agreed that an extra difference to remove unit root was not necessary for either series.
 
+### Autocorrelation and Partial Autocorrelation plots
+
 ```{r, warning = FALSE}
 #create variables for seasonally differenced data
-z1 <- GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff1 = difference(LandAvgTemp, 12))
+Fig51 <- GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff1 = difference(LandAvgTemp, 12))
 
-z2 <- GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff2 = difference(LandOceanAvgTemp, 12)) 
+Fig52 <- GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff2 = difference(LandOceanAvgTemp, 12)) 
 
 ```
 
 The next step was to examine the sample autocorrelation and partial autocorrelation plots, and use them to try and make inference about possible ARIMA models to fit. For both series, the acf plot had a decaying sine wave and the pacf had a fast decay, with lag 3 being the last significant value. These both suggested that an ARMA(3,0) model be a good option to try. However, there were some spikes later on in the pacf plot around lag 12 which implied that the simple ARMA may have problems.
 
 ```{r, warning = FALSE}
-z1 %>% gg_tsdisplay(diff1, plot_type = 'partial', lag_max = 15)
-z2 %>% gg_tsdisplay(diff2, plot_type = 'partial', lag_max = 15)
+Fig51 %>% gg_tsdisplay(diff1, plot_type = 'partial', lag_max = 15)  + labs(title = "Land Average Temperature + Acf + Pacf plots", caption = "fig. 51") #subtitle = "Land Average Temperature seasonal difference",  y="AvgTemp Cº differenced",caption = "fig. 51"))
+Fig52 %>% gg_tsdisplay(diff2, plot_type = 'partial', lag_max = 15) + labs(title = "Land + Ocean Average Temperature + Acf + Pacf plots", caption = "fig. 52") #, subtitle = "Land + Ocean Average Temperature seasonal difference",  y="AvgTemp Cº differenced",       caption = "fig. 52"))
 ```
 
 For the Land temperature series, we trained the following models; an ARMA(3,0), ARMA(2,0), ARIMA(1,1) and the optimal model from R given by the ARIMA built in function. We compared these models using the tidy function, showing a combined AIC, AICc and BIC comparison, and then just with the AICc for simplicity. We found that the best model was by far the SARIMA(4,0,0)(2,0,0) model, with an AICc of 863.7; a far lower score than that of the ARMA(3,0) which had an AICc of 1451.9.
 
+### Fitting ARIMA/SARIMA models
+
 ```{r, warning = FALSE}
-fitting_land <- z1 %>%
+fitting_land <- Fig51 %>%
   model(
         ar3 = ARIMA(diff1 ~ pdq(3, 0, 0) + PDQ(0,0,0)),
         ar2 = ARIMA(diff1 ~ pdq(2, 0, 0) + PDQ(0,0,0)), 
@@ -1077,7 +1089,7 @@ fitting_land %>% glance() %>% arrange(AICc)
 For the Land and Ocean series, we obtained similar results when model selecting. The best ARMA model was again the ARMA(3,0), with an AICc of -1524.2, however this was greatly bettered by the SARIMA(4,0,0)(2,0,0) which had an AICc of -2120.3.
 
 ```{r, warning = FALSE}
-fitting_land_ocean <- z2 %>%
+fitting_land_ocean <- Fig52 %>%
   model(
         ar3 = ARIMA(diff2 ~ pdq(3, 0, 0) + PDQ(0,0,0)),
         ar2 = ARIMA(diff2 ~ pdq(2, 0, 0) + PDQ(0,0,0)), 
@@ -1088,15 +1100,17 @@ fitting_land_ocean %>% tidy()
 fitting_land_ocean %>% glance() %>% arrange(AICc)
 ```
 
+### Ljung box tests and residual plots
+
 ```{r warning=FALSE}
 
-sarima_land <- z1 %>% model(arima = ARIMA(diff1))
-arima_land <- z1 %>%  model(arima = ARIMA(diff1 ~ pdq(3, 0, 0) + PDQ(0,0,0))) 
-sarima_land %>% gg_tsresiduals(lag_max=15)
-augment(sarima_land) %>%
+sarima_land <- Fig51 %>% model(arima = ARIMA(diff1))
+arima_land <- Fig51 %>%  model(arima = ARIMA(diff1 ~ pdq(3, 0, 0) + PDQ(0,0,0))) 
+sarima_land %>% gg_tsresiduals(lag_max=15) +labs(title = "Residual plots for Land Average Temperature for SARIMA model", caption = "fig. 53")
+augment(sarima_land) %>% 
   features(.resid, ljung_box, lag = 10, dof = 3)
 
-arima_land %>% gg_tsresiduals(lag_max=15)
+arima_land %>% gg_tsresiduals(lag_max=15) +labs(title = "Residual plots for Land Average Temperature for ARIMA model", caption = "fig. 54")
 augment(arima_land) %>%
   features(.resid, ljung_box, lag = 10, dof = 3)
 
@@ -1105,28 +1119,32 @@ augment(arima_land) %>%
 
 ```
 
+
+
 ```{r warning=FALSE}
-sarima_land_ocean <- z2 %>%  model(arima = ARIMA(diff2)) 
-arima_land_ocean <- z2 %>%  model(arima = ARIMA(diff2 ~ pdq(3, 0, 0) + PDQ(0,0,0))) 
+sarima_land_ocean <- Fig52 %>%  model(arima = ARIMA(diff2)) 
+arima_land_ocean <- Fig52 %>%  model(arima = ARIMA(diff2 ~ pdq(3, 0, 0) + PDQ(0,0,0))) 
 
 
-sarima_land_ocean %>% gg_tsresiduals(lag_max=15)
+sarima_land_ocean %>% gg_tsresiduals(lag_max=15) +labs(title = "Residual plots for Land Average Temperature for SARIMA model", caption = "fig. 55")
 augment(sarima_land_ocean) %>%
   features(.resid, ljung_box, lag = 10, dof = 3)# as there are 3 parameters
 
 
-arima_land_ocean %>% gg_tsresiduals(lag_max=15)
+arima_land_ocean %>% gg_tsresiduals(lag_max=15)+labs(title = "Residual plots for Land and Ocean Average Temperature for ARIMA model", caption = "fig. 56")
 augment(arima_land_ocean) %>%
   features(.resid, ljung_box, lag = 10, dof = 3)
 ```
 
 We decided to compare the two models further by checking that the residuals exhibited white noise. For both series we obtained similar results; the residuals showed white noise behaviour in their plots, however the autocorrelation function for the residuals of the ARMA(3,0) showed a strong seasonal component whereas this was far less prominent in the SARIMA model. The S part of the SARIMA model deals with this seasonality as expected, further confirming that this should be the model to use for forecasting.
 
+### Forecasts with the final SARIMA models
+
 ```{r warning=FALSE}
 sarima_land %>% forecast(h = "8 years") %>% 
-  autoplot(filter(z1, year(Date)>2000))
+  autoplot(filter(Fig51, year(Date)>2000)) +labs(title = "8 year forecast for Land Average Temperature for SARIMA model", y="AvgTemp Cº differenced", caption = "fig. 57")
 sarima_land_ocean %>% forecast(h = "8 years") %>% 
-  autoplot(filter(z2, year(Date)>2000))
+  autoplot(filter(Fig52, year(Date)>2000)) +labs(title = "8 year forecast for Land + Ocean Average Temperature for SARIMA model", y="AvgTemp Cº differenced", caption = "fig. 58")
 ```
 
 Lastly, to complete the ARIMA box-jenkins process we plotted the forecast for 8 years in advance for the two series, obtaining what looked like to be very precise forecasts, especially on the 4 year margin.
@@ -1137,22 +1155,22 @@ Lastly, to complete the ARIMA box-jenkins process we plotted the forecast for 8 
 Lastly, a comparison between the best performing naive, ETS and ARIMA models will be made. This comparison will be made using cross validation. However, there are some computational constraints. Cross validation for three distinct models applied to the land average temperature time series, which is quite large, takes a long time. Therefore, the "slide_tsibble" function with a size of 10 years and steps of 12 months was applied. The results can be seen below: 
 
 ```{r, warning = FALSE}
-z1 %>% 
+Fig51 %>% 
   filter(!is.na(LandAvgTemp)) %>%
   slide_tsibble(.size = 120, .step = 12) %>% 
   model(Seasonal_Naive = SNAIVE(LandAvgTemp),
         ANA_ETS = ETS(LandAvgTemp ~ error("A") + trend("N") + season("A"))
         ) %>% 
   forecast(h = "4 years") %>% 
-  accuracy(z1)
+  accuracy(Fig51)
 
-z1 %>% 
+Fig51 %>% 
   filter(!is.na(LandAvgTemp)) %>%
   slide_tsibble(.size = 120, .step = 12) %>% 
   model(auto1 = ARIMA(diff1)
         ) %>% 
   forecast(h = "4 years") %>% 
-  accuracy(z1)
+  accuracy(Fig51)
 ```
 
 According to the model tables depicted above, the forecasting method that minimizes the RMSE is the ETS with additive errors and seasonal component. The auto ARIMA and seasonal naive are closely behind, but did not perform as well as the exponential smoothing one.
