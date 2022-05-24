@@ -1,6 +1,6 @@
 ---
 title: "Forecasting Methods Project"
-author: "Group"
+author: "Alex Sofroniou, Joao Silvestre, Rodrigo Conceicao, Rosanna Mueller, Sofia Branco"
 date: "01/05/2022"
 output:
   html_document:
