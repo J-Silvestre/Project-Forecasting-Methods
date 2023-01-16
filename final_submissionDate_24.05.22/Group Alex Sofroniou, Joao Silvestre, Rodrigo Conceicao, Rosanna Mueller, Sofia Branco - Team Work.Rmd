@@ -1,0 +1,1179 @@
+---
+title: "Forecasting Methods Project"
+author: "Alex Sofroniou, Joao Silvestre, Rodrigo Conceicao, Rosanna Mueller, Sofia Branco"
+date: "01/05/2022"
+output:
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float:
+      smooth_scroll: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+#loading libraries
+library(fpp3)
+library(tidyverse)
+library(patchwork)
+#install.packages("seasonal")
+#install.packages("patchwork")
+#working directory for github
+
+setwd("~/GitHub/Project-Forecasting-Methods")
+#setwd("~/GitHub/Project-Forecasting-Methods")
+
+#setwd("Github/Project-Forecasting-Methods")
+
+
+#code to modify our original data files so we could merge them
+#--------------------------------------------- 
+
+#loading the data 
+
+#GlobalTemperature <-read.csv("data/GlobalTemperatures.csv")
+
+#adding column 
+
+#GlobalTemperature["Country"]<- "Global"
+
+#creating new csv file  
+
+#write.csv(GlobalTemperature, "GlobalTemperatures2.csv")
+
+#Country <- read.csv("data/GlobalLandTemperaturesByCountry.csv")
+#names(Country) <-c("dt","LandAverageTemperature", "AverageTemperatureUncertainty","Country")
+#write.csv(Country,"GlobalLandTemperaturesByCountry2.csv")
+
+#------------------------------------------- 
+
+
+
+```
+
+```{r, message=FALSE, include=FALSE}
+#merging Global file with country file
+GlobalCountryTemp <- list.files(pattern = "*.csv", full.names = TRUE) %>% 
+  lapply(read_csv) %>%                             
+  bind_rows  
+
+#transforming in a tsibble
+
+GlobalCountryTemp<- GlobalCountryTemp%>% mutate(Date = yearmonth(dt)) %>% as_tsibble(index=Date, key="Country") %>% select(Date, Country, everything()) %>% select(-dt,-LandMaxTemperatureUncertainty, -LandMinTemperatureUncertainty,-AverageTemperatureUncertainty) 
+
+#changing columns names
+names(GlobalCountryTemp) <-c('Date','Country','idk', 'LandAvgTemp','LandAvgTempUnc', 'LandMaxTemp', 'LandMinTemp', 'LandOceanAvgTemp', 'LandOceanAvgTempUnc')
+GlobalCountryTemp <-GlobalCountryTemp %>%  select(-idk)
+#-------------------Objects for visualization
+
+#Creating GlobalTemp object, which contains only Global values and cleaning it for visualization
+GlobalTempV <- GlobalCountryTemp %>% filter(Country=="Global")  %>% filter(year(Date)>1984, year(Date)<2014)
+GlobalTempV <-na.omit(GlobalTempV)
+
+#Creating CountryTemp objects, each contains one country and cleaning it for visualizations purpose -->Not sure if its needed to use
+#using years above 1984 for visualisation purposes
+
+#PortugalTempV <-GlobalCountryTemp %>% filter(Country == "Portugal") %>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#GermanyTempV <-GlobalCountryTemp %>% filter(Country == "Germany")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#UkTempV <-GlobalCountryTemp %>% filter(Country == "United Kingdom")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#BrazilTempV <-GlobalCountryTemp %>% filter(Country == "Brazil")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#USATempV <-GlobalCountryTemp %>% filter(Country == "United States")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#ChinaTempV <-GlobalCountryTemp %>% filter(Country == "China")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#MaliTempV <-GlobalCountryTemp %>% filter(Country == "Mali")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#SouthAfricaTempV <-GlobalCountryTemp %>% filter(Country == "South Africa")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#AustraliaTempV <-GlobalCountryTemp %>% filter(Country == "Australia")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+#GreenlandTempV <- GlobalCountryTemp %>% filter(Country == "Greenland")%>% select(Date, Country, LandAvgTemp)%>% filter(year(Date)>1984)
+
+
+#divided it because analysing 10 at once gets really messy
+countries<- c('Portugal','Mali','Greenland')
+countries2<- c('Portugal', 'Germany', 'United Kingdom','Brazil','United States')
+countries3<-c('China','Mali','South Africa','Australia','Greenland')
+
+#-------------------Objects to use in the rest of the work
+
+#Global
+GlobalTemp <- GlobalCountryTemp %>% filter(Country=="Global") 
+GlobalTemp <-na.omit(GlobalTemp)
+
+#Countries-->not sure if its needed to use
+PortugalTemp <-GlobalCountryTemp %>% filter(Country == "Portugal") %>% select(Date, Country, LandAvgTemp)
+GermanyTemp <-GlobalCountryTemp %>% filter(Country == "Germany")%>% select(Date, Country, LandAvgTemp)
+UkTemp <-GlobalCountryTemp %>% filter(Country == "United Kingdom")%>% select(Date, Country, LandAvgTemp)
+BrazilTemp <-GlobalCountryTemp %>% filter(Country == "Brazil")%>% select(Date, Country, LandAvgTemp)
+USATemp <-GlobalCountryTemp %>% filter(Country == "United States")%>% select(Date, Country, LandAvgTemp)
+ChinaTemp <-GlobalCountryTemp %>% filter(Country == "China")%>% select(Date, Country, LandAvgTemp)
+MaliTemp <-GlobalCountryTemp %>% filter(Country == "Mali")%>% select(Date, Country, LandAvgTemp)
+SouthAfricaTemp <-GlobalCountryTemp %>% filter(Country == "South Africa")%>% select(Date, Country, LandAvgTemp)
+AustraliaTemp <-GlobalCountryTemp %>% filter(Country == "Australia")%>% select(Date, Country, LandAvgTemp)
+GreenlandTemp <- GlobalCountryTemp %>% filter(Country == "Greenland")%>% select(Date, Country, LandAvgTemp)
+
+
+europe <- c('Austria', 'Portugal', 'Germany', 'United Kingdom (Europe)', 'Norway',
+           'France (Europe)', 'Ukraine', 'Poland', 'Greece', 'Belgium',
+            'Hungary', 'Italy', 'Albania', 'Spain')
+
+africa <- c('Algeria', 'Angola', 'Benin', 'Botswana', 'Burkina Faso',
+            'Burundi', 'Cape Verde', 'Mali', 'Congo (Democratic Republic Of #The)', 'Zambia', 'Zimbabwe', 'Morocco', 'Niger', 'Nigeria')
+
+
+asia <- c('China', 'Russia', 'Malaysia', 'Japan', 'Afghanistn', 'Saudi Arabia', 
+          'Taiwan', 'Qatar', 'Armenia', 'Azerbaijan', 'Bahrain',
+          'Bangladesh', 'Bhutan', 'Brunei', 'Cambodia', 'Cyprus', 
+          'Georgia', 'India', 'Indonesia', 'Iran', 'Jordan', 'Yemen')
+
+north_america <- c('Antigua And Barbuda', 'Bahamas', 'Barbados', 
+                   'Belize', 'Canada', 'Costa Rica', 'Cuba', 'Dominica',
+                   'Dominican Republic', 'El Salvador', 'Grenada', 
+                   'Guatemala', 'Haiti', 'Honduras', 'Jamaica', 'Mexico',
+                   'United States', 'Panama')
+
+south_america <- c('Argentina', 'Bolivia', 'Brazil', 'Chile',
+                   'Colombia', 'Peru', 'Paraguay', 'Guyana', 'Ecuador',
+                   'Suriname', 'Uruguay', 'Venezuela')
+
+oceania <- c('Australia', 'Fiji', 'Kiribati', 'Marshall Islands', 
+             'Micronesia', 'Nauru', 'New Zealand', 'Palau', 'Papua New Guinea',
+             'Samoa', 'Tonga')
+```
+
+## 1. Introduction
+
+In this work, the group will focus on the analysis of temperature changes over the last three centuries, from 1800 to 2015. We have chosen this variable because climate change and global warming are one of the biggest problems the world is facing today. With this project, we expect to gain more knowledge about how temperature has behaved over the years, especially in this last century with global warming. We aim to understand how temperature patterns differ across countries and continents, identify seasonal variations and trend patterns. Moreover, we will explore different prediction methods hoping to find a model that best fits our data and provides higher accuracy.
+
+Our time-series dataset ranges from about 1800 to 2015. Since it is monthly data, it contains some NAs, especially in the earliest years of available data. The dataset provides us with a land average temperature for each country as well as a global perspective with land average temperature, ocean & land average temperature and the associated uncertainty value. The maximum and minimum values for land temperature are also given. The dataset comes from the Berkeley Earth website, which has compiled temperature records.
+
+In this report, we will follow certain steps to achieve our desired goals. First, we explore the dataset by creating time series graphs and analyzing them. In this way, we aim to identify possible patterns such as trends, cycles and seasonal fluctuations over time. Then, common methods to extract these components are applied in order to improve the forecast accuracy thereafter.
+In chapter 4 we will use several benchmark forecasting methods to forecast our time series and assess forecast accuracy. In the following to sections first the most appropriate Exponential Smooting Methods and then ARIMA Models are applied. Finally, we will compare the different models in a conclusion and summarize our results.
+
+
+```{r}
+GlobalTemp
+GlobalCountryTemp %>% select(Date, Country, LandAvgTemp)
+```
+<br>
+
+
+<br>
+
+## 2. Time series graphics
+
+In this section, the group explores the dataset by creating time series graphics and analyzing them. This part is very important as it provides the group with an overall view of temperature changes over time and allows them to identify possible patterns such as trends, cycles and seasonal variation over time.
+
+### General overview of the dataset
+
+```{r, warning = FALSE}
+Fig1 <- GlobalTemp %>% autoplot(LandOceanAvgTemp)+
+  geom_line(color="blue")+
+  labs(title = "Gloabal Land & Ocean Temperature",
+       subtitle = "Average",
+       y="LandOceanAvgTemp Cº",
+       caption = "fig. 1")
+
+Fig2 <- GlobalCountryTemp %>% filter(Country == "Brazil") %>% autoplot(LandAvgTemp)+
+  geom_line(color="green")+
+  labs(title = "Land Temperature in Brazil",
+       subtitle="Average",
+       y="LandAvgTemp Cº",
+       caption = "fig. 2")
+
+Fig3 <- GlobalCountryTemp %>% filter(Country=="Global") %>% autoplot(LandAvgTempUnc)+
+  labs(title = "Land Temperature Uncertainty - Evolution over time",
+       subtitle="Average",
+       caption = "fig. 3")
+
+(Fig1 | Fig2 ) / Fig3
+```
+
+The dataset provides three different views that can be combined and analysed in multiple different ways.
+
+The first view is the global land & ocean average temperature (see fig. 1). It provides an interesting overview on how the combination of both land and ocean temperature has been changing since 1850.
+
+The central view of the dataset is the land temperature analysis, which can be divided into two parts:
+
+-   A global analysis that contains average, max and min temperature values
+-   A more narrow analysis by country that allows us to observe particular average temperatures over the years by country. Note that the years analysed may differ from country to country due to missing data in the dataset, especially for years before 1900. Figure 2 shows the time series of Land Temperature of Brazil to illustrate the time series of one country as an example.
+
+The final view is related with the uncertainty of the average temperature values and how it has changed over time (see fig. 3).
+
+```{r, warning=FALSE}
+GlobalTempV %>% ggplot()+
+  geom_line(data=GlobalTempV, aes(Date, LandMaxTemp, col="LandMaxTemp"))+
+  geom_line(data=GlobalTempV, aes(Date,LandAvgTemp,col="LandAvgTemp"),lwd=2)+
+  geom_line(data=GlobalTempV, aes(Date, LandMinTemp, col="LandMinTemp"))+
+  labs(title = "Land temperature - Global overview",
+       y="LandTemp Cº",
+       color="Temperature Type",
+       caption = "fig. 4")+
+  scale_color_manual(values= c("red","black","blue"))
+       
+
+GlobalCountryTemp %>% filter(Country %in% countries) %>% filter(year(Date)>1984) %>% autoplot(LandAvgTemp)+
+  geom_line(data=GlobalTempV ,aes(Date, LandAvgTemp, col= "Global"),lwd=2)+
+  labs(title= "Global & Country Land Temperature - Last 30 years",
+            subtitle = "Average",
+            y= "LandAvgTemp Cº",
+       caption = "fig. 5")+
+  ylim(-30,40)+
+  theme(legend.position = "right")
+```
+<br>
+
+Figure 5 shows the average temperature in the last 30 years of three selected countries and "global". By looking at these time series, we can see that the temperature behaves differently depending on the country analysed. Some countries belong to hot regions like Mali and even Portugal and therefore have higher temperatures while other countries like Greenland are in more northern zones and have colder temperatures. The global temperature is nothing more than the weighted average of the temperature of all countries in the original dataset and therefore it appears in the "middle" of the time series graph. The same reasoning can be applied to the max and min global temperature in figure 4.
+
+When we take a closer look to these graphs it's possible to start observing some seasonal and trending patterns. Regarding the trending patterns, we can clearly see a very smooth crescent trend when it comes to land and ocean temperatures (fig. 1), which makes sense as a result of a direct effect of the global warming in the temperature, making it rise. On the other hand, there is a clear downward trend on the temperature uncertainty (fig. 3), which makes sense as temperature measurement methods become better and more accurate over time.
+
+Looking now at the seasonal pattern, when we highlight the two graphs starting from 1985 onwards (fig. 4 and 5), it becomes explicit that there is a seasonal behavior every year. There are four seasons (winter, spring, summer and autumn) and we can clearly see that each of those has its temperature characteristics.
+
+### Focusing on seasonality, cycles and trends
+
+In this section, the objective is to focus on the seasonal and trending pattern identified previously and confirm them.
+
+```{r, warning=FALSE, fig.width = 6}
+#seasonal and trending
+Fig6 <-GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  gg_season(LandAvgTemp)+
+  labs(title = "Global Land Temperature Seasonality",
+       y="LandAvgTemp Cº",
+       color="Years",
+       caption = "fig. 6")
+
+Fig7<- GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  gg_season(LandOceanAvgTemp)+
+  labs(title = "Global Land & Ocean Temp. Seasonality",
+       y="LandOceanAvgTemp Cº",
+       color="Years",
+       caption = "fig. 7")
+
+Fig6 + Fig7
+```
+
+The two graphs above give us some interesting insights into the seasonality observed previously.
+
+We can clearly see that in winter months (December, January and February), the temperature reaches the lowest values while in summer months (June, July, August), the temperature reaches its peak. Besides showing the seasonality, this graph shows the crescent trending as the years go by. The lines that represent the years keep going up in the graph.
+
+Another very important aspect that we can spot is that in years around 1800 the values have some kind of spikes, this results from the fact that there was a big uncertainty around the temperature in these years and as time pass by, the uncertainty decreases and the lines become more stable. The land and ocean seasonality graph clearly shows that difference as it doesn't have values below 1900.
+
+```{r, warning=FALSE}
+#subseries
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  gg_subseries(LandAvgTemp)+
+  labs(title = "Subseries - Monthly Global Analysis",
+       y="LandAvgTemp Cº",
+       caption = "fig. 8")
+
+GlobalCountryTemp %>% 
+  filter(Country %in% countries2) %>% 
+  gg_subseries(LandAvgTemp)+
+  labs(title = "Subseries - Monthly Analysis",
+         y="LandAvgTemp Cº",
+       caption = "fig. 9")
+
+GlobalCountryTemp %>% 
+  filter(Country %in% countries3) %>% 
+  gg_subseries(LandAvgTemp)+
+  labs(title = "Subseries - Monthly Analysis",
+         y="LandAvgTemp Cº",
+       caption = "fig. 10")
+
+
+```
+
+The subseries analysis also provides some more details about seasonality and trend.
+
+Especially figure 8 shows clearly high discrepancies in early 1800 temperature values due to the high uncertainty. However, it is still clear that the trend is increasing globally.
+
+The country subseries analysis in figure 9 and 10 reveals again a strong seasonality. However, it also shows a new perspective regarding the seasonality. Some countries have their seasonality "swaped" when compared to the global seasonality. This is due to the fact that the temperature in the countries of the northern hemisphere is the opposite of that in the countries of the southern hemisphere: If it's summer in the north (June, July, August), it's winter in the south. Nevertheless we can still identify the growing trend of the temperature in most countries.
+
+### Looking at autocorrelation and white noise
+
+Lastly, we analyse the autocorrelation and examine whether white noise exists.
+
+```{r}
+#6, 12 or 24 lags--> monthly data
+#In this case 12 looks the best as it captures all months of one year
+
+Fig11 <-GlobalCountryTemp %>% filter(Country=="Global") %>% ACF(LandAvgTemp,lag_max = 12) %>% autoplot()+
+  labs(title = "Autocorrelation in LandAvgTemp - Global",
+       subtitle = "12 month lag",
+       caption = "fig. 11")
+
+Fig13 <-GlobalCountryTemp %>% 
+  filter(Country %in% countries2)%>% ACF(LandAvgTemp,lag_max = 12) %>% autoplot()+
+  labs(title = "Autocorrelation in LandAvgTemp - Country",
+       subtitle = "12 month lag",
+       caption = "fig. 13")
+
+#transforming it into yearly data since there is no seasonality
+#showing the first 48 years
+uncertainty<- GlobalCountryTemp %>% filter(Country=="Global") %>%
+  mutate(Year= year(Date)) %>% 
+  as_tibble(GlobalCountryTemp) %>% 
+  group_by(Year)%>%
+  select(-Date) %>%
+  summarise(LandAvgTempUnc= mean(LandAvgTempUnc))
+
+Fig12 <-uncertainty %>%as_tsibble(index=Year) %>% filter(Year> "1752") %>% 
+  ACF(LandAvgTempUnc, lag_max = 48) %>% autoplot()+
+  labs(title = "Autocorrelation in LandAvgTempUnc - Global",
+       subtitle = "48 years lag",
+       caption = "fig. 12")
+
+(Fig11 / Fig12)
+
+Fig13
+```
+
+By looking at the autocorrelation plots, regarding the Land Average Temperature (see figure 11 and 12), we used a lag of 12 months since it's more appropriate for monthly data and it captures all the months of one year. It clearly shows that autocorrelation exists between the time series and its lags period. We can also spot that the autocorrelation peaks in months 6 and 12, which correspond to the highest and lowest temperature peaks of the seasonality, respectively.
+
+For the autocorrelation analysis of land average temperature uncertainty (see figure 13), we first changed the monthly data to yearly data as there is no seasonality and it helps with the visualization. Moreover, we defined a lag period of 48 years which is about 1/3 of our total data. We can observe that it follows the typical trend behavior: Small lags have larger values as they are close to the previous value and tend to get smaller as the time goes by.
+
+Since our autocorrelation values are mostly above the significant interval our time series don't follow "white noise".
+
+## 3. Time Series Decomposition
+
+First of all, we replaced missing values, by the last available value for that variable (in an up-down manner), so that we keep our time series without missing gaps, to be able to decompose it.
+
+```{r, warning = FALSE}
+
+GlobalCountryTemp %>%
+  fill(LandAvgTemp, .direction = 'down') %>%
+  fill(LandOceanAvgTemp, .direction = 'down') -> GlobalCountryTemp 
+  
+#colSums(is.na(GlobalCountryTemp))
+
+```
+
+Now, we are going to see if the series need adjustments. As we can see in the graphs below, our variation does not change with the level of the time series. So, we will not use mathematical transformations.
+
+```{r, warning = FALSE}
+
+Fig14<- GlobalTemp %>%
+  filter(year(Date)>1838, year(Date)<1900) %>%
+  autoplot(LandAvgTemp)+
+  geom_line(color = '#0088cc')+
+  labs(title = "Land Temperature- Global",
+       subtitle = "Average",
+       y="LandAvgTemp Cº", caption = "fig. 14")
+
+Fig15 <-GlobalTemp %>%
+  filter(year(Date)>1900, year(Date)<1990) %>%
+  autoplot(LandAvgTemp)+
+  geom_line(color = '#ff3399')+
+  labs(title = "Land Temperature- Global",
+       subtitle = "Average",
+       y="LandAvgTemp Cº", caption = "fig. 15")
+
+Fig16 <-GlobalTemp %>%
+  filter(year(Date)>1990, year(Date)<2014) %>%
+  autoplot(LandAvgTemp)+
+  geom_line(color = '#cc33ff')+
+  labs(title = "Land Temperature- Global",
+       subtitle = "Average",
+       y="LandAvgTemp Cº", caption = "fig. 16")
+Fig14 + Fig15 / Fig16
+
+
+```
+
+As the variations around the trend are of similar magnitudes over time, we will use an Additive Decomposition. There are constant ups and downs in terms of seasonality, and the trend is also steadily going upwards, although slowly over time. There is no exponential growth.
+
+### Decomposing using Classical Decomposition
+
+```{r, warning = FALSE}
+
+GlobalTemp %>%
+  select(LandOceanAvgTemp) -> land_ocean_global_temp
+
+land_ocean_global_temp %>%
+  model(classical_decomposition(LandOceanAvgTemp, type = "additive")) %>%
+  components() -> classic_decmp
+
+classic_decmp %>%
+  autoplot() +
+  labs(title = "Land and Ocean Global Temperature - Classical Additive Decomposition", caption = "fig. 17")
+
+classic_decmp %>%
+  autoplot(random, color = '#ff668c') +
+  labs(title = "Variations not captured by Classical Decomposition in Land and Ocean", caption = "fig. 18")
+
+
+
+```
+
+**How does Classical Decomposition fit our time series?**
+
+Since classical decomposition assumes that the seasonal component repeats from year to year, it fits well with our time series, as temperatures are always higher in summer and lower in winter and this pattern is maintained.
+
+Now, we will try to decompose the series into the Seasonal components, the Trend component and a Remainder, using STL Decomposition.
+
+### Decomposing using STL
+
+```{r, warning = FALSE}
+
+
+dec <- land_ocean_global_temp %>% 
+  model(stl = STL(LandOceanAvgTemp))
+
+#components(dec)
+
+
+GlobalTemp %>%
+  select(LandAvgTemp) -> land_global_temp
+
+  
+dec2 <- land_global_temp %>% 
+  model(stl = STL(LandAvgTemp))
+
+#components(dec2)
+
+```
+
+We now isolate the trend and the seasonal adjusted temperatures in graphs.
+
+```{r, warning = FALSE}
+
+Fig19 <-land_ocean_global_temp %>%
+  autoplot(LandOceanAvgTemp, color = 'gray') + 
+  autolayer(components(dec), trend, color = '#6666ff') + 
+  ggtitle('Land & Ocean Global Temp. Trend') +
+  labs(caption = "fig. 19")
+
+
+Fig20<- land_global_temp %>%
+  autoplot(LandAvgTemp, color = 'gray') + 
+  autolayer(components(dec2), trend, color = 'purple') + 
+  ggtitle('Land Global Temperature Trend')+
+  labs(caption = "fig. 20")
+
+components(dec) %>%
+  filter(year(Date)>1900) -> comp_after1900
+
+Fig21 <-land_ocean_global_temp %>%
+  filter(year(Date)>1900) %>%
+  autoplot(LandOceanAvgTemp, color = 'gray') + 
+  autolayer(comp_after1900, trend, color = '#6666ff') + 
+  ggtitle('Land & Ocean Global Temp. Trend')+
+  labs(caption = "fig. 21")
+
+Fig22<- land_global_temp %>%
+  autoplot(LandAvgTemp, color = 'gray') + 
+  autolayer(components(dec2), season_adjust, color = 'purple') + 
+  ggtitle('Seasonal Adjusted Land Global Temp.')+
+  labs(caption = "fig. 22")
+
+(Fig19 + Fig20) 
+(Fig21 + Fig22)
+
+```
+
+In the first graph, it is possible to depict a notable growth in land and ocean temperatures trend over the years. When comparing this graph with the second one (depicting the Land Global temperatures trend), we can see that the second one's trend is not growing as significantly. This may mean that the rising trend in the oceans temperature is contributing highly to the upward trend in land plus oceans temperature.
+
+In the third graph, zooming in to more recent years, we can see the evident growth in land and ocean global average temperatures.
+
+In the last graph, after adjusting the series regarding seasonal variations, we can clearly see that the land average global temperature is rising, more significantly from 1950 to the current years.
+
+```{r, warning = FALSE}
+
+components(dec) %>%
+  autoplot() + ggtitle('Land and Ocean Global Temperature STL Decomposition')+
+  labs(caption = "fig. 23")
+
+#components(dec2) %>%
+#  autoplot() + ggtitle('Land Global Temperature') 
+
+components(dec) %>%
+  autoplot(remainder, color = '#ff668c') + ggtitle('Land Global Temperature Remainder')+
+  labs(caption = "fig. 24") 
+
+#components(dec2) %>%
+#autoplot(remainder, color = '#8c66ff') + ggtitle('Land and Ocean Global Temperature Remainder') 
+
+
+
+```
+
+**How is STL for our time series?**
+
+Looking at the remainder, there is no clear pattern. That is a sign that the STL model is capturing our season and our trend in an appropriate manner.
+
+### Decomposing using SEATS Decomposition
+
+Now, we will try the X-13 ARIMA-SEATS Decomposition.
+
+```{r, warning = FALSE}
+
+land_ocean_global_temp %>% 
+  filter(year(Date) > 1990) %>%
+  model(seats = feasts::: SEATS(LandOceanAvgTemp)) %>%
+  components() -> seats_dec
+
+autoplot(seats_dec) + labs(title = "Land and Ocean Global Temperature X-13 ARIMA-SEATS Decomposition", caption = "fig. 25")
+```
+
+**Did SEATS help?**
+
+The trend is smoother. It is easier to see that the trend is going up.
+
+
+### Trend in different Continents
+
+```{r, message=FALSE, warning = FALSE}
+
+#----------------------------------------------------------------
+
+GlobalCountryTemp %>%
+  filter(year(Date)> 1850) %>%
+  filter (Country == 'Europe') %>%
+  select(LandAvgTemp) %>%
+  as_tibble() %>%
+  group_by(Date) %>% 
+  summarise_at(vars(LandAvgTemp), list(LandTempEurope = mean)) %>%
+  as_tsibble() %>%
+  fill(LandTempEurope, .direction = 'down') -> tempEurope
+
+decEurope <- tempEurope %>% 
+  model(stl = STL(LandTempEurope))
+
+#components(decEurope)
+
+Fig26 <- tempEurope %>%
+  autoplot(LandTempEurope, color = 'gray') + 
+  autolayer(components(decEurope), trend, color = '#9900cc') + 
+  ggtitle('Land Temperature Europe Trend') +
+  labs(caption = "fig. 26")
+
+#----------------------------------------------------------------
+
+GlobalCountryTemp %>%
+  filter(year(Date)> 1860) %>%
+  filter (Country == 'Africa') %>%
+  select(LandAvgTemp) %>%
+  as_tibble() %>%
+  group_by(Date) %>% 
+  summarise_at(vars(LandAvgTemp), list(LandTempAfrica = mean)) %>%
+  as_tsibble() %>%
+  fill(LandTempAfrica, .direction = 'down') -> tempAfrica
+
+decAfrica <- tempAfrica %>% 
+  model(stl = STL(LandTempAfrica))
+
+#components(decAfrica)
+
+Fig27 <- tempAfrica %>%
+  autoplot(LandTempAfrica, color = 'gray') + 
+  autolayer(components(decAfrica), trend, color = '#e65c00') + 
+  ggtitle('Land Temperature Africa Trend') +
+  labs(caption = "fig. 27")
+
+#----------------------------------------------------------------
+
+GlobalCountryTemp %>%
+  filter(year(Date)> 1850) %>%
+  filter (Country == 'Asia') %>%
+  select(LandAvgTemp) %>%
+  as_tibble() %>%
+  group_by(Date) %>% 
+  summarise_at(vars(LandAvgTemp), list(LandTempAsia = mean)) %>%
+  as_tsibble() %>%
+  fill(LandTempAsia, .direction = 'down') -> tempAsia
+
+decAsia <- tempAsia %>% 
+  model(stl = STL(LandTempAsia))
+
+#components(decAsia)
+
+Fig28 <- tempAsia %>%
+  autoplot(LandTempAsia, color = 'gray') + 
+  autolayer(components(decAsia), trend, color = '#ff4d94') + 
+  ggtitle('Land Temperature Asia Trend') +
+  labs(caption = "fig. 28")
+
+#----------------------------------------------------------------
+
+GlobalCountryTemp %>%
+  filter(year(Date)> 1850) %>%
+  filter (Country == 'South America') %>%
+  select(LandAvgTemp) %>%
+  as_tibble() %>%
+  group_by(Date) %>% 
+  summarise_at(vars(LandAvgTemp), list(LandTempSouthAmerica = mean)) %>%
+  as_tsibble() %>%
+  fill(LandTempSouthAmerica, .direction = 'down') -> tempSouthAmerica
+
+decSouthAmerica <- tempSouthAmerica %>% 
+  model(stl = STL(LandTempSouthAmerica))
+
+#components(decSouthAmerica)
+
+Fig29 <- tempSouthAmerica %>%
+  autoplot(LandTempSouthAmerica, color = 'gray') + 
+  autolayer(components(decSouthAmerica), trend, color = '#008040') + 
+  ggtitle('Land Temperature South America Trend') +
+  labs(caption = "fig. 29")
+
+#----------------------------------------------------------------
+
+GlobalCountryTemp %>%
+  filter(year(Date)> 1850) %>%
+  filter (Country == 'North America') %>%
+  select(LandAvgTemp) %>%
+  as_tibble() %>%
+  group_by(Date) %>% 
+  summarise_at(vars(LandAvgTemp), list(LandTempNorthAmerica = mean)) %>%
+  as_tsibble() %>%
+  fill(LandTempNorthAmerica, .direction = 'down') -> tempNorthAmerica
+
+decNorthAmerica <- tempNorthAmerica %>% 
+  model(stl = STL(LandTempNorthAmerica))
+
+#components(decNorthAmerica)
+
+Fig30 <- tempNorthAmerica %>%
+  autoplot(LandTempNorthAmerica, color = 'gray') + 
+  autolayer(components(decNorthAmerica), trend, color = '#009999') + 
+  ggtitle('Land Temperature North America Trend') +
+  labs(caption = "fig. 30")
+
+#----------------------------------------------------------------
+
+GlobalCountryTemp %>%
+  filter(year(Date)> 1850) %>%
+  filter (Country == 'Oceania') %>%
+  select(LandAvgTemp) %>%
+  as_tibble() %>%
+  group_by(Date) %>% 
+  summarise_at(vars(LandAvgTemp), list(LandTempOceania = mean)) %>%
+  as_tsibble() %>%
+  fill(LandTempOceania, .direction = 'down') -> tempOceania
+
+decOceania <- tempOceania %>% 
+  model(stl = STL(LandTempOceania))
+
+#components(decOceania)
+
+Fig31 <- tempOceania %>%
+  autoplot(LandTempOceania, color = 'gray') + 
+  autolayer(components(decOceania), trend, color = '#99004d') + 
+  ggtitle('Land Temperature Oceania Trend') +
+  labs(caption = "fig. 31")
+Fig26 + Fig27
+Fig28 + Fig29
+Fig30 + Fig31
+```
+
+By analysing the trends on the different continents, we can draw some conclusions:
+
+It is important to make the distinction, that the trend over time is ranging from very different values from continent to continent. While in North America the temperatures are much colder in general, in Europe and Asia they are slight more moderate. In Oceania the temperatures are hotter, ranging always above 20Cº, but in Africa and South America the temperatures are alarmingly higher, especially in Africa where temperatures start at about 23ºC in 1860, and have already over-passed the 25ºC.
+
+In Africa and South America the trend is going upwards significantly, and much faster, compared to other continents. In Asia and North America, the trend is increasing, but more slowly than on other continents.
+
+
+### Trend and Seasonal Strenght in different Countries and Continents
+
+```{r}
+
+GlobalCountryTemp %>% 
+  fill(LandAvgTemp, .direction = "down") %>%
+  features(LandAvgTemp, feat_stl) %>%
+  drop_na(trend_strength, seasonal_strength_year) %>%
+  mutate(Continent = case_when(
+    Country %in% europe  ~ "Europe" ,
+    Country %in% africa  ~ "Africa" ,
+    Country %in% asia  ~ "Asia" ,
+    Country %in% north_america  ~ "North America",
+    Country %in% south_america  ~ "South America",
+    Country %in% oceania  ~ "Oceania"
+  )
+) %>%
+  drop_na(Continent) %>%
+  ggplot(aes(x = trend_strength, y = seasonal_strength_year, colour = Continent)) +
+  scale_color_manual(values=c('#ff9900', '#ff4d94', '#9900cc', '#009999', '#ffcc00', '#00cc00')) +
+  geom_point() +
+  labs(title= 'Trend and Seasonal Strenght in different Countries', caption = "fig. 32")
+
+
+```
+
+In the scatter plot above, we can evaluate the strength of the trends and seasonal patterns on different countries, grouped by continent.
+
+In all countries in the graph, the seasonal patterns are clearly strong (the majority with a seasonal strength higher than 0.7).
+
+In Europe, we can see countries are in a cluster with a very high seasonal strength (temperature differences by month are more pronounced) and lower trend strength (it is not going on an upward trend as much).
+
+In Asia the seasonal strength is very high in almost all plotted countries (above 0.85). Meaning the differences in temperatures in distinct seasons are very significant (colder winters and very hot summers/spring).
+
+In North America, the trend is very strong in most of the countries, meaning temperatures are rising quite fast and significantly.
+
+
+### Subseries of Land and Ocean Global Temperature
+
+Moreover, on the next plot we can see that on average both the global land temperature and the global land and ocean temperature are much higher in summer months, compared to the rest, and much lower in January, February, and December. Interestingly in July and August the trend is going down. So in previous years, temperatures were higher in these months, compared to recent years.
+
+```{r, warning = FALSE}
+
+components(dec) %>% gg_subseries(season_year) + 
+  labs(title = 'Subseries by month of Land and Ocean Global Temperatures', caption = "fig. 33") 
+
+```
+
+
+## 4. The forecaster’s toolbox
+
+In the previous chapters we have already prepared and visualized our data in order to gain a good understanding of our data. Now, we will use some benchmark forecasting methods to forecast our time series. Moreover, methods for assessing forecast accuracy will be applied.
+
+### Specifying a model
+
+Looking at our data allows us to identify common patterns, and subsequently specify an appropriate model. We have seen in the previous chapters that our time series for Land Average Temperature and Land & Ocean Average temperature reveal a seasonal and a trend pattern. Now, we will check which type of forecasting method is appropriate for this type of time series.
+
+There are several simple forecasting methods. The "Average method" and the "Naïve method" are suitable for time series without any seasonality or trend pattern. Therefore, we won't use these methods for our time series.
+
+The "Seasonal naïve method" is appropriate for data with seasonality and the "Drift Method" for data with a trend pattern. For that reason, we will know apply these forecasting methods to our data and visualize the results.
+
+```{r}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  fill(LandAvgTemp, .direction = "down") %>% 
+  model(Seasonal_naive = SNAIVE(LandAvgTemp),
+        Drift = RW(LandAvgTemp ~ drift())
+        ) %>% forecast(h = "8 years") %>% 
+  autoplot((filter(GlobalCountryTemp, year(Date) > 2000))) + 
+  labs(title = "Global Land Average Temperature - Forecast",
+       subtitle = "Drift and Seasonal naïve method",
+       y="LandAvgTemp Cº",
+       caption = "fig. 34")
+```
+
+```{r}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  fill(LandOceanAvgTemp, .direction = "down") %>% 
+  model(Seasonal_naive = SNAIVE(LandOceanAvgTemp),
+        Drift = RW(LandOceanAvgTemp ~ drift())
+        ) %>% forecast(h = "8 years") %>% 
+  autoplot(filter(GlobalCountryTemp, year(Date) > 2000)) +
+  labs(title = "Global Land & Ocean Average Temperature - Forecast",
+       subtitle = "Drift and Seasonal naïve method",
+       y="LandOceanAvgTemp Cº",
+       caption = "fig. 35")
+```
+
+The figures above show the forecasts for the next 8 years (from 2016 onward) estimated by the "Seasonal naïve method" and the "Drift Method" for the times Series "Global Land Average temperature" and "Global Land & Ocean Temperature", respectively. It can be seen that the area for the prediction intervals is high (espicially for the "Drift method"), which means that there is a high uncertainty in the forecasts. One reason for this may be that one method is suitable for data with seasonality and the other method for data with trend. But in fact our time series has both seasonality and trend.
+
+Let's try to apply the "Drift Method" on the seasonal adjusted data, so that we capture both components in our forecast: Seasonality and Trend.
+
+```{r, warning = FALSE}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  fill(LandAvgTemp, .direction = "down") %>%
+  model(stlf = decomposition_model(
+    STL(LandAvgTemp ~ trend(window = 7), robust = TRUE),
+        Drift = RW(season_adjust ~ drift())
+    )) %>% 
+  forecast(h = "8 years") %>% 
+  autoplot(filter(GlobalCountryTemp, year(Date) > 2000)) +
+  labs(title = "Global Land Average Temperature - Forecast",
+       subtitle = "Drift method based on seasonal adjusted data",
+       y="LandAvgTemp Cº",
+       caption = "fig. 36")
+
+```
+
+```{r, warning = FALSE}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  fill(LandOceanAvgTemp, .direction = "down") %>%
+  filter(!is.na(LandOceanAvgTemp)) %>% 
+  model(stlf = decomposition_model(
+    STL(LandOceanAvgTemp ~ trend(window = 7), robust = TRUE),
+        Drift = RW(season_adjust ~ drift())
+    )) %>% 
+  forecast(h = "8 years") %>% 
+  autoplot(filter(GlobalCountryTemp, year(Date) > 2000)) +
+  labs(title = "Global Land & Ocean Average Temperature - Forecast",
+       subtitle = "Drift method based on seasonal adjusted data",
+       y="LandOceanAvgTemp Cº",
+       caption = "fig. 37")
+```
+
+The figures above show the forecasts for the next 8 years (from 2016 onward) estimated by the "Drift Method" based on the seasonal adjusted data (based on STL Decomposition) for the times Series "Global Land Average temperature" and "Global Land & Ocean Temperature", respectively. The prediction intervals are still big, especially for the forecast of the "Global Land Average temperature". When we compare the prediction interval to those of the "Seasonal naïve method" in the figures before they seem to be even bigger.
+
+In the following chapter we will calculate the forecasting accuracy and check if our intuition about the best method is true.
+
+### Accuracy & performance evaluation
+
+In this chapter we will divide our data in training and test sets to evaluate the forecasting accuracy. For this purpose the time series cross-validation is used. In this procedure, there are a number of test sets, each consisting of a single observation. The corresponding training set consists only of observations that occurred before the observation that forms the test set. By averaging over the test series the forecasting accuracy is calculated.
+
+In the following we will use the one-step ahead forecast with an initial sample size of 3 and the stretch_tsibble function (=extends a growing length window with new data) to calculate the accuracy obtained via time series cross-validation. To increase the performance of the code, only data since 1990 will be considered.
+
+#### Global land average temperature forecast
+
+```{r, warning = FALSE}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  filter(year(Date)>=1990) %>%
+  fill(LandAvgTemp, .direction = "down") %>%
+  filter(!is.na(LandAvgTemp)) %>%
+  stretch_tsibble(.init = 3, .step = 1) %>% 
+  model(Seasonal_naive = SNAIVE(LandAvgTemp),
+        Drift = RW(LandAvgTemp ~ drift())
+        ) %>% forecast(h = "8 years") %>% 
+  accuracy(GlobalCountryTemp)
+```
+
+```{r, warning = FALSE}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  filter(year(Date)>=1990) %>%
+  fill(LandAvgTemp, .direction = "down") %>%
+  filter(!is.na(LandAvgTemp)) %>%
+  stretch_tsibble(.init = 3, .step = 1) %>%
+  model(stlf = decomposition_model(
+    STL(LandAvgTemp ~ trend(window = 7), robust = TRUE),
+        Drift = RW(season_adjust ~ drift())
+    )) %>% forecast(h = "8 years") %>% 
+  accuracy(GlobalCountryTemp)
+
+```
+
+In the figures above we can see the accuracy of the three different models for the Average global Land Temperature. The RMSE is a good way to choose the best forecasting model. The RMSE of the "Seasonal naïve method" is the smallest, followed by the "Drift Method" on seasonal adjusted data and then the normal "Drift method".
+
+#### Global land and ocean average temperature forecast
+
+```{r}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  filter(year(Date)>=1990) %>%
+  fill(LandOceanAvgTemp, .direction = "down") %>%
+  filter(!is.na(LandOceanAvgTemp)) %>%
+  stretch_tsibble(.init = 3, .step = 1) %>% 
+  model(Seasonal_naive = SNAIVE(LandOceanAvgTemp),
+        Drift = RW(LandOceanAvgTemp ~ drift())
+        ) %>% forecast(h = "8 years") %>% 
+  accuracy(GlobalCountryTemp)
+```
+
+```{r, warning = FALSE}
+GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  filter(year(Date)>=1990) %>%
+  fill(LandOceanAvgTemp, .direction = "down") %>%
+  filter(!is.na(LandOceanAvgTemp)) %>%
+  stretch_tsibble(.init = 3, .step = 1) %>%
+  model(stlf = decomposition_model(
+    STL(LandOceanAvgTemp ~ trend(window = 7), robust = TRUE),
+        Drift = RW(season_adjust ~ drift())
+    )) %>% forecast(h = "8 years") %>% 
+  accuracy(GlobalCountryTemp)
+
+```
+
+In the figures above we can see the accuracy of the three different models for the Average global Land & Ocean Temperature. By evaluating the RMSE we can again see that the forecasting accuracy of the "Seasonal naïve method" is the best, followed by the "Drift Method" on seasonal adjusted data and then the normal "Drift method".
+
+The reason for this may be that our time series shows a strong seasonality but only a slight trend. Therefore, the "Seasonal naïve method" already captures the most important factor. If the forecasting horizon would be bigger it can be assumed, that the performance of the "Drift Method" on seasonal adjusted data increases. Moreover, a different value for the step ahead forecast (we chose one-step ahead forecast) could lead to a different result.
+
+#### Checking Residuals of selected method
+
+Based on our previous analysis, we can conclude that the "Seasonal naïve method" is the most appropriate method for our time series. Let's have a look at the residuals of this method:
+
+```{r, warning = FALSE}
+Fig38<- GlobalCountryTemp %>% 
+  filter(Country=="Global") %>% 
+  filter(year(Date)>=1990) %>%
+  fill(LandAvgTemp, .direction = "down") %>% 
+  model(Seasonal_naive = SNAIVE(LandAvgTemp)) %>% 
+  augment() %>% 
+  autoplot(.resid) + labs(title = "Residuals from Seasonal naïve method", caption = "fig. 38")
+
+Fig39<- GlobalCountryTemp %>% 
+  filter(Country=="Global") %>%
+  filter(year(Date)>=1990) %>%
+  fill(LandAvgTemp, .direction = "down") %>% 
+  model(Seasonal_naive = SNAIVE(LandAvgTemp)) %>% 
+  augment() %>% 
+  ACF(.resid) %>% 
+  autoplot() + labs(title = "ACF of Residuals from Seasonal naïve method", caption = "fig. 39")
+
+Fig38 / Fig39
+```
+
+We have limited our time series to data from 1990 onwards, as we do not need data from 1850 onwards. In the two figures above we can see the residuals from the "Seasonal naïve method" and the ACF of the residuals from the "Seasonal naïve method". The ACF value is for some lags very low, but we can also see that there are several outliers. Therefore, we can't say that the residuals of our selected method looks like white noise. This means that none of the Benchmark method is optimal for our time series. However, the "Seasonal naïve method" seems to perform good with regard to the forecasting accuracy.
+
+
+## 5. Exponential Smoothing
+
+The second to last topic in this report will focus entirely in applying Exponential Smoothing methods to the given time-series. Firstly, ETS forecasting will be applied to the global average temperatures, as well as land average temperatures for each continent. Secondly, an assessment of the forecast accuracy will be analyzed.
+
+### Global Land Average Temperature
+
+Due to the strong presence of seasonality in our data, the most appropriate Exponential Smoothing methods would most likely be the ones with a seasonal component, such as Holt-Winters Additive Method or Holt-Winters Multiplicative Method. Besides that, a more simpel ETS Method without a trend component could also be considered.Therefore, in this first step, these three exponential smoothing methods are applied.
+
+```{r, warning = FALSE}
+global_temp <- 
+  GlobalCountryTemp %>% 
+  filter(Country == "Global") %>% 
+  filter(year(Date)>=1990)
+
+fit_global_land <- global_temp %>% 
+  model(
+    ANA_Land = ETS(LandAvgTemp ~ error("A") + trend("N") + season("A")),
+    AAA_Land = ETS(LandAvgTemp ~ error("A") + trend("A") + season("A")),
+    MAM_Land = ETS(LandAvgTemp ~ error("M") + trend("A") + season("M"))
+    )
+
+fit_ANA <- global_temp %>% model(ANA = ETS(LandAvgTemp ~ error("A") + trend("N") + season("A")))
+
+report(fit_global_land)
+fit_global_land %>% 
+  components() %>% 
+  autoplot() + labs(title = "ETS Components", caption = "fig. 40")
+```
+
+It seems that when the time series is limited from 1990 onward, the ideal exponential smoothing method is the one which does not include any trend (slope). Besides that, the ones that do include a trend (Holt-Winters Additive and Multiplicative Methods) seem to have a slope that is nearly equal to zero. The reasoning behind this is most likely related with the fact that although there is an increasing trend in temperature, this trend is quite small when we consider a time range from the 1990's onward. Therefore, the ideal forecasting method in this case, would be the "ANA" ETS, since this is the one that minimizes the AIC, AICc and BIC.
+
+```{r, warning = FALSE}
+fit_global_land %>% 
+  forecast(h = "8 years") %>% 
+  autoplot(filter(global_temp, year(Date)>2000),level = NULL) + labs(title = "Global Land Average Temperature ETS Forecast", caption = "fig. 41")
+```
+
+As expected, the ETS forecasts applied to these time series had a very small AICc difference and, therefore, even though ANA was the one that performed the best, the three methods applied do not differ much from one another. This is mainly due to the fact that the models that did have a trend component (Holt-Winters Additive and Multiplicative), had a very small trend value. Naturally, the Holt Winters multiplicative method was the one that performed the worst because seasonal variations in this case do not change proportionally to the level of the series.
+
+```{r, warning = FALSE}
+fit_ANA %>% 
+  gg_tsresiduals() + labs(title = "Residual plots for Global Average Temperature ETS(A,N,A) Forecast", caption = "fig. 42")
+
+```
+
+By looking at the distribution plot of the residuals, it is possible to visualize that the residuals do tend to cluster around zero. Besides that, only 2 out of 24 lags in the ACF are barely significant. This means that the residuals do seem to be white noise. Which leads to the conclusion that the residuals are normal and uncorrelated. Therefore, the forecasts should also follow a normal distribution. This indicates that using an exponential smoothing method that is comprised of an additive error with a null trend and additive seasonal component would yield fairly decent forecasts.
+
+
+### Continents' Land Average Temperature
+
+Similarly to what was done for global land average temperature, this time around, exponential smoothing methods will be applied to forecast average temperatures for each continent available in the data set that is being studied.
+
+```{r, warning = FALSE}
+land_continents <- 
+  GlobalCountryTemp %>% 
+  filter(Country %in% c("North America", "South America", "Europe", "Asia", "Oceania", "Africa")) %>% 
+  filter(year(Date)>=1990)
+
+fit_continents <- land_continents %>% 
+  model(
+    ANA_Continents = ETS(LandAvgTemp)
+  )
+
+fit_continents %>% report()
+fit_continents %>% 
+  components() %>% 
+  autoplot() + labs(title = "ETS Components", caption = "fig. 43")
+
+```
+
+The exponential smoothing method that minimizes the AIC, Corrected AIC and BIC for all the six continents available in the data set is the ANA Exponential Smoothing Method. This was also the best exponential smoothing method for the global land average temperature time series that we have previously seen.
+
+It is important to highlight that the level and seasonality ETS components differ drastically from continent to continent. Africa, South America and Oceania have a level above 20. Whereas Europe, Asia and North America have a level below 10. This is obviously related with the fact that temperatures in the latter three continents are significantly lower than in the former three. Besides that, there seems to be a much higher seasonal variation in Europe, Asia and North America than in Africa, Oceania and South America.
+
+```{r, warning = FALSE}
+fit_continents %>% 
+  forecast(h = "8 years") %>% 
+  autoplot(land_continents) + facet_grid(Country~., scales = "free_y", shrink = T)  + labs(title = "Land Average Temperature ETS Forecast by Continent", caption = "fig. 44")
+```
+
+The forecasts applied to each time series for each continent clearly differ significantly from one-another. The seasonal differences that were previously analyzed are also visible in the ETS forecast since only North America, Europe and Asia have forecasts of negative or close to negative temperatures. Additionally, it is important to highlight that Africa and South America seem to have a larger confidence interval in its forecast than other continents. Hence, the forecast for these continents seem to be less precise than for the others.
+
+Lastly, the residuals for the forecast of each continent must be plotted.
+
+```{r, warning = FALSE}
+fit_continents %>% 
+  augment() %>% 
+  autoplot(.resid) + facet_grid(Country~., scales = "free_y", shrink = T) + labs(title = "Residuals from ANA ETS per Continent", caption = "fig. 45")
+
+fit_continents %>% 
+  augment() %>% 
+  ACF(.resid) %>% 
+  autoplot() + facet_grid(Country~., scales = "free_y", shrink = T) + labs(title = "Residuals from ANA ETS per Continent", caption = "fig. 46")
+```
+
+In a similar fashion to what was seen for the Global Land Average Temperature forecast residuals, the residuals for the continents also seem to follow white noise. Only North America, Europe and Asia have two barely significant lags in a total of 24. On the other hand, Oceania and South America have 1, whereas Africa has none. Interestingly enough, the continents that had two significant lags are the ones with a higher seasonal variation. Regardless, this means that there is statistical evidence that indicates that these residuals do follow white noise.
+
+## 6. ARIMA
+
+The last step for our analysis was to use the box-jenkins methodology to fit ARIMA/SARIMA models. This involved a process of examining the data for differencing in view of trend and seasonality, before applying model fitting and then checking diagnostics to ensure a good fit. When the final models were chosen, we plotted a forecast and compared with that of the exponential smoothing and the Naive method. 
+
+### Plotting both the and the Land and Ocean series before and after a seasonal difference.
+```{r}
+Fig47 <- GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
+autoplot(LandAvgTemp) +labs(title = "Land Average Temperature",
+       subtitle = "Plot of data from 1900 onwards",
+       y="AvgTemp Cº",
+       caption = "fig. 47")
+Fig48 <- GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
+autoplot(LandOceanAvgTemp)+labs(title = "Land + Ocean Average Temperature",
+       subtitle = "Plot of data from 1900 onwards",
+       y="AvgTemp Cº",
+       caption = "fig. 48")
+Fig49 <- GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
+autoplot(LandAvgTemp %>% difference(12)) + labs(title = "Land Average Temperature", subtitle = "Plot of data with seasonal difference", 
+       y="AvgTemp Cº differenced",
+       caption = "fig. 49")
+Fig50 <- GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% 
+autoplot(LandOceanAvgTemp %>% difference(12)) + labs(title = "Land + Ocean Average Temperature", subtitle = "Plot of data with seasonal difference", 
+       y="AvgTemp Cº differenced",
+       caption = "fig. 50")
+(Fig47 + Fig48)/(Fig49 + Fig50)
+
+```
+
+We plotted the time series of interest in view of beginning the process to fit ARIMA models to the data. Both showed high seasonality and some moderate positive linear trend.
+After differencing to remove the seasonal trend, these looked far more stationary.
+
+### Unit Root tests
+
+```{r, warning = FALSE}
+GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)  %>%mutate(diff_lat = (difference(LandAvgTemp, 12)))%>%
+  features(diff_lat, unitroot_pp)
+
+GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)%>% mutate(diff_lat = (difference(LandAvgTemp, 12))) %>%
+  features(diff_lat, unitroot_kpss)
+
+
+GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)  %>%mutate(diff_lat = (difference(LandOceanAvgTemp, 12)))%>%
+  features(diff_lat, unitroot_pp)
+
+GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899)%>% mutate(diff_lat = (difference(LandOceanAvgTemp, 12))) %>%
+  features(diff_lat, unitroot_kpss)
+```
+
+First we wanted to check for any necessary differencing or box-cox transformations before moving into ARIMA modelling. For both series, the variance appeared to be very stable, so we did not feel that there was any need for a log transformation. We have already mentioned that there was high seasonality in the data, which is no surprise as it is to do with weather. To handle this, we first differenced both series at lag 12. The positive linear trend was very weak but still existed in the data; we had to decide whether it was necessary to difference it out or not. We used some tests to help us make the decision; the pp and the kpss tests. For both series, the pp test had a p-value of 0.01, rejecting H0 of a unit root, and the kpss test had a p-value of 0.1, not rejecting H0 that there was not a unit root. The tests agreed that an extra difference to remove unit root was not necessary for either series.
+
+### Autocorrelation and Partial Autocorrelation plots
+
+```{r, warning = FALSE}
+#create variables for seasonally differenced data
+Fig51 <- GlobalCountryTemp %>% filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff1 = difference(LandAvgTemp, 12))
+
+Fig52 <- GlobalCountryTemp %>%  filter(Country=="Global",  year(Date) > 1899) %>% mutate(diff2 = difference(LandOceanAvgTemp, 12)) 
+
+```
+
+The next step was to examine the sample autocorrelation and partial autocorrelation plots, and use them to try and make inference about possible ARIMA models to fit. For both series, the acf plot had a decaying sine wave and the pacf had a fast decay, with lag 3 being the last significant value. These both suggested that an ARMA(3,0) model be a good option to try. However, there were some spikes later on in the pacf plot around lag 12 which implied that the simple ARMA may have problems.
+
+```{r, warning = FALSE}
+Fig51 %>% gg_tsdisplay(diff1, plot_type = 'partial', lag_max = 15)  + labs(title = "Land Average Temperature + Acf + Pacf plots", caption = "fig. 51") #subtitle = "Land Average Temperature seasonal difference",  y="AvgTemp Cº differenced",caption = "fig. 51"))
+Fig52 %>% gg_tsdisplay(diff2, plot_type = 'partial', lag_max = 15) + labs(title = "Land + Ocean Average Temperature + Acf + Pacf plots", caption = "fig. 52") #, subtitle = "Land + Ocean Average Temperature seasonal difference",  y="AvgTemp Cº differenced",       caption = "fig. 52"))
+```
+
+For the Land temperature series, we trained the following models; an ARMA(3,0), ARMA(2,0), ARIMA(1,1) and the optimal model from R given by the ARIMA built in function. We compared these models using the tidy function, showing a combined AIC, AICc and BIC comparison, and then just with the AICc for simplicity. We found that the best model was by far the SARIMA(4,0,0)(2,0,0) model, with an AICc of 863.7; a far lower score than that of the ARMA(3,0) which had an AICc of 1451.9.
+
+### Fitting ARIMA/SARIMA models
+
+```{r, warning = FALSE}
+fitting_land <- Fig51 %>%
+  model(
+        ar3 = ARIMA(diff1 ~ pdq(3, 0, 0) + PDQ(0,0,0)),
+        ar2 = ARIMA(diff1 ~ pdq(2, 0, 0) + PDQ(0,0,0)), 
+        arma11 = ARIMA(diff1 ~ pdq(1, 1, 1) + PDQ(0,0,0)), 
+        auto1 = ARIMA(diff1)
+        )
+fitting_land %>% tidy()
+fitting_land %>% glance() %>% arrange(AICc)
+```
+
+For the Land and Ocean series, we obtained similar results when model selecting. The best ARMA model was again the ARMA(3,0), with an AICc of -1524.2, however this was greatly bettered by the SARIMA(4,0,0)(2,0,0) which had an AICc of -2120.3.
+
+```{r, warning = FALSE}
+fitting_land_ocean <- Fig52 %>%
+  model(
+        ar3 = ARIMA(diff2 ~ pdq(3, 0, 0) + PDQ(0,0,0)),
+        ar2 = ARIMA(diff2 ~ pdq(2, 0, 0) + PDQ(0,0,0)), 
+        arma11 = ARIMA(diff2 ~ pdq(1, 1, 1) + PDQ(0,0,0)), 
+        auto1 = ARIMA(diff2)
+        )
+fitting_land_ocean %>% tidy()
+fitting_land_ocean %>% glance() %>% arrange(AICc)
+```
+
+### Ljung box tests and residual plots
+
+```{r warning=FALSE}
+
+sarima_land <- Fig51 %>% model(arima = ARIMA(diff1))
+arima_land <- Fig51 %>%  model(arima = ARIMA(diff1 ~ pdq(3, 0, 0) + PDQ(0,0,0))) 
+sarima_land %>% gg_tsresiduals(lag_max=15) +labs(title = "Residual plots for Land Average Temperature for SARIMA model", caption = "fig. 53")
+augment(sarima_land) %>% 
+  features(.resid, ljung_box, lag = 10, dof = 3)
+
+arima_land %>% gg_tsresiduals(lag_max=15) +labs(title = "Residual plots for Land Average Temperature for ARIMA model", caption = "fig. 54")
+augment(arima_land) %>%
+  features(.resid, ljung_box, lag = 10, dof = 3)
+
+
+
+
+```
+
+
+
+```{r warning=FALSE}
+sarima_land_ocean <- Fig52 %>%  model(arima = ARIMA(diff2)) 
+arima_land_ocean <- Fig52 %>%  model(arima = ARIMA(diff2 ~ pdq(3, 0, 0) + PDQ(0,0,0))) 
+
+
+sarima_land_ocean %>% gg_tsresiduals(lag_max=15) +labs(title = "Residual plots for Land Average Temperature for SARIMA model", caption = "fig. 55")
+augment(sarima_land_ocean) %>%
+  features(.resid, ljung_box, lag = 10, dof = 3)# as there are 3 parameters
+
+
+arima_land_ocean %>% gg_tsresiduals(lag_max=15)+labs(title = "Residual plots for Land and Ocean Average Temperature for ARIMA model", caption = "fig. 56")
+augment(arima_land_ocean) %>%
+  features(.resid, ljung_box, lag = 10, dof = 3)
+```
+
+We decided to compare the two models further by checking that the residuals exhibited white noise. For both series we obtained similar results; the residuals showed white noise behaviour in their plots, however the autocorrelation function for the residuals of the ARMA(3,0) showed a strong seasonal component whereas this was far less prominent in the SARIMA model. The S part of the SARIMA model deals with this seasonality as expected, further confirming that this should be the model to use for forecasting.
+
+### Forecasts with the final SARIMA models
+
+```{r warning=FALSE}
+sarima_land %>% forecast(h = "8 years") %>% 
+  autoplot(filter(Fig51, year(Date)>2000)) +labs(title = "8 year forecast for Land Average Temperature for SARIMA model", y="AvgTemp Cº differenced", caption = "fig. 57")
+sarima_land_ocean %>% forecast(h = "8 years") %>% 
+  autoplot(filter(Fig52, year(Date)>2000)) +labs(title = "8 year forecast for Land + Ocean Average Temperature for SARIMA model", y="AvgTemp Cº differenced", caption = "fig. 58")
+```
+
+Lastly, to complete the ARIMA box-jenkins process we plotted the forecast for 8 years in advance for the two series, obtaining what looked like to be very precise forecasts, especially on the 4 year margin.
+
+
+## 7. Conclusion
+
+Lastly, a comparison between the best performing naive, ETS and ARIMA models will be made. This comparison will be made using cross validation. However, there are some computational constraints. Cross validation for three distinct models applied to the land average temperature time series, which is quite large, takes a long time. Therefore, the "slide_tsibble" function with a size of 10 years and steps of 12 months was applied. The results can be seen below: 
+
+```{r, warning = FALSE}
+Fig51 %>% 
+  filter(!is.na(LandAvgTemp)) %>%
+  slide_tsibble(.size = 120, .step = 12) %>% 
+  model(Seasonal_Naive = SNAIVE(LandAvgTemp),
+        ANA_ETS = ETS(LandAvgTemp ~ error("A") + trend("N") + season("A"))
+        ) %>% 
+  forecast(h = "4 years") %>% 
+  accuracy(Fig51)
+
+Fig51 %>% 
+  filter(!is.na(LandAvgTemp)) %>%
+  slide_tsibble(.size = 120, .step = 12) %>% 
+  model(auto1 = ARIMA(diff1)
+        ) %>% 
+  forecast(h = "4 years") %>% 
+  accuracy(Fig51)
+```
+
+According to the model tables depicted above, the forecasting method that minimizes the RMSE is the ETS with additive errors and seasonal component. The auto ARIMA and seasonal naive are closely behind, but did not perform as well as the exponential smoothing one.
+
+Overall, the group observed that the temperature has been increasing steadily  over the years. This is most likely due to global warming, which was mentioned previously throughout the report. Furthermore, our forecasts indicate that it is likely that the temperature keeps increasing in the following years. Therefore, there must be cooperation between countries worldwide to reverse this increasing trend in temperature.
+
